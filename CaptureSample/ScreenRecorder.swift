@@ -21,7 +21,7 @@ struct CaptureConfiguration {
     var filterOutOwningApplication = true
 }
 
-struct CapturedFrame: Sendable {
+struct CapturedFrame {
     var sampleBuffer: CMSampleBuffer
     var surface: IOSurface
     var contentRect: CGRect
@@ -30,8 +30,7 @@ struct CapturedFrame: Sendable {
     var scaleFactor: Double
 }
 
-@MainActor
-class ScreenRecorder: NSObject, ObservableObject, @unchecked Sendable {
+class ScreenRecorder: NSObject, ObservableObject {
     
     struct ScreenRecorderError: Error {
         let errorDescription: String
@@ -41,14 +40,16 @@ class ScreenRecorder: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
     
-    @Published var latestFrame: CapturedFrame?
-    @Published var error: Error?
-    @Published var isRecording = false
+    @MainActor @Published var latestFrame: CapturedFrame?
+    @MainActor @Published var error: Error?
+    @MainActor @Published var isRecording = false
     
     private var stream: SCStream?
     private let logger = Logger()
     private var cpuStartTime = mach_absolute_time()
+    private let frameOutputQueue = DispatchQueue(label: "frame-handling")
     
+    @MainActor
     func startCapture(with captureConfig: CaptureConfiguration) async {
         error = nil
         isRecording = false
@@ -58,13 +59,10 @@ class ScreenRecorder: NSObject, ObservableObject, @unchecked Sendable {
             
             let streamConfig = streamConfiguration(for: captureConfig)
             
-            stream = SCStream(filter: filter, captureOutputProperties: streamConfig, delegate: self)
+            stream = SCStream(filter: filter, configuration: streamConfig, delegate: self)
+            try stream?.addStreamOutput(self, type: .screen, sampleHandlerQueue: frameOutputQueue)
             
-            try await stream?.startCapture { stream, sampleBuffer in
-                Task {
-                    self.handleFrame(for: stream, sampleBuffer: sampleBuffer)
-                }
-            }
+            try await stream?.startCapture()
             cpuStartTime = mach_absolute_time()
             isRecording = true
         } catch {
@@ -73,23 +71,25 @@ class ScreenRecorder: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
     
+    @MainActor
     func update(with captureConfig: CaptureConfiguration) async {
         do {
             let filter = try await contentFilter(for: captureConfig)
             let streamConfig = streamConfiguration(for: captureConfig)
-            try await stream?.update(streamConfig)
-            try await stream?.update(filter)
+            try await stream?.updateConfiguration(streamConfig)
+            try await stream?.updateContentFilter(filter)
         } catch {
             logger.error("Failed to update the filter: \(String(describing: error))")
             self.error = error
         }
     }
     
+    @MainActor
     func stopCapture() async {
         isRecording = false
         
         do {
-            try await stream?.stop()
+            try await stream?.stopCapture()
         } catch {
             logger.error("Failed to stop capture: \(error.localizedDescription)")
             self.error = error
@@ -114,10 +114,10 @@ class ScreenRecorder: NSObject, ObservableObject, @unchecked Sendable {
                 let excludedApps = content.applications.filter { app in
                     Bundle.main.bundleIdentifier == app.bundleIdentifier
                 }
-                filter = SCContentFilter(display: display, excludingApplications: excludedApps, exceptingWindows: nil)
+                filter = SCContentFilter(display: display, excludingApplications: excludedApps, exceptingWindows: [])
             } else {
                 // Create a content filter that includes the entire display.
-                filter = SCContentFilter(display: display, excludingWindows: nil)
+                filter = SCContentFilter(display: display, excludingWindows: [])
             }
         case .independentWindow:
             guard let window = config.window else {
@@ -140,7 +140,7 @@ class ScreenRecorder: NSObject, ObservableObject, @unchecked Sendable {
         }
         
         // Capture at 60fps.
-        streamConfig.minimumFrameTime = 1 / 60
+        streamConfig.minimumFrameInterval = CMTime(value: 1, timescale: CMTimeScale(60))
         
         // Increase the depth of the frame queue to ensure high FPS while displaying the stream.
         // Increasing the depth also increases the memory footprint of WindowServer.
@@ -148,7 +148,17 @@ class ScreenRecorder: NSObject, ObservableObject, @unchecked Sendable {
         return streamConfig
     }
     
-    func handleFrame(for stream: SCStream, sampleBuffer: CMSampleBuffer) {
+    private func convertToSeconds(_ machTime: UInt64) -> TimeInterval {
+        var timebase = mach_timebase_info_data_t()
+        mach_timebase_info(&timebase)
+        let nanoseconds = machTime * UInt64(timebase.numer) / UInt64(timebase.denom)
+        return Double(nanoseconds) / Double(kSecondScale)
+    }
+}
+
+extension ScreenRecorder: SCStreamOutput {
+    func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of type: SCStreamOutputType) {
+        
         guard sampleBuffer.isValid else {
             logger.log("The sample buffer is invalid.")
             return
@@ -162,13 +172,13 @@ class ScreenRecorder: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         
-        guard let statusRawValue = attachments[SCStreamFrameInfo.statusKey] as? Int,
+        guard let statusRawValue = attachments[SCStreamFrameInfo.status] as? Int,
               let status = SCFrameStatus(rawValue: statusRawValue) else {
             logger.error("Failed to get the frame status from attachments.")
             return
         }
                 
-        guard status == .frameComplete else {
+        guard status == .complete else {
             logger.log("Not updating frame because frame status is \(String(describing: status))")
             return
         }
@@ -185,25 +195,25 @@ class ScreenRecorder: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         
-        guard let contentRectDict = attachments[.contentRectKey],
+        guard let contentRectDict = attachments[.contentRect],
               let contentRect = CGRect(dictionaryRepresentation: contentRectDict as! CFDictionary) else {
             logger.error("Failed to get a content rectangle from the sample buffer.")
             return
         }
         
-        guard let displayTime = attachments[.displayTimeKey] as? UInt64 else {
+        guard let displayTime = attachments[.displayTime] as? UInt64 else {
             logger.error("Failed to get a display time from the sample buffer.")
             return
         }
         
         let elapsedTime = convertToSeconds(displayTime) - convertToSeconds(cpuStartTime)
         
-        guard let contentScale = attachments[.contentScaleKey] as? Double else {
+        guard let contentScale = attachments[.contentScale] as? Double else {
             logger.error("Failed to get the contentScale from the sample buffer.")
             return
         }
         
-        guard let scaleFactor = attachments[.scaleFactorKey] as? Double else {
+        guard let scaleFactor = attachments[.scaleFactor] as? Double else {
             logger.error("Failed to get the scaleFactor from the sample buffer.")
             return
         }
@@ -212,26 +222,23 @@ class ScreenRecorder: NSObject, ObservableObject, @unchecked Sendable {
         let surface = unsafeBitCast(surfaceRef, to: IOSurface.self)
         
         // Publish a new value for the latestFrame property.
-        latestFrame = CapturedFrame(sampleBuffer: sampleBuffer,
-                                    surface: surface,
-                                    contentRect: contentRect,
-                                    displayTime: elapsedTime,
-                                    contentScale: contentScale,
-                                    scaleFactor: scaleFactor)
-    }
-    
-    private func convertToSeconds(_ machTime: UInt64) -> TimeInterval {
-        var timebase = mach_timebase_info_data_t()
-        mach_timebase_info(&timebase)
-        let nanoseconds = machTime * UInt64(timebase.numer) / UInt64(timebase.denom)
-        return Double(nanoseconds) / Double(kSecondScale)
+        DispatchQueue.main.async {
+            self.latestFrame = CapturedFrame(sampleBuffer: sampleBuffer,
+                                             surface: surface,
+                                             contentRect: contentRect,
+                                             displayTime: elapsedTime,
+                                             contentScale: contentScale,
+                                             scaleFactor: scaleFactor)
+        }
     }
 }
 
 extension ScreenRecorder: SCStreamDelegate {
     func stream(_ stream: SCStream, didStopWithError error: Error) {
-        logger.error("Stream stopped with error: \(error.localizedDescription)")
-        self.error = error
-        isRecording = false
+        DispatchQueue.main.async {
+            self.logger.error("Stream stopped with error: \(error.localizedDescription)")
+            self.error = error
+            self.isRecording = false
+        }
     }
 }

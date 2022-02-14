@@ -10,7 +10,7 @@ import ScreenCaptureKit
 import OSLog
 import Combine
 
-struct CaptureView: View, Sendable {
+struct CaptureView: View {
     
     @StateObject var screenRecorder = ScreenRecorder()
     @State var availableContent: SCShareableContent?
