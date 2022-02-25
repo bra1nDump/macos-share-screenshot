@@ -103,25 +103,32 @@ struct CaptureView: View {
         }
         .padding()
         .onAppear {
-            timer = RunLoop.current.schedule(after: .init(.now), interval: .seconds(3)) {
-                Task {
-                    do {
-                        availableContent = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
-
-                        // Set the display if not previously selected.
-                        if captureConfig.display == nil {
-                            captureConfig.display = availableContent?.displays.first
-                        }
-                        
-                        // Set the selected window if not previously selected.
-                        if captureConfig.window == nil {
-                            captureConfig.window = availableContent?.windows.first
-                        }
-                    } catch {
-                        self.error = error
-                        logger.error("Failed to get shareable content: \(error.localizedDescription)")
-                    }
+            timer = RunLoop.current.schedule(after: .init(.now),
+                                             interval: .seconds(3)) {
+                refreshAvailableContent()
+            }
+        }
+    }
+    
+    /// - Tag: GetAvailableContent
+    private func refreshAvailableContent() {
+        Task {
+            do {
+                availableContent = try await SCShareableContent.excludingDesktopWindows(false,
+                                                                                        onScreenWindowsOnly: true)
+                
+                // Store the first available display in the local settings.
+                if captureConfig.display == nil {
+                    captureConfig.display = availableContent?.displays.first
                 }
+                
+                // Store the first available window in the local settings.
+                if captureConfig.window == nil {
+                    captureConfig.window = availableContent?.windows.first
+                }
+            } catch {
+                self.error = error
+                logger.error("Failed to get the shareable content: \(error.localizedDescription)")
             }
         }
     }

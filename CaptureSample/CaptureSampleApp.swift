@@ -2,7 +2,7 @@
 See LICENSE folder for this sample’s licensing information.
 
 Abstract:
-A sample app that demonstrates how to use ScreenCaptureKit.
+The entry point into this app.
 */
 import SwiftUI
 

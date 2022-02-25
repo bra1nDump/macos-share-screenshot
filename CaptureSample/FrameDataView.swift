@@ -2,7 +2,7 @@
 See LICENSE folder for this sample’s licensing information.
 
 Abstract:
-A view that renders information about a captured frame.
+A view that renders information about a video frame.
 */
 
 import SwiftUI
