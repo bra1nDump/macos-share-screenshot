@@ -2,161 +2,225 @@
 See LICENSE folder for this sample’s licensing information.
 
 Abstract:
-An object that captures a stream of screen content.
+A model object that provides the interface to capture screen content and system audio.
 */
 
 import Foundation
 import ScreenCaptureKit
+import Combine
 import OSLog
+import SwiftUI
 
-enum CaptureType {
-    case independentWindow
-    case display
+/// A provider of audio levels from the captured samples.
+class AudioLevelsProvider: ObservableObject {
+    @Published var audioLevels = AudioLevels.zero
 }
 
-struct CaptureConfiguration {
-    var captureType: CaptureType = .display
-    var display: SCDisplay?
-    var window: SCWindow?
-    var filterOutOwningApplication = true
-}
-
-struct CapturedFrame {
-    var sampleBuffer: CMSampleBuffer
-    var surface: IOSurface
-    var contentRect: CGRect
-    var displayTime: TimeInterval
-    var contentScale: Double
-    var scaleFactor: Double
-}
-
-class ScreenRecorder: NSObject, ObservableObject {
+@MainActor
+class ScreenRecorder: ObservableObject {
     
-    struct ScreenRecorderError: Error {
-        let errorDescription: String
-        
-        init(_ description: String) {
-            errorDescription = description
+    /// The supported capture types.
+    enum CaptureType {
+        case display
+        case window
+    }
+    
+    private let logger = Logger()
+    
+    @Published var isRunning = false
+    
+    // MARK: - Video Properties
+    @Published var captureType: CaptureType = .display {
+        didSet { updateEngine() }
+    }
+    
+    @Published var selectedDisplay: SCDisplay? {
+        didSet { updateEngine() }
+    }
+    
+    @Published var selectedWindow: SCWindow? {
+        didSet { updateEngine() }
+    }
+    
+    @Published var isAppExcluded = true {
+        didSet { updateEngine() }
+    }
+    
+    @Published var contentSize = CGSize(width: 1, height: 1)
+    private var scaleFactor: Int { Int(NSScreen.main?.backingScaleFactor ?? 2) }
+    
+    /// A view that renders the screen content.
+    lazy var capturePreview: CapturePreview = {
+        CapturePreview()
+    }()
+    
+    private var availableApps = [SCRunningApplication]()
+    @Published private(set) var availableDisplays = [SCDisplay]()
+    @Published private(set) var availableWindows = [SCWindow]()
+    
+    // MARK: - Audio Properties
+    @Published var isAudioCaptureEnabled = true {
+        didSet {
+            updateEngine()
+            if isAudioCaptureEnabled {
+                startAudioMetering()
+            } else {
+                stopAudioMetering()
+            }
+        }
+    }
+    @Published var isAppAudioExcluded = false { didSet { updateEngine() } }
+    @Published private(set) var audioLevelsProvider = AudioLevelsProvider()
+    // A value that specifies how often to retrieve calculated audio levels.
+    private let audioLevelRefreshRate: TimeInterval = 0.1
+    private var audioMeterCancellable: AnyCancellable?
+    
+    // The object that manages the SCStream.
+    private let captureEngine = CaptureEngine()
+    
+    private var isSetup = false
+    
+    // Combine subscribers.
+    private var subscriptions = Set<AnyCancellable>()
+    
+    var canRecord: Bool {
+        get async {
+            do {
+                // If the app doesn't have Screen Recording permission, this call generates an exception.
+                try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
+                return true
+            } catch {
+                return false
+            }
         }
     }
     
-    @MainActor @Published var latestFrame: CapturedFrame?
-    @MainActor @Published var error: Error?
-    @MainActor @Published var isRecording = false
-
-    private var stream: SCStream?
-    private let logger = Logger()
-    private var cpuStartTime = mach_absolute_time()
-    private let frameOutputQueue = DispatchQueue(label: "frame-handling")
+    func monitorAvailableContent() async {
+        guard !isSetup else { return }
+        // Refresh the lists of capturable content.
+        await self.refreshAvailableContent()
+        Timer.publish(every: 3, on: .main, in: .common).autoconnect().sink { [weak self] _ in
+            guard let self = self else { return }
+            Task {
+                await self.refreshAvailableContent()
+            }
+        }
+        .store(in: &subscriptions)
+    }
     
-    /// - Tag: StartCapture
-    @MainActor
-    func startCapture(with captureConfig: CaptureConfiguration) async {
-        error = nil
-        isRecording = false
+    /// Starts capturing screen content.
+    func start() async {
+        // Exit early if already running.
+        guard !isRunning else { return }
+        
+        if !isSetup {
+            // Starting polling for available screen content.
+            await monitorAvailableContent()
+            isSetup = true
+        }
+        
+        // If the user enables audio capture, start monitoring the audio stream.
+        if isAudioCaptureEnabled {
+            startAudioMetering()
+        }
         
         do {
-            // Create the content filter with the sample app settings.
-            let filter = try await contentFilter(for: captureConfig)
-            
-            // Create the stream configuration with the sample app settings.
-            let streamConfig = streamConfiguration(for: captureConfig)
-            
-            // Create a capture stream with the filter and stream configuration.
-            stream = SCStream(filter: filter, configuration: streamConfig, delegate: self)
-            
-            // Add a stream output to capture screen content.
-            try stream?.addStreamOutput(self, type: .screen, sampleHandlerQueue: frameOutputQueue)
-            
-            // Start the capture session.
-            try await stream?.startCapture()
-            
-            cpuStartTime = mach_absolute_time()
-            isRecording = true
+            let config = streamConfiguration
+            let filter = contentFilter
+            // Update the running state.
+            isRunning = true
+            // Start the stream and await new video frames.
+            for try await frame in captureEngine.startCapture(configuration: config, filter: filter) {
+                capturePreview.updateFrame(frame)
+                if contentSize != frame.size {
+                    // Update the content size if it changed.
+                    contentSize = frame.size
+                }
+            }
         } catch {
-            logger.error("Failed to start the stream session: \(String(describing: error))")
-            self.error = error
+            logger.error("\(error.localizedDescription)")
+            // Unable to start the stream. Set the running state to false.
+            isRunning = false
         }
+    }
+    
+    /// Stops capturing screen content.
+    func stop() async {
+        guard isRunning else { return }
+        await captureEngine.stopCapture()
+        stopAudioMetering()
+        isRunning = false
+    }
+    
+    private func startAudioMetering() {
+        audioMeterCancellable = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect().sink { [weak self] _ in
+            guard let self = self else { return }
+            self.audioLevelsProvider.audioLevels = self.captureEngine.audioLevels
+        }
+    }
+    
+    private func stopAudioMetering() {
+        audioMeterCancellable?.cancel()
+        audioLevelsProvider.audioLevels = AudioLevels.zero
     }
     
     /// - Tag: UpdateCaptureConfig
-    @MainActor
-    func update(with captureConfig: CaptureConfiguration) async {
-        do {
-            let filter = try await contentFilter(for: captureConfig)
-            let streamConfig = streamConfiguration(for: captureConfig)
-            try await stream?.updateConfiguration(streamConfig)
-            try await stream?.updateContentFilter(filter)
-        } catch {
-            logger.error("Failed to update the stream session: \(String(describing: error))")
-            self.error = error
+    private func updateEngine() {
+        guard isRunning else { return }
+        Task {
+            await captureEngine.update(configuration: streamConfiguration, filter: contentFilter)
         }
     }
     
-    @MainActor
-    func stopCapture() async {
-        isRecording = false
-        
-        do {
-            try await stream?.stopCapture()
-        } catch {
-            logger.error("Failed to stop the stream session: \(error.localizedDescription)")
-            self.error = error
-        }
-    }
-    
-    /// - Tag: CreateContentFilter
-    private func contentFilter(for config: CaptureConfiguration) async throws -> SCContentFilter {
+    /// - Tag: UpdateFilter
+    private var contentFilter: SCContentFilter {
         let filter: SCContentFilter
-        
-        if let display = config.display {
-
-            // Create a content filter that includes all content from the display,
-            // excluding the sample app's window.
-            if config.filterOutOwningApplication {
-
-                // Get the content that's available to capture.
-                let content = try await SCShareableContent.excludingDesktopWindows(false,
-                                                                                   onScreenWindowsOnly: true)
-                
-                // Exclude the sample app by matching the bundle identifier.
-                let excludedApps = content.applications.filter { app in
+        switch captureType {
+        case .display:
+            guard let display = selectedDisplay else { fatalError("No display selected.") }
+            var excludedApps = [SCRunningApplication]()
+            // If a user chooses to exclude the app from the stream,
+            // exclude it by matching its bundle identifier.
+            if isAppExcluded {
+                excludedApps = availableApps.filter { app in
                     Bundle.main.bundleIdentifier == app.bundleIdentifier
                 }
-                
-                // Create a content filter that excludes the sample app.
-                filter = SCContentFilter(display: display,
-                                         excludingApplications: excludedApps,
-                                         exceptingWindows: [])
-                
-            } else {
-                // Create a content filter that includes the entire display.
-                filter = SCContentFilter(display: display, excludingWindows: [])
             }
-            
-        } else if let window = config.window {
+            // Create a content filter with excluded apps.
+            filter = SCContentFilter(display: display,
+                                     excludingApplications: excludedApps,
+                                     exceptingWindows: [])
+        case .window:
+            guard let window = selectedWindow else { fatalError("No window selected.") }
             
             // Create a content filter that includes a single window.
             filter = SCContentFilter(desktopIndependentWindow: window)
-            
-        } else {
-            throw ScreenRecorderError("The configuration doesn't provide a display or window.")
         }
         return filter
     }
     
-    /// - Tag: CreateStreamConfiguration
-    private func streamConfiguration(for captureConfig: CaptureConfiguration) -> SCStreamConfiguration {
+    private var streamConfiguration: SCStreamConfiguration {
+        
         let streamConfig = SCStreamConfiguration()
         
-        // Set the capture size to twice the display size to support retina displays.
-        if let display = captureConfig.display, captureConfig.captureType == .display {
-            streamConfig.width = display.width * 2
-            streamConfig.height = display.height * 2
+        // Configure audio capture.
+        streamConfig.capturesAudio = isAudioCaptureEnabled
+        streamConfig.excludesCurrentProcessAudio = isAppAudioExcluded
+        
+        // Configure the display content width and height.
+        if captureType == .display, let display = selectedDisplay {
+            streamConfig.width = display.width * scaleFactor
+            streamConfig.height = display.height * scaleFactor
+        }
+        
+        // Configure the window content width and height.
+        if captureType == .window, let window = selectedWindow {
+            streamConfig.width = Int(window.frame.width) * 2
+            streamConfig.height = Int(window.frame.height) * 2
         }
         
         // Set the capture interval at 60 fps.
-        streamConfig.minimumFrameInterval = CMTime(value: 1, timescale: CMTimeScale(60))
+        streamConfig.minimumFrameInterval = CMTime(value: 1, timescale: 60)
         
         // Increase the depth of the frame queue to ensure high fps at the expense of increasing
         // the memory footprint of WindowServer.
@@ -165,98 +229,59 @@ class ScreenRecorder: NSObject, ObservableObject {
         return streamConfig
     }
     
-    private func convertToSeconds(_ machTime: UInt64) -> TimeInterval {
-        var timebase = mach_timebase_info_data_t()
-        mach_timebase_info(&timebase)
-        let nanoseconds = machTime * UInt64(timebase.numer) / UInt64(timebase.denom)
-        return Double(nanoseconds) / Double(kSecondScale)
-    }
-}
-
-extension ScreenRecorder: SCStreamOutput {
-        
-    /// - Tag: DidOutputSampleBuffer
-    func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of type: SCStreamOutputType) {
-
-        guard sampleBuffer.isValid else {
-            logger.log("The sample buffer is invalid.")
-            return
-        }
-
-        // Retrieve the dictionary of metadata attachments from the sample buffer.
-        // You use the attachments to retrieve data about the captured frame.
-        guard let attachmentsArray = CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, createIfNecessary: true) as? [[SCStreamFrameInfo: Any]],
-              let attachments = attachmentsArray.first else {
-            logger.error("Failed to retrieve the attachments from the sample buffer.")
-            return
-        }
-
-        guard let statusRawValue = attachments[SCStreamFrameInfo.status] as? Int,
-              let status = SCFrameStatus(rawValue: statusRawValue) else {
-            logger.error("Failed to get the frame status from the attachments.")
-            return
-        }
-        
-        guard status == .complete else {
-            logger.log("Skip updating the frame because the frame status is \(String(describing: status))")
-            return
-        }
-
-        guard let pixelBuffer = sampleBuffer.imageBuffer else {
-            logger.error("Failed to get a pixel buffer from the sample buffer.")
-            return
-        }
-
-        guard let surfaceRef = CVPixelBufferGetIOSurface(pixelBuffer)?.takeUnretainedValue() else {
-            logger.error("Could not get an IOSurface from the pixel buffer.")
-            return
-        }
-
-        guard let contentRectDict = attachments[.contentRect],
-              let contentRect = CGRect(dictionaryRepresentation: contentRectDict as! CFDictionary) else {
-            logger.error("Failed to get a content rectangle from the sample buffer.")
-            return
-        }
-
-        guard let displayTime = attachments[.displayTime] as? UInt64 else {
-            logger.error("Failed to get a display time from the sample buffer.")
-            return
-        }
-
-        let elapsedTime = convertToSeconds(displayTime) - convertToSeconds(cpuStartTime)
-
-        guard let contentScale = attachments[.contentScale] as? Double else {
-            logger.error("Failed to get the contentScale from the sample buffer.")
-            return
-        }
-
-        guard let scaleFactor = attachments[.scaleFactor] as? Double else {
-            logger.error("Failed to get the scaleFactor from the sample buffer.")
-            return
-        }
-
-        // Force-cast the IOSurfaceRef to IOSurface.
-        let surface = unsafeBitCast(surfaceRef, to: IOSurface.self)
-        
-        // Publish the new captured frame.
-        DispatchQueue.main.async {
-            self.latestFrame = CapturedFrame(sampleBuffer: sampleBuffer,
-                                             surface: surface,
-                                             contentRect: contentRect,
-                                             displayTime: elapsedTime,
-                                             contentScale: contentScale,
-                                             scaleFactor: scaleFactor)
+    /// - Tag: GetAvailableContent
+    private func refreshAvailableContent() async {
+        do {
+            // Retrieve the available screen content to capture.
+            let availableContent = try await SCShareableContent.excludingDesktopWindows(false,
+                                                                                        onScreenWindowsOnly: true)
+            availableDisplays = availableContent.displays
+            
+            let windows = filterWindows(availableContent.windows)
+            if windows != availableWindows {
+                availableWindows = windows
+            }
+            availableApps = availableContent.applications
+            
+            if selectedDisplay == nil {
+                selectedDisplay = availableDisplays.first
+            }
+            if selectedWindow == nil {
+                selectedWindow = availableWindows.first
+            }
+        } catch {
+            logger.error("Failed to get the shareable content: \(error.localizedDescription)")
         }
     }
-}
-
-extension ScreenRecorder: SCStreamDelegate {
     
-    func stream(_ stream: SCStream, didStopWithError error: Error) {
-        DispatchQueue.main.async {
-            self.logger.error("Stream stopped with error: \(error.localizedDescription)")
-            self.error = error
-            self.isRecording = false
+    private func filterWindows(_ windows: [SCWindow]) -> [SCWindow] {
+        windows
+        // Sort the windows by app name.
+            .sorted { $0.owningApplication?.applicationName ?? "" < $1.owningApplication?.applicationName ?? "" }
+        // Remove windows that don't have an associated .app bundle.
+            .filter { $0.owningApplication != nil && $0.owningApplication?.applicationName != "" }
+        // Remove this app's window from the list.
+            .filter { $0.owningApplication?.bundleIdentifier != Bundle.main.bundleIdentifier }
+    }
+}
+
+extension SCWindow {
+    var displayName: String {
+        switch (owningApplication, title) {
+        case (.some(let application), .some(let title)):
+            return "\(application.applicationName): \(title)"
+        case (.none, .some(let title)):
+            return title
+        case (.some(let application), .none):
+            return "\(application.applicationName): \(windowID)"
+        default:
+            return ""
         }
+    }
+}
+
+extension SCDisplay {
+    var displayName: String {
+        "Display: \(width) x \(height)"
     }
 }

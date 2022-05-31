@@ -3,32 +3,44 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2291E512278E1711008CF77A /* FrameDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2291E511278E1711008CF77A /* FrameDataView.swift */; };
+		C44093732816EC8800FB8386 /* Synth.aif in Resources */ = {isa = PBXBuildFile; fileRef = C44093722816EC8800FB8386 /* Synth.aif */; };
+		C44093752816EC9C00FB8386 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44093742816EC9C00FB8386 /* AudioPlayer.swift */; };
+		C470F0812811C5CB00D29309 /* ScreenRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C470F0802811C5CB00D29309 /* ScreenRecorder.swift */; };
+		C471DFFB2809F440001D24C9 /* PowerMeter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C471DFF92809F440001D24C9 /* PowerMeter.swift */; };
+		C471DFFE280A0968001D24C9 /* AudioLevelsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C471DFFD280A0968001D24C9 /* AudioLevelsView.swift */; };
+		C4729DA52821BFAD00AAC477 /* MaterialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4729DA42821BFAD00AAC477 /* MaterialView.swift */; };
 		C4B0DAAF276BA4480015082A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C4B0DAAE276BA4480015082A /* Assets.xcassets */; };
 		C4B0DAB2276BA4480015082A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C4B0DAB1276BA4480015082A /* Preview Assets.xcassets */; };
 		C4B0DABA276BA49F0015082A /* CaptureSampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B0DAB9276BA49F0015082A /* CaptureSampleApp.swift */; };
-		C4B0DABE276BA4B50015082A /* CaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B0DABB276BA4B50015082A /* CaptureView.swift */; };
-		C4B0DABF276BA4B50015082A /* FrameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B0DABC276BA4B50015082A /* FrameView.swift */; };
-		C4B0DAC0276BA4B50015082A /* ScreenRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B0DABD276BA4B50015082A /* ScreenRecorder.swift */; };
+		C4B0DABE276BA4B50015082A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B0DABB276BA4B50015082A /* ContentView.swift */; };
+		C4B0DABF276BA4B50015082A /* CapturePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B0DABC276BA4B50015082A /* CapturePreview.swift */; };
+		C4B0DAC0276BA4B50015082A /* CaptureEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B0DABD276BA4B50015082A /* CaptureEngine.swift */; };
+		C4EB90D428108656006A595C /* ConfigurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EB90D328108656006A595C /* ConfigurationView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2291E511278E1711008CF77A /* FrameDataView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FrameDataView.swift; path = ../CaptureSample/FrameDataView.swift; sourceTree = "<group>"; };
 		7C6C99F1D4B6E3EBA3A7B7DF /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE.txt; sourceTree = "<group>"; };
 		8D89E0E7125AFE6B4E2E6500 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		9AEEB9169F5D7FC75E6B35A2 /* SampleCode.xcconfig */ = {isa = PBXFileReference; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
+		C44093722816EC8800FB8386 /* Synth.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = Synth.aif; sourceTree = "<group>"; };
+		C44093742816EC9C00FB8386 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
+		C470F0802811C5CB00D29309 /* ScreenRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenRecorder.swift; sourceTree = "<group>"; };
+		C471DFF92809F440001D24C9 /* PowerMeter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerMeter.swift; sourceTree = "<group>"; };
+		C471DFFD280A0968001D24C9 /* AudioLevelsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioLevelsView.swift; sourceTree = "<group>"; };
+		C4729DA42821BFAD00AAC477 /* MaterialView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MaterialView.swift; sourceTree = "<group>"; };
 		C4B0DAA7276BA4460015082A /* CaptureSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CaptureSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4B0DAAE276BA4480015082A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = ../CaptureSample/Assets.xcassets; sourceTree = "<group>"; };
 		C4B0DAB1276BA4480015082A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C4B0DAB3276BA4480015082A /* CaptureSample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = CaptureSample.entitlements; path = ../CaptureSample/CaptureSample.entitlements; sourceTree = "<group>"; };
 		C4B0DAB9276BA49F0015082A /* CaptureSampleApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CaptureSampleApp.swift; path = ../CaptureSample/CaptureSampleApp.swift; sourceTree = "<group>"; };
-		C4B0DABB276BA4B50015082A /* CaptureView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CaptureView.swift; path = ../CaptureSample/CaptureView.swift; sourceTree = "<group>"; };
-		C4B0DABC276BA4B50015082A /* FrameView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FrameView.swift; path = ../CaptureSample/FrameView.swift; sourceTree = "<group>"; };
-		C4B0DABD276BA4B50015082A /* ScreenRecorder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ScreenRecorder.swift; path = ../CaptureSample/ScreenRecorder.swift; sourceTree = "<group>"; };
+		C4B0DABB276BA4B50015082A /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		C4B0DABC276BA4B50015082A /* CapturePreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CapturePreview.swift; sourceTree = "<group>"; };
+		C4B0DABD276BA4B50015082A /* CaptureEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureEngine.swift; sourceTree = "<group>"; };
+		C4EB90D328108656006A595C /* ConfigurationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +61,25 @@
 			);
 			name = LICENSE;
 			path = LICENSE;
+			sourceTree = "<group>";
+		};
+		C41D1B1D2814BD230033613F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				C4B0DABC276BA4B50015082A /* CapturePreview.swift */,
+				C4EB90D328108656006A595C /* ConfigurationView.swift */,
+				C471DFFD280A0968001D24C9 /* AudioLevelsView.swift */,
+				C4729DA42821BFAD00AAC477 /* MaterialView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		C44093712816EC7800FB8386 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				C44093722816EC8800FB8386 /* Synth.aif */,
+			);
+			path = Audio;
 			sourceTree = "<group>";
 		};
 		C4B0DA9E276BA4460015082A = {
@@ -73,11 +104,14 @@
 		C4B0DAA9276BA4460015082A /* CaptureSample */ = {
 			isa = PBXGroup;
 			children = (
+				C470F0802811C5CB00D29309 /* ScreenRecorder.swift */,
+				C4B0DABD276BA4B50015082A /* CaptureEngine.swift */,
+				C471DFF92809F440001D24C9 /* PowerMeter.swift */,
+				C44093742816EC9C00FB8386 /* AudioPlayer.swift */,
+				C4B0DABB276BA4B50015082A /* ContentView.swift */,
+				C41D1B1D2814BD230033613F /* Views */,
 				C4B0DAB9276BA49F0015082A /* CaptureSampleApp.swift */,
-				C4B0DABB276BA4B50015082A /* CaptureView.swift */,
-				C4B0DABC276BA4B50015082A /* FrameView.swift */,
-				2291E511278E1711008CF77A /* FrameDataView.swift */,
-				C4B0DABD276BA4B50015082A /* ScreenRecorder.swift */,
+				C44093712816EC7800FB8386 /* Audio */,
 				C4B0DAAE276BA4480015082A /* Assets.xcassets */,
 				C4B0DAB3276BA4480015082A /* CaptureSample.entitlements */,
 				C4B0DAB0276BA4480015082A /* Preview Content */,
@@ -129,7 +163,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1330;
-				LastUpgradeCheck = 1330;
+				LastUpgradeCheck = 1400;
 				ORGANIZATIONNAME = Apple;
 				TargetAttributes = {
 					C4B0DAA6276BA4460015082A = {
@@ -139,7 +173,7 @@
 				};
 			};
 			buildConfigurationList = C4B0DAA2276BA4460015082A /* Build configuration list for PBXProject "CaptureSample" */;
-			compatibilityVersion = "Xcode 13.0";
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -163,6 +197,7 @@
 			files = (
 				C4B0DAB2276BA4480015082A /* Preview Assets.xcassets in Resources */,
 				C4B0DAAF276BA4480015082A /* Assets.xcassets in Resources */,
+				C44093732816EC8800FB8386 /* Synth.aif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,11 +208,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C4B0DABF276BA4B50015082A /* FrameView.swift in Sources */,
-				C4B0DAC0276BA4B50015082A /* ScreenRecorder.swift in Sources */,
+				C4B0DABF276BA4B50015082A /* CapturePreview.swift in Sources */,
+				C4B0DAC0276BA4B50015082A /* CaptureEngine.swift in Sources */,
+				C44093752816EC9C00FB8386 /* AudioPlayer.swift in Sources */,
+				C470F0812811C5CB00D29309 /* ScreenRecorder.swift in Sources */,
 				C4B0DABA276BA49F0015082A /* CaptureSampleApp.swift in Sources */,
-				2291E512278E1711008CF77A /* FrameDataView.swift in Sources */,
-				C4B0DABE276BA4B50015082A /* CaptureView.swift in Sources */,
+				C471DFFE280A0968001D24C9 /* AudioLevelsView.swift in Sources */,
+				C4EB90D428108656006A595C /* ConfigurationView.swift in Sources */,
+				C4729DA52821BFAD00AAC477 /* MaterialView.swift in Sources */,
+				C4B0DABE276BA4B50015082A /* ContentView.swift in Sources */,
+				C471DFFB2809F440001D24C9 /* PowerMeter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -219,6 +259,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -236,7 +277,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -281,6 +322,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -292,7 +334,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -309,9 +351,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = CaptureSample/CaptureSample.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"CaptureSample/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -322,6 +366,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.example.apple-samplecode.CaptureSample${SAMPLE_CODE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -340,9 +385,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = CaptureSample/CaptureSample.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"CaptureSample/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -353,6 +400,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.example.apple-samplecode.CaptureSample${SAMPLE_CODE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
