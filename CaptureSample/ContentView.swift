@@ -14,22 +14,19 @@ import LaunchAtLogin
 import HotKey
 
 struct ContentView: View {
-    // Nil for preview
-    let appDelegate: AppDelegate?
-    
     @State var userStopped = false
     @State var disableInput = false
     @State var isUnauthorized = false
     
     @StateObject var screenRecorder = ScreenRecorder()
     
-    let cmdShiftSeven = HotKey(key: .seven, modifiers: [.command, .shift])
-    
     var body: some View {
         HSplitView {
             ConfigurationView(screenRecorder: screenRecorder, userStopped: $userStopped)
                 .frame(minWidth: 280, maxWidth: 280)
                 .disabled(disableInput)
+            
+            // TODO: Put the screenshot here for debugging? I mean why not just place it in the bottom left?
             screenRecorder.capturePreview
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .aspectRatio(screenRecorder.contentSize, contentMode: .fit)
@@ -64,26 +61,7 @@ struct ContentView: View {
         }
         .navigationTitle("Screen Capture Sample")
         .onAppear {
-            // TODO: Pass the callback to do stuff
-            cmdShiftSeven.keyDownHandler = {
-                print("Key Down")
-            }
-//            HotkeySolution.register()
-            cmdShiftSeven.keyUpHandler = {
-                
-                
-                // Showing the window I should setup the actual screenshotting s
-//                appDelegate?.showOverlayWindow()
-
-                var screenRect = NSScreen.main?.frame ?? NSRect.zero
-                    
-                // For debugging only allocate part of the screen for testing to be able to stop debugging
-                screenRect = screenRect.insetBy(dx: screenRect.width / 4, dy: screenRect.height / 4)
-                
-                let _ = OverlayWindow(contentRect: screenRect, styleMask: .borderless, backing: .buffered, defer: false)
-                
-//                overlayWindow.makeKeyAndOrderFront(nil)
-            }
+            
             
             Task {
                 if await screenRecorder.canRecord {
@@ -99,6 +77,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(appDelegate: nil)
+        ContentView()
     }
 }

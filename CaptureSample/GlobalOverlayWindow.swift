@@ -8,180 +8,212 @@
 
 import Foundation
 import SwiftUI
-import ApplicationServices
-
+import Carbon
 import Cocoa
 
-// Seems veeery relevant! https://github.com/acheronfail/pixel-picker/blob/fae1ec38c938d625b5122aa5cbc497c9ef6effc1/README.md
-// This seems like exactly what I need https://github.com/acheronfail/pixel-picker/blob/fae1ec38c938d625b5122aa5cbc497c9ef6effc1/Pixel%20Picker/ShowAndHideCursor.swift#L76
-
-// Related, but too powerful it seems, requires accessibility
-// https://developer.apple.com/documentation/coregraphics/1454426-cgeventtapcreate
-
-// More examples online using NSCursor
-// https://github.com/iina/iina/blob/79cd70c6197eeb0efd599c5c60e7c208292e3193/iina/InitialWindowController.swift#L512
-// This one adds tracking + on cursor enter changes appearance
-//
-// https://github.com/viktorstrate/color-picker-plus/blob/940854dddd05a1fdb8d55ec36b464143cac2a280/Color%20Picker%20Plus/ScrollingTextField.swift#L36
-//
-// I can try running those projects and see what happens
-
-// Works when cursor is above the newly created window
-// And app needs to have focus - app should not capture focus
-
-class CustomCursorView: NSView {
-    override func resetCursorRects() {
-        // Don't call super to avoid clearning existing cursor
-        super.resetCursorRects()
+// Define your SwiftUI view
+struct CaptureOverlayView: View {
+    enum CaptureOverlayState {
+        case initializing
         
-        // Has to be in resetCursorRects
-        // Calling this elsewhere is discarded
-//        self.addCursorRect(self.bounds, cursor: .crosshair)
+        case placingAnchor(currentVirtualCursorPosition: CGPoint)
+        // Starts out the same as anchor
+        case selectingFrame(anchorPoint: CGPoint, virtualCursorPosition: CGPoint)
         
-//        NSCursor.crosshair.push()
+        // Final state does not need to be represented here, will be called out with a frame and recored once this window dies
+        // hmmm but for gifs this would need to change, so lets just keep it here
         
-//        NSCursor.crosshair.push()
+        case capturing(frame: CGRect)
     }
     
-    override func discardCursorRects() {
-        super.discardCursorRects()
-    }
+    let onComplete: (_ imageData: Data?) -> Void
+    @State private var state: CaptureOverlayState = .initializing
     
-    override func viewWillMove(toWindow newWindow: NSWindow?) {
-        super.viewWillMove(toWindow: newWindow)
-        // TODO: If newWindow is nil - we are dismissing - cleanup
+    // TODO: Create a class and place state that needs cleaning there - for instance place global monitors there and cleanup after when instance is thrown away
+    
+    init(onComplete: @escaping (_ imageData: Data?) -> Void) {
+        self.onComplete = onComplete
         
+        // TODO: Add event to find first down
         
-        
-        if (newWindow == nil) {
-            cShowCursor()
-        } else {
-            cHideCursor()
+        // Only signup after first mouse down event
+        NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown]) {
+            event in
+            print("place anchor")
         }
         
-        // Create a tracking area and add it to the view
-//        let trackingArea = NSTrackingArea(rect: self.bounds, options: [.mouseMoved, .activeAlways], owner: self, userInfo: nil)
-//        self.addTrackingArea(trackingArea)
+        NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseUp]) {
+            event in
+            print("complete selection at current poisition, start capturing")
+        }
         
-//        self.window?.invalidateCursorRects(for: self)
+        NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved]) {
+            event in
+//            print("mouse moved")
+            // TODO: Write update to state
+        }
     }
 
-    // implement on enter / exit
-    override func mouseEntered(with event: NSEvent) {
-        super.mouseEntered(with: event)
-        print("mouse entered")
-
-//       NSCursor.crosshair.push()
-    }
-
-
-    
-    override func viewDidMoveToWindow() {
-        super.viewDidMoveToWindow()
-        
-
-        
-        return
-        
-        // https://stackoverflow.com/a/3939241/5552584
-//        let propertyString = CFStringCreateWithCString(kCFAllocatorDefault, "SetsCursorInBackground", 0)
-//        CGSSetConnectionProperty(_CGSDefaultConnection(), _CGSDefaultConnection(), propertyString, kCFBooleanTrue)
-//        
-//        NSCursor.crosshair.push()
-    }
-    
-    override func mouseDown(with event: NSEvent) {
-        super.mouseDown(with: event)
-//        print("mouse down")
-//        print(event.locationInWindow.x)
-    }
-    
-    override func mouseUp(with event: NSEvent) {
-        super.mouseUp(with: event)
-//        print("mouse up")
-        
-        // Dismiss window - done with the screenshot
-        NSCursor.crosshair.pop()
-        self.window?.orderOut(nil)
-    }
-
-    override func mouseDragged(with event: NSEvent) {
-        super.mouseDragged(with: event)
-//        print("mouse moved")
+    var body: some View {
+        // TODO: Parametrize the cursor parameters with constant configurations and make it follow the current virtual cursor, or if in another state - don't show it at all
+        // Use GeometryReader to get the size of the view
+        GeometryReader { geometry in
+            // Your SwiftUI code goes here.
+            // You can draw the crosshair or the selection rectangle based on the anchorPoint and currentPoint
+            // For example, a simple crosshair can be drawn like this:
+            Path { path in
+                let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                path.move(to: CGPoint(x: center.x - 10, y: center.y))
+                path.addLine(to: CGPoint(x: center.x + 10, y: center.y))
+                path.move(to: CGPoint(x: center.x, y: center.y - 10))
+                path.addLine(to: CGPoint(x: center.x, y: center.y + 10))
+            }
+            .stroke(Color.blue, lineWidth: 2)
+        }
+        .background(Color.blue.opacity(0.2))
     }
 }
 
-class OverlayWindow: NSWindow {
+
+typealias ImageData = Data
+
+// Copy all functionality in window to OverlayPanel
+
+// This class is in charge of managing the panels which are brought to the front
+// (above other apps) without actually activating PixelPicker itself.
+class OverlayPanel: NSPanel {
+    override var canBecomeKey: Bool {
+        get { return true }
+    }
+    
+    override var canBecomeMain: Bool {
+        get { return true }
+    }
+    
+    // Initializer for OverlayPanel
     override init(contentRect: NSRect, styleMask style: NSWindow.StyleMask, backing backingStoreType: NSWindow.BackingStoreType, defer flag: Bool) {
         super.init(contentRect: contentRect, styleMask: .borderless.union(.fullSizeContentView), backing: backingStoreType, defer: flag)
-        self.backgroundColor = NSColor.blue.withAlphaComponent(0.2)
+
         self.isOpaque = false
         self.hasShadow = false
         self.ignoresMouseEvents = false // Change to true if you don't want to intercept events
-        self.level = .modalPanel
-        
-        self.contentView = CustomCursorView()
+        self.level = .screenSaver
+        self.backgroundColor = .blue.withAlphaComponent(0.2)
+
+        // Set up window properties
+        self.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+        self.level = .popUpMenu
+        self.styleMask = .nonactivatingPanel
+        self.isOpaque = false
+        self.acceptsMouseMovedEvents = true
+
+        // Additional setup transferred from awakeFromNib
+        // ...
+
+        // Setup content view with CaptureOverlayView
+        let nsHostingContentView = NSHostingView(rootView: CaptureOverlayView(onComplete: { imageData in
+            if let imageData {
+                print("Got image!")
+            } else {
+                print("User canceled")
+            }
+        }))
+        self.contentView = nsHostingContentView
+
+        // Additional window setup
+        makeKeyAndOrderFront(self)
+
+//        cHideCursor()
+        setupGlobalEventHandlers()
+    }
+
+    private func setupGlobalEventHandlers() {
+        // Setup for global event handlers
+//        NSApp.activate(ignoringOtherApps: true)
+        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            if Int(event.keyCode) == kVK_Escape {
+                print("escape")
+                self?.cleanupAndClose()
+                
+                // To avoid the beep
+                return nil
+            } else {
+                return nil
+            }
+        }
+
+        // Local event monitor can also be added if needed
+        // ...
+    }
+
+    private func cleanupAndClose() {
+        cShowCursor()
+        self.close()
+    }
+}
+
+
+
+class OverlayWindow: NSWindow {
+    // Will take callback onScreenshot: ImageData -> Void
+    override init(contentRect: NSRect, styleMask style: NSWindow.StyleMask, backing backingStoreType: NSWindow.BackingStoreType, defer flag: Bool) {
+        super.init(contentRect: contentRect, styleMask: .borderless.union(.fullSizeContentView), backing: backingStoreType, defer: flag)
+        self.isOpaque = false
+        self.hasShadow = false
+        self.ignoresMouseEvents = false // Change to true if you don't want to intercept events
+        self.level = .screenSaver
+        self.backgroundColor = .blue.withAlphaComponent(0.2)
         
         // We don't want to make it key to avoid any visible UI changes
         // from user's perspective the only thing that changed is the cursor glyph
         self.orderFrontRegardless()
         
-        // Without making key can't get the cursor to change
-//        self.makeKeyAndOrderFront(nil)
-    }
-
-    
-    override func makeKeyAndOrderFront(_ sender: Any?) {
-//        NSCursor.crosshair.push()
+        cHideCursor()
         
-        // https://developer.apple.com/documentation/appkit/nswindow/1419543-canbecomekeywindow
-        // Won't become key I think?
-        // -[NSWindow makeKeyWindow] called on CaptureSample.OverlayWindow 0x1222068f0 which returned NO from -[NSWindow canBecomeKeyWindow].
-        // - there are conditions to become key window, without it seems the cursor stuff doesn't work
-        super.makeKeyAndOrderFront(sender)
+        // [try] TO catch escape
+        NSApp.activate(ignoringOtherApps: true)
         
-//        self.contentView?.resetCursorRects()
-        
-        // Note: Might be a better home is cursor setup override above
-//        NSCursor.crosshair.push()
-        
-//        self.contentView?.discardCursorRects()
-        
-        
-        
-        // TODO: Handle escape?
-        
-        // Start listening for a left mouse down event
-        // Once down event happens capture coordinates
-        // Start tracking cursor position - on each position update - draw a
-        // partially transparent rectangle between the anchor point and current cursor position
-        
-        // Since we are on window we can just track this with standard methods, right?
-        // Maybe we can try local monitor?
-//        NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown, handler: {
-//            event in
-//            print("left mouse down")
-//        })
-//        
-//        NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDragged, handler: {
-//            event in
-//            print("left mouse dragging")
-//        })
-//        
-//        NSEvent.addGlobalMonitorForEvents(matching: .leftMouseUp, handler: {
-//            event in
-//            print("left mouse up")
-//            
-//            // TODO: Handle if no movement
-////            NSCursor.crosshair.pop()
-//        })
-    }
-    
-    override func keyDown(with event: NSEvent) {
-        if event.keyCode == 53 {  // 53 is the key code for the Escape key
-            self.orderOut(nil)   // Dismiss the window
-        } else {
-            super.keyDown(with: event)  // Handle other key presses
+        NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
+          if Int(event.keyCode) == kVK_Escape {
+              print("escape")
+              DispatchQueue.main.async {
+//                  self?.cleanupAndClose()
+              }
+              
+            return  // needed to get rid of purr sound
+          } else {
+            return
+          }
         }
+        
+        // It would be nice if we can keep track of all control events outside the view and just use the view for drawing
+//        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+//          if Int(event.keyCode) == kVK_Escape {
+//              print("escape")
+//              DispatchQueue.main.async {
+////                  self?.cleanupAndClose()
+//              }
+//              
+//            return event // needed to get rid of purr sound
+//          } else {
+//            return nil
+//          }
+//        }
+        
+        let nsHostingContentView = NSHostingView(rootView: CaptureOverlayView(onComplete: { imageData in
+            if let imageData {
+                print("Got image!")
+            } else {
+                print("User canceled")
+            }
+        }))
+        self.contentView = nsHostingContentView
+    }
+    
+    private func cleanupAndClose() {
+        cShowCursor()
+        // Remove window from screen
+        // TODO: Pass the data back
+        self.close()
     }
 }
