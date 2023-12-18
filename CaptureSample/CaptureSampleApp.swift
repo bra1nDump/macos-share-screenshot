@@ -8,9 +8,12 @@ import SwiftUI
 
 @main
 struct CaptureSampleApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+//            DebugView()
+            ContentView(appDelegate: appDelegate)
                 .frame(minWidth: 960, minHeight: 724)
                 .background(.black)
         }

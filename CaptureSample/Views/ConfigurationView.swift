@@ -8,6 +8,8 @@ A view that provides the UI to configure screen capture.
 import SwiftUI
 import ScreenCaptureKit
 
+import LaunchAtLogin
+
 /// The app's configuration user interface.
 struct ConfigurationView: View {
     
@@ -60,6 +62,8 @@ struct ConfigurationView: View {
                     }
                 }
                 .labelsHidden()
+                
+                LaunchAtLogin.Toggle("Launch at login 🦄")
                 
                 Toggle("Exclude sample app from stream", isOn: $screenRecorder.isAppExcluded)
                     .disabled(screenRecorder.captureType == .window)

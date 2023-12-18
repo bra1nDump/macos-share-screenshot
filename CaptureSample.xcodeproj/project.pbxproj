@@ -20,12 +20,19 @@
 		C4B0DABF276BA4B50015082A /* CapturePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B0DABC276BA4B50015082A /* CapturePreview.swift */; };
 		C4B0DAC0276BA4B50015082A /* CaptureEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B0DABD276BA4B50015082A /* CaptureEngine.swift */; };
 		C4EB90D428108656006A595C /* ConfigurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EB90D328108656006A595C /* ConfigurationView.swift */; };
+		D266C9A02B2FB7E5001D7B66 /* ShowAndHideCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D266C99F2B2FB7E5001D7B66 /* ShowAndHideCursor.swift */; };
+		D266C9A22B2FB859001D7B66 /* ShowAndHideCursor.m in Sources */ = {isa = PBXBuildFile; fileRef = D266C9A12B2FB859001D7B66 /* ShowAndHideCursor.m */; };
+		D26996722B2EA5C600CADFDC /* RegisterGlobalHotKeyManually.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26996712B2EA5C600CADFDC /* RegisterGlobalHotKeyManually.swift */; };
+		D26996772B2EAA7100CADFDC /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = D26996762B2EAA7100CADFDC /* LaunchAtLogin */; };
+		D269967A2B2EAB0600CADFDC /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = D26996792B2EAB0600CADFDC /* HotKey */; };
+		D269967C2B2EB10300CADFDC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D269967B2B2EB10300CADFDC /* AppDelegate.swift */; };
+		D269967E2B2EB12700CADFDC /* GlobalOverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D269967D2B2EB12700CADFDC /* GlobalOverlayWindow.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		7C6C99F1D4B6E3EBA3A7B7DF /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE.txt; sourceTree = "<group>"; };
+		7C6C99F1D4B6E3EBA3A7B7DF /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		8D89E0E7125AFE6B4E2E6500 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		9AEEB9169F5D7FC75E6B35A2 /* SampleCode.xcconfig */ = {isa = PBXFileReference; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
+		9AEEB9169F5D7FC75E6B35A2 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 		C44093722816EC8800FB8386 /* Synth.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = Synth.aif; sourceTree = "<group>"; };
 		C44093742816EC9C00FB8386 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		C470F0802811C5CB00D29309 /* ScreenRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenRecorder.swift; sourceTree = "<group>"; };
@@ -41,6 +48,13 @@
 		C4B0DABC276BA4B50015082A /* CapturePreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CapturePreview.swift; sourceTree = "<group>"; };
 		C4B0DABD276BA4B50015082A /* CaptureEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureEngine.swift; sourceTree = "<group>"; };
 		C4EB90D328108656006A595C /* ConfigurationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationView.swift; sourceTree = "<group>"; };
+		D266C99D2B2FB18B001D7B66 /* ShareShot-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ShareShot-Bridging-Header.h"; sourceTree = "<group>"; };
+		D266C99F2B2FB7E5001D7B66 /* ShowAndHideCursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowAndHideCursor.swift; sourceTree = "<group>"; };
+		D266C9A12B2FB859001D7B66 /* ShowAndHideCursor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShowAndHideCursor.m; sourceTree = "<group>"; };
+		D266C9A32B2FB87A001D7B66 /* ShowAndHideCursor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShowAndHideCursor.h; sourceTree = "<group>"; };
+		D26996712B2EA5C600CADFDC /* RegisterGlobalHotKeyManually.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterGlobalHotKeyManually.swift; sourceTree = "<group>"; };
+		D269967B2B2EB10300CADFDC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		D269967D2B2EB12700CADFDC /* GlobalOverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalOverlayWindow.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,6 +62,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D269967A2B2EAB0600CADFDC /* HotKey in Frameworks */,
+				D26996772B2EAA7100CADFDC /* LaunchAtLogin in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,7 +75,6 @@
 			children = (
 				7C6C99F1D4B6E3EBA3A7B7DF /* LICENSE.txt */,
 			);
-			name = LICENSE;
 			path = LICENSE;
 			sourceTree = "<group>";
 		};
@@ -105,12 +120,19 @@
 			isa = PBXGroup;
 			children = (
 				C470F0802811C5CB00D29309 /* ScreenRecorder.swift */,
+				D26996712B2EA5C600CADFDC /* RegisterGlobalHotKeyManually.swift */,
 				C4B0DABD276BA4B50015082A /* CaptureEngine.swift */,
 				C471DFF92809F440001D24C9 /* PowerMeter.swift */,
 				C44093742816EC9C00FB8386 /* AudioPlayer.swift */,
 				C4B0DABB276BA4B50015082A /* ContentView.swift */,
+				D269967D2B2EB12700CADFDC /* GlobalOverlayWindow.swift */,
+				D266C99F2B2FB7E5001D7B66 /* ShowAndHideCursor.swift */,
+				D266C9A12B2FB859001D7B66 /* ShowAndHideCursor.m */,
+				D266C9A32B2FB87A001D7B66 /* ShowAndHideCursor.h */,
+				D266C99D2B2FB18B001D7B66 /* ShareShot-Bridging-Header.h */,
 				C41D1B1D2814BD230033613F /* Views */,
 				C4B0DAB9276BA49F0015082A /* CaptureSampleApp.swift */,
+				D269967B2B2EB10300CADFDC /* AppDelegate.swift */,
 				C44093712816EC7800FB8386 /* Audio */,
 				C4B0DAAE276BA4480015082A /* Assets.xcassets */,
 				C4B0DAB3276BA4480015082A /* CaptureSample.entitlements */,
@@ -151,6 +173,10 @@
 			dependencies = (
 			);
 			name = CaptureSample;
+			packageProductDependencies = (
+				D26996762B2EAA7100CADFDC /* LaunchAtLogin */,
+				D26996792B2EAB0600CADFDC /* HotKey */,
+			);
 			productName = CaptureIt;
 			productReference = C4B0DAA7276BA4460015082A /* CaptureSample.app */;
 			productType = "com.apple.product-type.application";
@@ -181,6 +207,10 @@
 				Base,
 			);
 			mainGroup = C4B0DA9E276BA4460015082A;
+			packageReferences = (
+				D26996752B2EAA7100CADFDC /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */,
+				D26996782B2EAB0600CADFDC /* XCRemoteSwiftPackageReference "HotKey" */,
+			);
 			productRefGroup = C4B0DAA8276BA4460015082A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -208,14 +238,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D269967C2B2EB10300CADFDC /* AppDelegate.swift in Sources */,
 				C4B0DABF276BA4B50015082A /* CapturePreview.swift in Sources */,
+				D266C9A02B2FB7E5001D7B66 /* ShowAndHideCursor.swift in Sources */,
 				C4B0DAC0276BA4B50015082A /* CaptureEngine.swift in Sources */,
+				D266C9A22B2FB859001D7B66 /* ShowAndHideCursor.m in Sources */,
 				C44093752816EC9C00FB8386 /* AudioPlayer.swift in Sources */,
 				C470F0812811C5CB00D29309 /* ScreenRecorder.swift in Sources */,
+				D26996722B2EA5C600CADFDC /* RegisterGlobalHotKeyManually.swift in Sources */,
 				C4B0DABA276BA49F0015082A /* CaptureSampleApp.swift in Sources */,
 				C471DFFE280A0968001D24C9 /* AudioLevelsView.swift in Sources */,
 				C4EB90D428108656006A595C /* ConfigurationView.swift in Sources */,
 				C4729DA52821BFAD00AAC477 /* MaterialView.swift in Sources */,
+				D269967E2B2EB12700CADFDC /* GlobalOverlayWindow.swift in Sources */,
 				C4B0DABE276BA4B50015082A /* ContentView.swift in Sources */,
 				C471DFFB2809F440001D24C9 /* PowerMeter.swift in Sources */,
 			);
@@ -352,12 +387,13 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = CaptureSample/CaptureSample.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"CaptureSample/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A55978949T;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -372,6 +408,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/CaptureSample/ShareShot-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -386,12 +423,13 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = CaptureSample/CaptureSample.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"CaptureSample/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A55978949T;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -406,6 +444,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/CaptureSample/ShareShot-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -432,6 +471,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D26996752B2EAA7100CADFDC /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin-Modern";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		D26996782B2EAB0600CADFDC /* XCRemoteSwiftPackageReference "HotKey" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/soffes/HotKey";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D26996762B2EAA7100CADFDC /* LaunchAtLogin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D26996752B2EAA7100CADFDC /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */;
+			productName = LaunchAtLogin;
+		};
+		D26996792B2EAB0600CADFDC /* HotKey */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D26996782B2EAB0600CADFDC /* XCRemoteSwiftPackageReference "HotKey" */;
+			productName = HotKey;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C4B0DA9F276BA4460015082A /* Project object */;
 }
