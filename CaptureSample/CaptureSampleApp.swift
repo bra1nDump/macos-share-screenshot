@@ -32,18 +32,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         createStatusBarItem()
         
         var overlayWindow: OverlayPanel? = nil
+        func startScreenshot() {
+            if let overlayWindow {
+                overlayWindow.close()
+            }
+            
+            let screenRect = NSScreen.main?.frame ?? NSRect.zero
 
-        // TODO: Pass the callback to do stuff
+            // For debugging only allocate part of the screen for testing to be able to stop debugging
+//            screenRect = screenRect.insetBy(dx: screenRect.width / 4, dy: screenRect.height / 4)
+            
+            overlayWindow = OverlayPanel(contentRect: screenRect)
+        }
+        
+        // DEBUGGING
+        startScreenshot()
+
         cmdShiftSeven.keyDownHandler = {
             // Make sure the old window is dismissed
-            overlayWindow = nil
-            
-            var screenRect = NSScreen.main?.frame ?? NSRect.zero
-                
-            // For debugging only allocate part of the screen for testing to be able to stop debugging
-            screenRect = screenRect.insetBy(dx: screenRect.width / 4, dy: screenRect.height / 4)
-            
-            overlayWindow = OverlayPanel(contentRect: screenRect, styleMask: .borderless, backing: .buffered, defer: false)
+            startScreenshot()
         }
     }
 

@@ -28,7 +28,7 @@ void cHideCursor(void) {
     propertyString = CFStringCreateWithCString(NULL, "SetsCursorInBackground", kCFStringEncodingUTF8);
     CGSSetConnectionProperty(_CGSDefaultConnection(), _CGSDefaultConnection(), propertyString, kCFBooleanTrue);
     CFRelease(propertyString);
-    // Hide the cursor and wait
+    // Hide the cursor
     CGDisplayHideCursor(kCGDirectMainDisplay);
 }
 
