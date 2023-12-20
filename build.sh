@@ -13,3 +13,4 @@ xcodebuild -scheme $SCHEME -configuration Debug CONFIGURATION_BUILD_DIR=$BUILD_O
 APP_PATH="$BUILD_OUTPUT_PATH/$SCHEME.app"
 
 echo "Built application path: $APP_PATH, provide this in the launch config"
+

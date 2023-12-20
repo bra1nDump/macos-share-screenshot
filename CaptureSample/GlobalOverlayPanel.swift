@@ -41,7 +41,7 @@ class OverlayPanel: NSPanel {
 
         // Special behavior for models
         self.worksWhenModal = true
-        
+
         // Track the mouse
         self.acceptsMouseMovedEvents = true
         self.ignoresMouseEvents = false

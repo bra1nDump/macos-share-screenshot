@@ -1,0 +1,6 @@
+{
+    "swift.sourcekit-lsp.serverArguments": [
+        "--log-level",
+        "debug",
+    ]
+}
