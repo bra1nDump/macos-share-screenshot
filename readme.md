@@ -1,11 +1,16 @@
 # Share Shot
 
-This project implements extended screenshot functionality of native macOS screenshoting Shift+Cmd+4:
-- Sticky screenshot stack left bottom of the screen always visible until dismissed ![Alt text](assets/cleanshot-screenshot-examples.png)
+This project implements extended screenshot functionality of native macOS screenshoting (try Shift+Cmd+4). We are trying to compete with clean shot X https://youtu.be/FZbICrBKWIU. To understand how hard it is to compete we are implementing a proof of concept with the main features from their product.
 
-Basically I want to implement the most sought after features of clean shot X https://youtu.be/FZbICrBKWIU, but for cheaper and possibly add more quick-actions like sending images to a shortcut or to chatgpt (using a related Chrome extension).
+I have already put together the basic infrastructure to implement the desired functionality. Most tasks in the project will be pretty standard UI development using SwiftUI + using APIs I have pre-researched + some window magic (which I think I have figured out already, so you don't have to figure it out, just use the existing approach).
+
+Basically I want to implement the most sought after features of , but for cheaper and possibly add more quick-actions like sending images to a shortcut or to chatgpt (using a related Chrome extension).
 
 I want to start out with creating a very simple prototype that will implement core functionality outlined below. The tasks are ordered by priority. Label [Task-*] has highest priority. Label [Next] has next highest priority. Label [Later] are just things to consider for later.
+
+Task-1 also includes just getting the project running on your machine and making sure we are on the same page.
+
+I estimate each task will take 2/3 work days. The full project is considered completed when Task-1, Task-2, Task-3 are completed.
 
 # How the product will work:
 
@@ -34,10 +39,8 @@ How it looks like: ![Alt text](assets/cleanshot-screenshot-examples.png)
 - [Task-2] Have a sticky stack of screenshots on the left bottom that stays there until explicitly dismissed by the user, see examples of cleanshot
   - The difficult thing here is to make it sticky, but not take focus from other applications. I think we can use the same exact approach as we do with the window for screenshot selection. We can just create a similar window to that one with roughly the same configurations, but only show on the left column of the screen. The windows will never be active at the same time.
   - As you take more screenshots, they should be pushed on top of the stack
-- [Next] You can drag the screenshot to drop it into another applications like telegram, gmail, etc.
-- As you hover over the screenshot 
-  - [Task-3] Top left shows a close button
-  - Top right shows edit button
+- As you hover the mouse over the screenshot in the stack
+  - [Task-3] Top left shows a close button - it will remove the screenshot from the stack
   - Center shows quick actions
     - [Task-3] copy (trivial)
     - [Task-3] save (trivial - just save to Desktop)
@@ -47,4 +50,6 @@ How it looks like: ![Alt text](assets/cleanshot-screenshot-examples.png)
       - copies the link to clipboard
       - compresses the image
       - uploads the screenshot to S3
+- [Next] You can drag the screenshot to drop it into another applications like telegram, gmail, etc.
 - The screenshot can be immediately edited with annotations - arrows, shapes - the usual annotation tooling functionality. Cleanshot also has it
+  - Edit button will be added top right on the screenshot card
