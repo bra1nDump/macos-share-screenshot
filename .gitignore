@@ -2,6 +2,9 @@
 #
 # Apple sample code gitignore configuration.
 
+# Don't include build artifacts when built from the command line
+build/
+
 # Finder
 .DS_Store
 
