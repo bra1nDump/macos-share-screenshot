@@ -1,16 +1,22 @@
 # Share Shot
 
-This project implements extended screenshot functionality of native macOS screenshoting (try Shift+Cmd+4). We are trying to compete with clean shot X https://youtu.be/FZbICrBKWIU. To understand how hard it is to compete we are implementing a proof of concept with the main features from their product.
+Screenshoting app for macOS. Prototype. 
+SwiftUI, basic English and basic coding skills required.
 
-I have already put together the basic infrastructure to implement the desired functionality. Most tasks in the project will be pretty standard UI development using SwiftUI + using APIs I have pre-researched + some window magic (which I think I have figured out already, so you don't have to figure it out, just use the existing approach).
+This project implements extended screenshot functionality of native macOS screenshoting (try Shift+Cmd+4). We are trying to compete with clean shot X https://youtu.be/FZbICrBKWIU. To understand how hard it is to compete we are implementing a proof of concept with the main features from their product. I have already put together the basic infrastructure to implement the desired functionality.
 
-Basically I want to implement the most sought after features of , but for cheaper and possibly add more quick-actions like sending images to a shortcut or to chatgpt (using a related Chrome extension).
+Most tasks in the project will be:
+- Pretty standard UI development using SwiftUI
+- Using screen capture APIs I have pre-researched
+- Some macOS window magic (which I think I have figured out already, so you don't have to figure it out, just use the existing approach)
 
-I want to start out with creating a very simple prototype that will implement core functionality outlined below. The tasks are ordered by priority. Label [Task-*] has highest priority. Label [Next] has next highest priority. Label [Later] are just things to consider for later.
+The tasks are ordered by priority. Label [Task-*] has highest priority. Label [Next] has next highest priority. Label [Later] are just things to consider for later.
 
 Task-1 also includes just getting the project running on your machine and making sure we are on the same page.
 
 I estimate each task will take 2/3 work days. The full project is considered completed when Task-1, Task-2, Task-3 are completed.
+
+# What you will be provided with 
 
 # How the product will work:
 
