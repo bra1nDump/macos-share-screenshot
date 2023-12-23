@@ -18,6 +18,7 @@ import Carbon
 
 // Define your SwiftUI view
 struct CaptureOverlayView: View {
+    @State private var capturedImageData: ImageData?
     enum CaptureOverlayState {
         case placingAnchor(currentVirtualCursorPosition: CGPoint)
         // Starts out the same as anchor
@@ -105,7 +106,7 @@ struct CaptureOverlayView: View {
         GeometryReader { geometry in
             createOverlayView(geometry: geometry)
                 // This adds additional layer so double the color
-                .background(Color.gray.opacity(0.2))
+               // .background(Color.gray.opacity(0.2))
                 .onDisappear {
                     print("on dissapear")
                     eventMonitors.stopMonitoringEvents()
@@ -194,13 +195,41 @@ struct CaptureOverlayView: View {
             .frame(width: frame.width, height: frame.height)
             .position(x: frame.midX, y: frame.midY)
     }
+    private func captureScreenshot(rect: CGRect) -> NSImage? {
+        let cgImage = CGDisplayCreateImage(CGMainDisplayID(), rect: rect)!
+           return NSImage(cgImage: cgImage, size: rect.size)
+       }
+  
 
     private func createCaptureView(frame: CGRect) -> some View {
-        // Create a view that represents the capturing state
-        return Rectangle()
-            .fill(Color.blue.opacity(0.2))
-            .frame(width: frame.width, height: frame.height)
-            .position(x: frame.midX, y: frame.midY)
+        // Add saving the screenshot and displaying the preview
+        let screenshot = captureScreenshot(rect: frame)
+        DispatchQueue.main.async {
+              capturedImageData = screenshot?.tiffRepresentation
+          }
+        
+        return VStack {
+            if let screenshot = screenshot {
+                Spacer()
+                Image(nsImage: screenshot)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(maxWidth: 200, maxHeight: 150)  // Preview size
+                    .background(Color.clear)
+                    .cornerRadius(20)
+                    .overlay(
+                          RoundedRectangle(cornerRadius: 20)
+                              .stroke(Color.white, lineWidth: 1)
+                      )
+      
+            } else {
+                // Return if the screenshot failed
+                Text("Capture Failed")
+            }
+        }
+        .padding(.bottom, 60)
+        .padding(20)
+        
     }
     
     static private func toFrame(anchorPoint: CGPoint, virtualCursorPosition: CGPoint) -> CGRect {

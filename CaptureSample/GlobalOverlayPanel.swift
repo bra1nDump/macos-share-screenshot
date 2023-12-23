@@ -26,7 +26,7 @@ class OverlayPanel: NSPanel {
     override var canBecomeKey: Bool {
         get { return true }
     }
-    
+    var screenshotPreview: NSImageView?
     // Initializer for OverlayPanel
     init(contentRect: NSRect) {
         // Style mask passed here is key! Changing it later will not have the same effect!

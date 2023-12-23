@@ -31,20 +31,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         createStatusBarItem()
         
-        var overlayWindow: OverlayPanel? = nil
+        let overlayWindow: OverlayPanel? = nil
         func startScreenshot() {
-            if let overlayWindow {
-                overlayWindow.close()
+            if let existingPreview = overlayWindow?.screenshotPreview {
+                existingPreview.removeFromSuperview()
             }
-            
-            let screenRect = NSScreen.main?.frame ?? NSRect.zero
 
-            // For debugging only allocate part of the screen for testing to be able to stop debugging
-//            screenRect = screenRect.insetBy(dx: screenRect.width / 4, dy: screenRect.height / 4)
-            
-            overlayWindow = OverlayPanel(contentRect: screenRect)
+            let screenRect = NSScreen.main?.frame ?? NSRect.zero
+            _ = OverlayPanel(contentRect: screenRect)
+
+           
+          
         }
-        
+
+        // Additional function for capturing a screenshot
+        func captureScreenshot(rect: NSRect) -> NSImage? {
+            let cgImage = CGDisplayCreateImage(CGMainDisplayID(), rect: rect)!
+            return NSImage(cgImage: cgImage, size: rect.size)
+        }
         // DEBUGGING
         startScreenshot()
 
