@@ -45,6 +45,8 @@ How it looks like: ![Alt text](assets/cleanshot-screenshot-examples.png)
 - [Task-2] Have a sticky stack of screenshots on the left bottom that stays there until explicitly dismissed by the user, see examples of cleanshot
   - The difficult thing here is to make it sticky, but not take focus from other applications. I think we can use the same exact approach as we do with the window for screenshot selection. We can just create a similar window to that one with roughly the same configurations, but only show on the left column of the screen. The windows will never be active at the same time.
   - As you take more screenshots, they should be pushed on top of the stack
+  - Restore mouse pointer
+  - Make sure its on a different window - we don't want to keep blocking the user's view
 - As you hover the mouse over the screenshot in the stack
   - [Task-3] Top left shows a close button - it will remove the screenshot from the stack
   - Center shows quick actions
