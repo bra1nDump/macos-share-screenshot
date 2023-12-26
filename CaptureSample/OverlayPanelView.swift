@@ -19,6 +19,7 @@ import Carbon
 // Define your SwiftUI view
 struct CaptureOverlayView: View {
     @State private var capturedImageData: ImageData?
+    @State private var capturedImages: [ImageData] = []
     enum CaptureOverlayState {
         case placingAnchor(currentVirtualCursorPosition: CGPoint)
         // Starts out the same as anchor
@@ -171,7 +172,9 @@ struct CaptureOverlayView: View {
             createSelectionRectangle(anchor: anchorPoint, currentPoint: virtualCursorPosition)
             createCrosshairView(center: virtualCursorPosition)
         case .capturing(let frame):
-            createCaptureView(frame: frame)
+            withAnimation{
+                createCaptureView(frame: frame)
+            }
         }
     }
 
@@ -196,41 +199,47 @@ struct CaptureOverlayView: View {
             .position(x: frame.midX, y: frame.midY)
     }
     private func captureScreenshot(rect: CGRect) -> NSImage? {
-        let cgImage = CGDisplayCreateImage(CGMainDisplayID(), rect: rect)!
-           return NSImage(cgImage: cgImage, size: rect.size)
-       }
+          let cgImage = CGDisplayCreateImage(CGMainDisplayID(), rect: rect)!
+          return NSImage(cgImage: cgImage, size: rect.size)
+      }
   
 
     private func createCaptureView(frame: CGRect) -> some View {
         // Add saving the screenshot and displaying the preview
-        let screenshot = captureScreenshot(rect: frame)
         DispatchQueue.main.async {
-              capturedImageData = screenshot?.tiffRepresentation
-          }
-        
-        return VStack {
-            if let screenshot = screenshot {
-                Spacer()
-                Image(nsImage: screenshot)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(maxWidth: 200, maxHeight: 150)  // Preview size
-                    .background(Color.clear)
-                    .cornerRadius(20)
-                    .overlay(
-                          RoundedRectangle(cornerRadius: 20)
-                              .stroke(Color.white, lineWidth: 1)
-                      )
-      
-            } else {
-                // Return if the screenshot failed
-                Text("Capture Failed")
+            if let screenshot = captureScreenshot(rect: frame),
+               let imageData = screenshot.tiffRepresentation,
+               !capturedImages.contains(imageData) {
+                
+                capturedImages.append(imageData)
             }
+        }
+        return VStack {
+            ScrollView{
+                ForEach(capturedImages.reversed(), id: \.self) { image in
+                    Image(nsImage: NSImage(data: image)!)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 200, height: 150)  // Preview size
+                        .background(Color.clear)
+                        .cornerRadius(10)
+                        .rotationEffect(.degrees(180))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.white, lineWidth: 1)
+                        )
+                        .opacity(1)
+                       .animation(/*@START_MENU_TOKEN@*/.easeIn/*@END_MENU_TOKEN@*/(duration: 0.5))
+                    
+                }
+            }
+            .rotationEffect(.degrees(180))
+         
         }
         .padding(.bottom, 60)
         .padding(20)
-        
     }
+      
     
     static private func toFrame(anchorPoint: CGPoint, virtualCursorPosition: CGPoint) -> CGRect {
         CGRect(x: min(anchorPoint.x, virtualCursorPosition.x),
