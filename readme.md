@@ -61,3 +61,14 @@ How it looks like: ![Alt text](assets/cleanshot-screenshot-examples.png)
 - [Next] You can drag the screenshot to drop it into another applications like telegram, gmail, etc.
 - The screenshot can be immediately edited with annotations - arrows, shapes - the usual annotation tooling functionality. Cleanshot also has it
   - Edit button will be added top right on the screenshot card
+
+## Shortcut actions
+- The value add is to be able to do things you often do. For example when I save a screenshot I sometimes want to save it to desktop, other times I want to save it to a specific folder. I want to be able to add shortcuts to locations where save them.
+- Sending to my contacts on telegram for example, would be another benefit. Basically invoking a shortcut action on the screenshot.
+  - https://talk.automators.fm/t/sending-a-message-from-shortcuts-to-telegram/13551
+  - Macos for instance does not have telegram shortcut. So accessibility integration becomes even more important. Technically we can record any action on the screen and replay it.
+- Automatically name the screenshot - We can do this with vision API
+- [Later] Automatically add annotations to the screenshot - We can do this with vision API
+  - Well this doesn't work for shit with vision / dale API https://chat.openai.com/c/786492b8-c66e-4193-84bd-daa30562b9b1 (private link because image conversations sharing are not supported yet)
+
+- The fact that I'm struggling to come up with things I do often with screenshots is not a good sign. I might be coming up with a fake problem.
