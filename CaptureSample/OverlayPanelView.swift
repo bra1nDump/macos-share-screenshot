@@ -8,7 +8,7 @@
 
 import SwiftUI
 import Carbon
-
+import ScreenCaptureKit
 // Current problem:
 // When app not in actual focus (title visible) - no view is rendered, mouse moves come through
 // When app is in focus - it renders the view, but mouse moves don't come
@@ -94,12 +94,13 @@ struct CaptureOverlayView: View {
     }
 
     let onComplete: (_ imageData: Data?) -> Void
-
+    let onCapture: (_ imageData: Data) -> Void
     @ObservedObject private var eventMonitors = KeyboardAndMouseEventMonitors()
     @State private var state: CaptureOverlayState
     
-    init(initialMousePosition: CGPoint, onComplete: @escaping (_: Data?) -> Void) {
+    init(initialMousePosition: CGPoint, onComplete: @escaping (_: Data?) -> Void, onCapture: @escaping (_ imageData: Data) -> Void) {
         self.onComplete = onComplete
+        self.onCapture = onCapture
         self.state = .placingAnchor(currentVirtualCursorPosition: initialMousePosition)
     }
     
@@ -203,6 +204,25 @@ struct CaptureOverlayView: View {
           return NSImage(cgImage: cgImage, size: rect.size)
       }
   
+    func captureScreenshotKit(rect: CGRect, windows: [SCWindow], display: SCDisplay) async throws -> NSImage? {
+        let availableWindows = windows.filter { window in
+            Bundle.main.bundleIdentifier != window.owningApplication?.bundleIdentifier
+        }
+        let filter = SCContentFilter(display: display, including: availableWindows)
+
+        if #available(macOS 14.0, *) {
+            let config = SCStreamConfiguration.defaultConfig(width: Int(rect.width), height: Int(rect.height))
+            
+            let image = try? await SCScreenshotManager.captureImage(
+                contentFilter: filter,
+                configuration: config
+            )
+            if let cgImage = image {
+                return NSImage(cgImage: cgImage, size: rect.size)
+            }
+        }
+        return nil
+    }
 
     private func createCaptureView(frame: CGRect) -> some View {
         // Add saving the screenshot and displaying the preview
@@ -210,34 +230,11 @@ struct CaptureOverlayView: View {
             if let screenshot = captureScreenshot(rect: frame),
                let imageData = screenshot.tiffRepresentation,
                !capturedImages.contains(imageData) {
-                
                 capturedImages.append(imageData)
+                onCapture(imageData)
             }
         }
-        return VStack {
-            ScrollView{
-                ForEach(capturedImages.reversed(), id: \.self) { image in
-                    Image(nsImage: NSImage(data: image)!)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 200, height: 150)  // Preview size
-                        .background(Color.clear)
-                        .cornerRadius(10)
-                        .rotationEffect(.degrees(180))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.white, lineWidth: 1)
-                        )
-                        .opacity(1)
-                       .animation(/*@START_MENU_TOKEN@*/.easeIn/*@END_MENU_TOKEN@*/(duration: 0.5))
-                    
-                }
-            }
-            .rotationEffect(.degrees(180))
-         
-        }
-        .padding(.bottom, 60)
-        .padding(20)
+        return EmptyView()
     }
       
     
@@ -250,3 +247,38 @@ struct CaptureOverlayView: View {
 }
 
 typealias ImageData = Data
+
+func captureScreen(windows: [SCWindow], display: SCDisplay) async throws -> CGImage? {
+    let availableWindows = windows.filter { window in
+        Bundle.main.bundleIdentifier != window.owningApplication?.bundleIdentifier
+    }
+
+    let filter = SCContentFilter(display: display, including: availableWindows)
+
+    if #available(macOS 14.0, *) {
+        let image = try? await SCScreenshotManager.captureImage(
+                contentFilter: filter,
+                configuration: SCStreamConfiguration.defaultConfig(
+                        width: display.width,
+                        height: display.height
+                )
+        )
+        return image
+    } else {
+        return nil
+    }
+}
+
+extension SCStreamConfiguration {
+    static func defaultConfig(width: Int, height: Int) -> SCStreamConfiguration {
+        let config = SCStreamConfiguration()
+        config.width = width
+        config.height = height
+        config.showsCursor = false
+        if #available(macOS 14.0, *) {
+            config.captureResolution = .best
+        }
+        return config
+    }
+}
+

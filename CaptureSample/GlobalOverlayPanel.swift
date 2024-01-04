@@ -27,6 +27,7 @@ class OverlayPanel: NSPanel {
         get { return true }
     }
     var screenshotPreview: NSImageView?
+    var onCapture: ((Data) -> Void)?
     // Initializer for OverlayPanel
     init(contentRect: NSRect) {
         // Style mask passed here is key! Changing it later will not have the same effect!
@@ -59,7 +60,11 @@ class OverlayPanel: NSPanel {
             }
             
             cShowCursor()
-        }))
+        },
+            onCapture: { capturedImageData in
+                self.createScreen(capturedImageData)
+              }
+        ))
         self.contentView = nsHostingContentView
         
         // Additional window setup
@@ -67,7 +72,12 @@ class OverlayPanel: NSPanel {
 
         cHideCursor()
     }
-
+    private func createScreen(_ imageData: Data) {
+        onCapture?(imageData)
+   cShowCursor()
+       self.contentView = nil
+       self.close()
+    }
     private func cleanupAndClose() {
         cShowCursor()
         
@@ -76,3 +86,4 @@ class OverlayPanel: NSPanel {
         self.close()
     }
 }
+
