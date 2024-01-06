@@ -94,13 +94,11 @@ struct CaptureOverlayView: View {
     }
 
     let onComplete: (_ imageData: Data?) -> Void
-    let onCapture: (_ imageData: Data) -> Void
     @ObservedObject private var eventMonitors = KeyboardAndMouseEventMonitors()
     @State private var state: CaptureOverlayState
     
-    init(initialMousePosition: CGPoint, onComplete: @escaping (_: Data?) -> Void, onCapture: @escaping (_ imageData: Data) -> Void) {
+    init(initialMousePosition: CGPoint, onComplete: @escaping (_: Data?) -> Void) {
         self.onComplete = onComplete
-        self.onCapture = onCapture
         self.state = .placingAnchor(currentVirtualCursorPosition: initialMousePosition)
     }
     
@@ -129,9 +127,14 @@ struct CaptureOverlayView: View {
                             print("mouse up")
                             // Finalize the selection if in selectingFrame state
                             if case .selectingFrame(let anchorPoint, let virtualCursorPosition) = state {
-                                state = .capturing(frame: Self.toFrame(anchorPoint: anchorPoint, virtualCursorPosition: virtualCursorPosition))
-                                
-                                // TODO: Kick off the actual screen capture
+                                let frame = Self.toFrame(anchorPoint: anchorPoint, virtualCursorPosition: virtualCursorPosition)
+                                // Check if the frame's size is zero
+                                if frame.size.width == 0 || frame.size.height == 0 {
+                                    onComplete(nil)
+                                } else {
+                                    state = .capturing(frame: frame)
+                                    // TODO: Kick off the actual screen capture
+                                }
                             }
                         },
                         onMouseMove: { point in
@@ -231,7 +234,7 @@ struct CaptureOverlayView: View {
                let imageData = screenshot.tiffRepresentation,
                !capturedImages.contains(imageData) {
                 capturedImages.append(imageData)
-                onCapture(imageData)
+                onComplete(imageData)
             }
         }
         return EmptyView()

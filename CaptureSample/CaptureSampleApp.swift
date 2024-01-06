@@ -42,10 +42,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             let screenRect = NSScreen.main?.frame ?? NSRect.zero
             self.overlayWindow = OverlayPanel(contentRect: screenRect)
-            overlayWindow?.onCapture = { [self] capturedImageData in
-                   self.capturedImages.append(capturedImageData)
+            overlayWindow?.onComplete = { [self] capturedImageData in
+                   self.capturedImages.append(capturedImageData!)
                 let newCapturePreview = ScreenshotPreviewPanel(imageData: capturedImages)
-                       newCapturePreview.makeKeyAndOrderFront(nil)
+                       newCapturePreview.orderFront(nil)
                 self.currentPreviewPanel = newCapturePreview
                       }
         }
@@ -83,19 +83,3 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // Implement any other necessary AppDelegate methods here
 }
 
-class ScreenshotPreviewPanel: NSPanel {
-    init(imageData: [ImageData]) {
-        let previewRect = NSRect(x: 0, y: 0, width: 300, height: 800)
-        super.init(contentRect: previewRect, styleMask: .borderless, backing: .buffered, defer: false)
-        self.backgroundColor = NSColor.clear
-        self.isOpaque = false
-     
-        let hostingView = NSHostingView(rootView: CaptureStackView(capturedImages: imageData))
-        hostingView.frame = previewRect
-        self.contentView?.addSubview(hostingView)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
