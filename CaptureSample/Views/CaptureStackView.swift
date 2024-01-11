@@ -7,10 +7,10 @@
 //
 
 import SwiftUI
+import AppKit
 
 struct CaptureStackView: View {
-   // @ObservedObject private var captureManager = CaptureManager()
-@State var capturedImages: [ImageData] = []
+   @State var capturedImages: [ImageData]
     var body: some View {
         VStack {
             if capturedImages.isEmpty {
@@ -21,31 +21,50 @@ struct CaptureStackView: View {
                         print("zero")
                     }
             } else {
-                ScrollView {
+                ScrollView(showsIndicators: false) {
                     ForEach(capturedImages.reversed(), id: \.self) { image in
-                        Image(nsImage: NSImage(data: image)!)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 200, height: 150)
-                            .background(Color.clear)
-                            .cornerRadius(10)
-                            .rotationEffect(.degrees(180))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.white, lineWidth: 1)
-                            )
-                    }
+                        ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage)
+                        }
                 }
                 .rotationEffect(.degrees(180))
             }
         }
         .padding(.bottom, 60)
-        .padding(20) 
+        .padding(20)
     }
+    private func copyToClipboard(_ image: ImageData) {
+        if let nsImage = NSImage(data: image) {
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.writeObjects([nsImage])
+        }
+    }
+    private func saveImage(_ image: ImageData) {
+        guard let nsImage = NSImage(data: image) else { return }
+        let savePanel = NSSavePanel()
+        savePanel.nameFieldStringValue = "image.png"
+        savePanel.message = "We need access to the desktop to save files."
+        savePanel.begin { response in
+            if response == .OK, let url = savePanel.url {
+                guard let tiffData = nsImage.tiffRepresentation,
+                      let bitmapImageRep = NSBitmapImageRep(data: tiffData),
+                      let imageData = bitmapImageRep.representation(using: .png, properties: [:]) else {
+                    return
+                }
+                do {
+                    try imageData.write(to: url)
+                    print("Image saved to Desktop")
+                } catch {
+                    print("Error saving image: \(error)")
+                }
+            }
+        }
+    }
+    private func deleteImage(_ image: ImageData) {
+               MyApplication.appDelegate?.deleteImage(image)
+        if let index = capturedImages.firstIndex(of: image) {
+                      capturedImages.remove(at: index)
+                   }
+       }
 }
 
-struct CaptureStackView_Previews: PreviewProvider {
-    static var previews: some View {
-        CaptureStackView()
-    }
-}

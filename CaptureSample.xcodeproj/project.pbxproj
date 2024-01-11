@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8B6934E32B495D29003BFDDF /* ScreenshotPreviewPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6934E22B495D29003BFDDF /* ScreenshotPreviewPanel.swift */; };
+		8B6E04CD2B4F4CB600DD5CDB /* ScreenShotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */; };
 		8BBAE2842B4689260079CCD4 /* CaptureStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */; };
 		C44093732816EC8800FB8386 /* Synth.aif in Resources */ = {isa = PBXBuildFile; fileRef = C44093722816EC8800FB8386 /* Synth.aif */; };
 		C44093752816EC9C00FB8386 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44093742816EC9C00FB8386 /* AudioPlayer.swift */; };
@@ -32,6 +33,7 @@
 /* Begin PBXFileReference section */
 		7C6C99F1D4B6E3EBA3A7B7DF /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		8B6934E22B495D29003BFDDF /* ScreenshotPreviewPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotPreviewPanel.swift; sourceTree = "<group>"; };
+		8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenShotView.swift; sourceTree = "<group>"; };
 		8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureStackView.swift; sourceTree = "<group>"; };
 		8D89E0E7125AFE6B4E2E6500 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		9AEEB9169F5D7FC75E6B35A2 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */,
+				8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */,
 				C4B0DABC276BA4B50015082A /* CapturePreview.swift */,
 				C4EB90D328108656006A595C /* ConfigurationView.swift */,
 				C471DFFD280A0968001D24C9 /* AudioLevelsView.swift */,
@@ -199,7 +202,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1330;
-				LastUpgradeCheck = 1400;
+				LastUpgradeCheck = 1520;
 				ORGANIZATIONNAME = Apple;
 				TargetAttributes = {
 					C4B0DAA6276BA4460015082A = {
@@ -256,6 +259,7 @@
 				C4B0DABA276BA49F0015082A /* CaptureSampleApp.swift in Sources */,
 				8BBAE2842B4689260079CCD4 /* CaptureStackView.swift in Sources */,
 				C471DFFE280A0968001D24C9 /* AudioLevelsView.swift in Sources */,
+				8B6E04CD2B4F4CB600DD5CDB /* ScreenShotView.swift in Sources */,
 				C4EB90D428108656006A595C /* ConfigurationView.swift in Sources */,
 				C4729DA52821BFAD00AAC477 /* MaterialView.swift in Sources */,
 				D269967E2B2EB12700CADFDC /* GlobalOverlayPanel.swift in Sources */,
@@ -308,6 +312,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -371,6 +376,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

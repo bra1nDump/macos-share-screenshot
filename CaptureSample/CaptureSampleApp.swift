@@ -10,12 +10,14 @@ import SwiftUI
 
 @main
 struct MyApplication {
-  static func main() {
-      let appDelegate = AppDelegate()
-      let application = NSApplication.shared
-      application.delegate = appDelegate
-      _ = NSApplicationMain(CommandLine.argc, CommandLine.unsafeArgv)
-  }
+    static var appDelegate: AppDelegate?
+    static func main() {
+        let appDelegate = AppDelegate()
+        MyApplication.appDelegate = appDelegate
+        let application = NSApplication.shared
+        application.delegate = appDelegate
+        _ = NSApplicationMain(CommandLine.argc, CommandLine.unsafeArgv)
+    }
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -67,7 +69,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             item.button?.target = self
         }
     }
-
+    @objc func deleteImage(_ image: ImageData) {
+        if let index = capturedImages.firstIndex(of: image) {
+            capturedImages.remove(at: index)
+        }
+    }
     @objc func statusBarItemClicked(_ sender: AnyObject?) {
         print("Status bar item clicked")
 
