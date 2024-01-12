@@ -26,7 +26,8 @@ class OverlayPanel: NSPanel {
     override var canBecomeKey: Bool {
         get { return true }
     }
-    
+    var screenshotPreview: NSImageView?
+    var onComplete: ((Data?) -> Void)?
     // Initializer for OverlayPanel
     init(contentRect: NSRect) {
         // Style mask passed here is key! Changing it later will not have the same effect!
@@ -50,16 +51,17 @@ class OverlayPanel: NSPanel {
         let nsHostingContentView = NSHostingView(rootView: CaptureOverlayView(
             initialMousePosition: convertToSwiftUICoordinates(NSEvent.mouseLocation, in: self),
             onComplete: { imageData in
-            if let _ = imageData {
-                print("Got image!")
-            } else {
-                print("User canceled")
-                // Does not actually dismiss the window - probably a retain cycle
-                self.cleanupAndClose()
-            }
-            
-            cShowCursor()
-        }))
+                           if let imageData = imageData {
+                               print("Got image!")
+                               self.createScreen(imageData)  // Moved capture logic to createScreen
+                           } else {
+                               print("User canceled")
+                               self.cleanupAndClose()
+                           }
+                           
+                           cShowCursor()
+                       }
+        ))
         self.contentView = nsHostingContentView
         
         // Additional window setup
@@ -67,7 +69,12 @@ class OverlayPanel: NSPanel {
 
         cHideCursor()
     }
-
+    private func createScreen(_ imageData: Data) {
+           onComplete?(imageData)  // Call onComplete with the captured image data
+           cShowCursor()
+           self.contentView = nil
+           self.close()
+       }
     private func cleanupAndClose() {
         cShowCursor()
         
@@ -76,3 +83,4 @@ class OverlayPanel: NSPanel {
         self.close()
     }
 }
+

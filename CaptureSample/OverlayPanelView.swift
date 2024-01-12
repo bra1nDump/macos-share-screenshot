@@ -8,7 +8,7 @@
 
 import SwiftUI
 import Carbon
-
+import ScreenCaptureKit
 // Current problem:
 // When app not in actual focus (title visible) - no view is rendered, mouse moves come through
 // When app is in focus - it renders the view, but mouse moves don't come
@@ -18,6 +18,8 @@ import Carbon
 
 // Define your SwiftUI view
 struct CaptureOverlayView: View {
+    @State private var capturedImageData: ImageData?
+    @State private var capturedImages: [ImageData] = []
     enum CaptureOverlayState {
         case placingAnchor(currentVirtualCursorPosition: CGPoint)
         // Starts out the same as anchor
@@ -92,7 +94,6 @@ struct CaptureOverlayView: View {
     }
 
     let onComplete: (_ imageData: Data?) -> Void
-
     @ObservedObject private var eventMonitors = KeyboardAndMouseEventMonitors()
     @State private var state: CaptureOverlayState
     
@@ -105,7 +106,7 @@ struct CaptureOverlayView: View {
         GeometryReader { geometry in
             createOverlayView(geometry: geometry)
                 // This adds additional layer so double the color
-                .background(Color.gray.opacity(0.2))
+               // .background(Color.gray.opacity(0.2))
                 .onDisappear {
                     print("on dissapear")
                     eventMonitors.stopMonitoringEvents()
@@ -126,9 +127,14 @@ struct CaptureOverlayView: View {
                             print("mouse up")
                             // Finalize the selection if in selectingFrame state
                             if case .selectingFrame(let anchorPoint, let virtualCursorPosition) = state {
-                                state = .capturing(frame: Self.toFrame(anchorPoint: anchorPoint, virtualCursorPosition: virtualCursorPosition))
-                                
-                                // TODO: Kick off the actual screen capture
+                                let frame = Self.toFrame(anchorPoint: anchorPoint, virtualCursorPosition: virtualCursorPosition)
+                                // Check if the frame's size is zero
+                                if frame.size.width == 0 || frame.size.height == 0 {
+                                    onComplete(nil)
+                                } else {
+                                    state = .capturing(frame: frame)
+                                    // TODO: Kick off the actual screen capture
+                                }
                             }
                         },
                         onMouseMove: { point in
@@ -170,7 +176,9 @@ struct CaptureOverlayView: View {
             createSelectionRectangle(anchor: anchorPoint, currentPoint: virtualCursorPosition)
             createCrosshairView(center: virtualCursorPosition)
         case .capturing(let frame):
-            createCaptureView(frame: frame)
+            withAnimation{
+                createCaptureView(frame: frame)
+            }
         }
     }
 
@@ -194,14 +202,44 @@ struct CaptureOverlayView: View {
             .frame(width: frame.width, height: frame.height)
             .position(x: frame.midX, y: frame.midY)
     }
+    private func captureScreenshot(rect: CGRect) -> NSImage? {
+          let cgImage = CGDisplayCreateImage(CGMainDisplayID(), rect: rect)!
+          return NSImage(cgImage: cgImage, size: rect.size)
+      }
+  
+    func captureScreenshotKit(rect: CGRect, windows: [SCWindow], display: SCDisplay) async throws -> NSImage? {
+        let availableWindows = windows.filter { window in
+            Bundle.main.bundleIdentifier != window.owningApplication?.bundleIdentifier
+        }
+        let filter = SCContentFilter(display: display, including: availableWindows)
+
+        if #available(macOS 14.0, *) {
+            let config = SCStreamConfiguration.defaultConfig(width: Int(rect.width), height: Int(rect.height))
+            
+            let image = try? await SCScreenshotManager.captureImage(
+                contentFilter: filter,
+                configuration: config
+            )
+            if let cgImage = image {
+                return NSImage(cgImage: cgImage, size: rect.size)
+            }
+        }
+        return nil
+    }
 
     private func createCaptureView(frame: CGRect) -> some View {
-        // Create a view that represents the capturing state
-        return Rectangle()
-            .fill(Color.blue.opacity(0.2))
-            .frame(width: frame.width, height: frame.height)
-            .position(x: frame.midX, y: frame.midY)
+        // Add saving the screenshot and displaying the preview
+        DispatchQueue.main.async {
+            if let screenshot = captureScreenshot(rect: frame),
+               let imageData = screenshot.tiffRepresentation,
+               !capturedImages.contains(imageData) {
+                capturedImages.append(imageData)
+                onComplete(imageData)
+            }
+        }
+        return EmptyView()
     }
+      
     
     static private func toFrame(anchorPoint: CGPoint, virtualCursorPosition: CGPoint) -> CGRect {
         CGRect(x: min(anchorPoint.x, virtualCursorPosition.x),
@@ -212,3 +250,38 @@ struct CaptureOverlayView: View {
 }
 
 typealias ImageData = Data
+
+func captureScreen(windows: [SCWindow], display: SCDisplay) async throws -> CGImage? {
+    let availableWindows = windows.filter { window in
+        Bundle.main.bundleIdentifier != window.owningApplication?.bundleIdentifier
+    }
+
+    let filter = SCContentFilter(display: display, including: availableWindows)
+
+    if #available(macOS 14.0, *) {
+        let image = try? await SCScreenshotManager.captureImage(
+                contentFilter: filter,
+                configuration: SCStreamConfiguration.defaultConfig(
+                        width: display.width,
+                        height: display.height
+                )
+        )
+        return image
+    } else {
+        return nil
+    }
+}
+
+extension SCStreamConfiguration {
+    static func defaultConfig(width: Int, height: Int) -> SCStreamConfiguration {
+        let config = SCStreamConfiguration()
+        config.width = width
+        config.height = height
+        config.showsCursor = false
+        if #available(macOS 14.0, *) {
+            config.captureResolution = .best
+        }
+        return config
+    }
+}
+

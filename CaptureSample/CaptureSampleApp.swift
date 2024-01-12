@@ -6,23 +6,27 @@ The entry point into this app.
 */
 import Cocoa
 import HotKey
+import SwiftUI
 
 @main
 struct MyApplication {
-  static func main() {
-      let appDelegate = AppDelegate()
-      let application = NSApplication.shared
-      application.delegate = appDelegate
-      _ = NSApplicationMain(CommandLine.argc, CommandLine.unsafeArgv)
-  }
+    static var appDelegate: AppDelegate?
+    static func main() {
+        let appDelegate = AppDelegate()
+        MyApplication.appDelegate = appDelegate
+        let application = NSApplication.shared
+        application.delegate = appDelegate
+        _ = NSApplicationMain(CommandLine.argc, CommandLine.unsafeArgv)
+    }
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+    var currentPreviewPanel: ScreenshotPreviewPanel?
     var statusBarItem: NSStatusItem?
-    
+    var capturedImages: [ImageData] = []
     // The menu that drops down from the menu bar item.
     var contextMenu: NSMenu = NSMenu()
-    
+    var overlayWindow: OverlayPanel?
     // Does not work when moved outside of COntentView
     // Probably something to do with not being able to bind commands when no UI is visible
     // Try - create a random window
@@ -31,20 +35,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         createStatusBarItem()
         
-        var overlayWindow: OverlayPanel? = nil
         func startScreenshot() {
-            if let overlayWindow {
-                overlayWindow.close()
+            if let existingPreview = overlayWindow?.screenshotPreview {
+                existingPreview.removeFromSuperview()
             }
-            
+            if let existingPreviewPanel = self.currentPreviewPanel {
+                    existingPreviewPanel.orderOut(nil)
+                }
             let screenRect = NSScreen.main?.frame ?? NSRect.zero
-
-            // For debugging only allocate part of the screen for testing to be able to stop debugging
-//            screenRect = screenRect.insetBy(dx: screenRect.width / 4, dy: screenRect.height / 4)
-            
-            overlayWindow = OverlayPanel(contentRect: screenRect)
+            self.overlayWindow = OverlayPanel(contentRect: screenRect)
+            overlayWindow?.onComplete = { [self] capturedImageData in
+                   self.capturedImages.append(capturedImageData!)
+                let newCapturePreview = ScreenshotPreviewPanel(imageData: capturedImages)
+                       newCapturePreview.orderFront(nil)
+                self.currentPreviewPanel = newCapturePreview
+                      }
         }
-        
         // DEBUGGING
         startScreenshot()
 
@@ -63,7 +69,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             item.button?.target = self
         }
     }
-
+    @objc func deleteImage(_ image: ImageData) {
+        if let index = capturedImages.firstIndex(of: image) {
+            capturedImages.remove(at: index)
+        }
+    }
     @objc func statusBarItemClicked(_ sender: AnyObject?) {
         print("Status bar item clicked")
 

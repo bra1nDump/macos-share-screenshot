@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B6934E32B495D29003BFDDF /* ScreenshotPreviewPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6934E22B495D29003BFDDF /* ScreenshotPreviewPanel.swift */; };
+		8B6E04CD2B4F4CB600DD5CDB /* ScreenShotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */; };
+		8BBAE2842B4689260079CCD4 /* CaptureStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */; };
 		C44093732816EC8800FB8386 /* Synth.aif in Resources */ = {isa = PBXBuildFile; fileRef = C44093722816EC8800FB8386 /* Synth.aif */; };
 		C44093752816EC9C00FB8386 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44093742816EC9C00FB8386 /* AudioPlayer.swift */; };
 		C470F0812811C5CB00D29309 /* ScreenRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C470F0802811C5CB00D29309 /* ScreenRecorder.swift */; };
@@ -29,6 +32,9 @@
 
 /* Begin PBXFileReference section */
 		7C6C99F1D4B6E3EBA3A7B7DF /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		8B6934E22B495D29003BFDDF /* ScreenshotPreviewPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotPreviewPanel.swift; sourceTree = "<group>"; };
+		8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenShotView.swift; sourceTree = "<group>"; };
+		8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureStackView.swift; sourceTree = "<group>"; };
 		8D89E0E7125AFE6B4E2E6500 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		9AEEB9169F5D7FC75E6B35A2 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 		C44093722816EC8800FB8386 /* Synth.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = Synth.aif; sourceTree = "<group>"; };
@@ -78,6 +84,8 @@
 		C41D1B1D2814BD230033613F /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */,
+				8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */,
 				C4B0DABC276BA4B50015082A /* CapturePreview.swift */,
 				C4EB90D328108656006A595C /* ConfigurationView.swift */,
 				C471DFFD280A0968001D24C9 /* AudioLevelsView.swift */,
@@ -121,6 +129,7 @@
 				D255C43E2B31D1D200A0C7B2 /* OverlayPanelView.swift */,
 				D255C43C2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift */,
 				D269967D2B2EB12700CADFDC /* GlobalOverlayPanel.swift */,
+				8B6934E22B495D29003BFDDF /* ScreenshotPreviewPanel.swift */,
 				C4B0DAB9276BA49F0015082A /* CaptureSampleApp.swift */,
 				D266C9A32B2FB87A001D7B66 /* ShowAndHideCursor.h */,
 				D266C99D2B2FB18B001D7B66 /* ShareShot-Bridging-Header.h */,
@@ -193,7 +202,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1330;
-				LastUpgradeCheck = 1400;
+				LastUpgradeCheck = 1520;
 				ORGANIZATIONNAME = Apple;
 				TargetAttributes = {
 					C4B0DAA6276BA4460015082A = {
@@ -248,10 +257,13 @@
 				C44093752816EC9C00FB8386 /* AudioPlayer.swift in Sources */,
 				C470F0812811C5CB00D29309 /* ScreenRecorder.swift in Sources */,
 				C4B0DABA276BA49F0015082A /* CaptureSampleApp.swift in Sources */,
+				8BBAE2842B4689260079CCD4 /* CaptureStackView.swift in Sources */,
 				C471DFFE280A0968001D24C9 /* AudioLevelsView.swift in Sources */,
+				8B6E04CD2B4F4CB600DD5CDB /* ScreenShotView.swift in Sources */,
 				C4EB90D428108656006A595C /* ConfigurationView.swift in Sources */,
 				C4729DA52821BFAD00AAC477 /* MaterialView.swift in Sources */,
 				D269967E2B2EB12700CADFDC /* GlobalOverlayPanel.swift in Sources */,
+				8B6934E32B495D29003BFDDF /* ScreenshotPreviewPanel.swift in Sources */,
 				D255C43D2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift in Sources */,
 				C4B0DABE276BA4B50015082A /* ContentView.swift in Sources */,
 				C471DFFB2809F440001D24C9 /* PowerMeter.swift in Sources */,
@@ -300,6 +312,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -314,7 +327,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -363,6 +376,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -371,7 +385,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -395,7 +409,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"CaptureSample/Preview Content\"";
-				DEVELOPMENT_TEAM = A55978949T;
+				DEVELOPMENT_TEAM = 9NYCJV4J3K;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -405,7 +419,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.example.apple-samplecode.CaptureSample${SAMPLE_CODE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -442,7 +456,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.example.apple-samplecode.CaptureSample${SAMPLE_CODE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
