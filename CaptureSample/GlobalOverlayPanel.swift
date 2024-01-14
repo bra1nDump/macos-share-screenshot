@@ -46,7 +46,7 @@ class OverlayPanel: NSPanel {
         // Track the mouse
         self.acceptsMouseMovedEvents = true
         self.ignoresMouseEvents = false
-        self.backgroundColor = .blue.withAlphaComponent(0.2)
+        self.backgroundColor = NSColor.blue.withAlphaComponent(0.2)
         
         let nsHostingContentView = NSHostingView(rootView: CaptureOverlayView(
             initialMousePosition: convertToSwiftUICoordinates(NSEvent.mouseLocation, in: self),
