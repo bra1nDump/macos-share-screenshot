@@ -22,6 +22,7 @@ struct ScreenShotView: View {
                 .background(Color.clear)
                 .cornerRadius(10)
                 .rotationEffect(.degrees(180))
+                .draggable(Image(nsImage: NSImage(data: image)!))
                 .overlay(
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(Color.white, lineWidth: 1)

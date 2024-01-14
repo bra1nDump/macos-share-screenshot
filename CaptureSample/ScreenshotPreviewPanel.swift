@@ -14,6 +14,7 @@ class ScreenshotPreviewPanel: NSPanel {
         super.init(contentRect: previewRect, styleMask: .borderless, backing: .buffered, defer: false)
         self.backgroundColor = NSColor.clear
         self.isOpaque = false
+        self.level = .floating
         let hostingView = NSHostingView(rootView: CaptureStackView(capturedImages: imageData))
         hostingView.frame = previewRect
         self.contentView?.addSubview(hostingView)
