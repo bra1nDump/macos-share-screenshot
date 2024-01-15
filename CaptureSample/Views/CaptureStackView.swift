@@ -22,9 +22,11 @@ struct CaptureStackView: View {
                     }
             } else {
                 ScrollView(showsIndicators: false) {
-                    ForEach(capturedImages.reversed(), id: \.self) { image in
-                        ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage)
+                    VStack(spacing: 20){
+                        ForEach(capturedImages.reversed(), id: \.self) { image in
+                            ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage)
                         }
+                    }
                 }
                 .rotationEffect(.degrees(180))
             }
@@ -37,6 +39,7 @@ struct CaptureStackView: View {
             let pasteboard = NSPasteboard.general
             pasteboard.clearContents()
             pasteboard.writeObjects([nsImage])
+            deleteImage(image)
         }
     }
     private func saveImage(_ image: ImageData) {
@@ -53,6 +56,7 @@ struct CaptureStackView: View {
                 }
                 do {
                     try imageData.write(to: url)
+                    deleteImage(image)
                     print("Image saved to Desktop")
                 } catch {
                     print("Error saving image: \(error)")
