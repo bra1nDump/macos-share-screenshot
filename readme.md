@@ -14,6 +14,7 @@ Most tasks in the project will be:
 - Currently there is a semi-transparent cross on the screen that remains in the same position where the mouse was when starting the app, while the actual cross moves around
 - Stack of captures does not appear if the app is invoked with a keyboard shortcut (Shift + Cmd + 7), which is how the app should appear in the first place, us entering capture mode by default is simply for debugging purposes
 - Currently if you hover over the screenshot in the stack, the buttons appear but not always disappear as the mouse leaves the area
+- Drag and drop of the screenshot from the stack to other applications
 - More window magic needed (a good starting point is the current panel windows that we use)
   - If I click anywhere outside of the stack, the stack should remain visible. This is the current behavior of cleanshot, ant is very convenient when you don't want to lose the stack of screenshots you have taken
   - When running xcode in full screen mode
@@ -36,7 +37,7 @@ Most tasks in the project will be:
 - [Done] We present an invisible window over the entire screen, hide the mouse an show a selection rectangle
   - If the user clicks escape - we dismiss the window and do nothing
   - Once the area is selected - we just kind of show the area and thats it
-- [Task-1] We take the screenshot of the selected area and show it in the bottom left corner of the screen
+- [done] We take the screenshot of the selected area and show it in the bottom left corner of the screen
   - Originally the project I started with was this tutorial by apple on how to use screen capture api https://developer.apple.com/documentation/screencapturekit/capturing_screen_content_in_macos
   - Most of the code from that is in this project, just inactive under /SampleCodeFromCaptureExample
   - You most likely will use this API to capture a screenshot: https://developer.apple.com/documentation/screencapturekit/scscreenshotmanager
@@ -78,10 +79,35 @@ How it looks like: ![Alt text](./assets/cleanshot-screenshot-examples.png)
 
 ## Shortcut actions
 - The value add is to be able to do things you often do. For example when I save a screenshot I sometimes want to save it to desktop, other times I want to save it to a specific folder. I want to be able to add shortcuts to locations where save them.
-- Sending to my contacts on telegram for example, would be another benefit. Basically invoking a shortcut action on the screenshot.
-  - https://talk.automators.fm/t/sending-a-message-from-shortcuts-to-telegram/13551
-  - Macos for instance does not have telegram shortcut. So accessibility integration becomes even more important. Technically we can record any action on the screen and replay it.
-- Automatically name the screenshot - We can do this with vision API
+- Re-impelement share menu on macos. I want as a quick action to have send to Isaiah, Steve, Max etc.
+  - Telegram
+    - https://talk.automators.fm/t/sending-a-message-from-shortcuts-to-telegram/13551
+    - Macos for instance does not have telegram shortcut. So accessibility integration becomes even more important. Technically we can record any action on the screen and replay it.
+    - Deep links don't support opening a chat with a specific user and adding attachments to it. https://core.telegram.org/api/links
+      - Create a PR to telegram MacOS app
+  - Slack - probably more important :D
+    - slack://user?team={TEAM_ID}&id={USER_ID}
+    - https://api.slack.com/reference/deep-linking
+  - Gmail
+    - https://stackoverflow.com/a/8852679
+    - We can upload to google drive and then send a link to the file in the body easily, or just use share google drive API ... but they have to be a google user I think
+
+## Annotations
+
+### Libraries that already implement drawing on the screen we can use
+- https://github.com/maxchuquimia/quickdraw
+  - The best one - supports circles, arroes, squares
+  - UIKit :(
+  - Is not ment to be used as a library, adopting it by copying over relevant code will take effort (3 days?)
+  - Can be used as a reference
+  - [notes] Render happens nicely here: https://github.com/maxchuquimia/quickdraw/blob/b9732eeef42869c88927a640d8c128affd3c19f4/QuickDraw/Views/DrawingView/DrawingView.swift#L105
+  - Majority of the code seems to be bookkeeping as always :D, tool selection, coordinate translation, mouse tracking, etc.
+  - Was rejected from AppStore repeatedly :(
+
+- SwiftUI 16 stars, simple, but better looking than below https://github.com/gahntpo/DrawingApp
+- SwiftUI 26 stars, very simple drawing https://github.com/Ytemiloluwa/DrawingApp
+
+- [Later] Automatically name the screenshot - We can do this with vision API
 - [Later] Automatically add annotations to the screenshot - We can do this with vision API
   - Well this doesn't work for shit with vision / dale API https://chat.openai.com/c/786492b8-c66e-4193-84bd-daa30562b9b1 (private link because image conversations sharing are not supported yet)
   - Automatically remove background, do segmetation
