@@ -52,8 +52,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             overlayWindow?.onComplete = { [self] capturedImageData in
                    self.capturedImages.append(capturedImageData!)
                 let newCapturePreview = ScreenshotPreviewPanel(imageData: capturedImages)
-                       newCapturePreview.orderFront(nil)
                 NSApp.activate(ignoringOtherApps: true)
+                       newCapturePreview.orderFront(nil)
+                newCapturePreview.makeFirstResponder(newCapturePreview)
                 self.currentPreviewPanel = newCapturePreview
                 isScreenshotInProgress = false
                 self.currentPreviewPanel = newCapturePreview

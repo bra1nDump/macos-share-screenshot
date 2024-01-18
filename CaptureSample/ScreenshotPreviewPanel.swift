@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Cocoa
 
 class ScreenshotPreviewPanel: NSPanel {
     override var canBecomeKey: Bool {
@@ -27,5 +28,19 @@ class ScreenshotPreviewPanel: NSPanel {
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class AlwaysOnTopWindowController: NSWindowController {
+    
+    override func windowDidLoad() {
+        super.windowDidLoad()
+        
+        if let window = self.window {
+            window.level = .floating
+            window.isOpaque = false
+            window.backgroundColor = NSColor.clear
+            window.hasShadow = false
+        }
     }
 }
