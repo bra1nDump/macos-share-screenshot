@@ -14,12 +14,7 @@ struct CaptureStackView: View {
     var body: some View {
         VStack {
             if capturedImages.isEmpty {
-                Text("No Captured Images")
-                    .foregroundColor(.gray)
-                    .padding()
-                    .onAppear{
-                        print("zero")
-                    }
+               
             } else {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20){
