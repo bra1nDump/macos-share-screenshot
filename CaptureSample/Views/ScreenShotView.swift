@@ -26,109 +26,103 @@ struct ScreenShotView: View {
                 .rotationEffect(.degrees(180))
                 .blur(radius: isHovered ? 5.0 : 0)
                 .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.white, lineWidth: 1)
-                            .rotationEffect(.degrees(180))
-                            .opacity(isHovered ? 1.0 : 0.0)
-                            
-                )
-                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.white, lineWidth: 1)
+                        .rotationEffect(.degrees(180))
+                        .opacity(isHovered ? 1.0 : 0.0)
+                        .overlay(
                             RoundedRectangle(cornerRadius: 10)
-                                .fill(Color.clear)
-                                .frame(width: 195, height: 145)
-                                .overlay(
-                                    ZStack{
-                                        VStack{
-                                            HStack{
-                                                Circle()
-                                                    .frame(width: 25, height: 25)
-                                                    .foregroundColor(.white)
-                                                    .overlay(
-                                                        Image(systemName: "xmark")
-                                                            .foregroundColor(.black)
-                                                    )
-                                                    .onTapGesture {
-                                                        deleteImage(image)
-                                                    }
-                                                Spacer()
-                                                Circle()
-                                                    .frame(width: 25, height: 25)
-                                                    .foregroundColor(.white)
-                                                    .overlay(
-                                                        Image(systemName: "pin.fill")
-                                                            .foregroundColor(.black)
-                                                            .rotationEffect(.degrees(45))
-                                                    )
-                                                    .onTapGesture {
-                                                        pinImage(image: NSImage(data: image)!)
-                                                    }
-                                            }
-                                            Spacer()
-                                            HStack{
-                                                Circle()
-                                                    .frame(width: 25, height: 25)
-                                                    .foregroundColor(.white)
-                                                    .overlay(
-                                                        Image(systemName: "pencil")
-                                                            .foregroundColor(.black)
-                                                    )
-                                                    .onTapGesture {
-                                                        saveToCloudImage(image: NSImage(data: image)!)
-                                                    }
-                                                Spacer()
-                                                Circle()
-                                                    .frame(width: 25, height: 25)
-                                                    .foregroundColor(.white)
-                                                    .overlay(
-                                                        Image(systemName: "icloud.and.arrow.up.fill")
-                                                            .foregroundColor(.black)
-                                                    )
-                                                    .onTapGesture {
-                                                        openImageInNewWindow(image: NSImage(data: image)!)
-                                                    }
-                                            }
-                                        }
-                                        .padding(5)
-                                        VStack{
-                                            RoundedRectangle(cornerRadius: 20)
-                                                .frame(width: 50, height: 25)
+                            .fill(Color.clear)
+                            .frame(width: 195, height: 145)
+                            .overlay(
+                                ZStack{
+                                    VStack{
+                                        HStack{
+                                            Circle()
+                                                .frame(width: 25, height: 25)
                                                 .foregroundColor(.white)
                                                 .overlay(
-                                                    Text("Copy")
+                                                    Image(systemName: "xmark")
                                                         .foregroundColor(.black)
                                                 )
                                                 .onTapGesture {
-                                                    copyImage(image)
+                                                    deleteImage(image)
                                                 }
-                                            RoundedRectangle(cornerRadius: 20)
-                                                .frame(width: 50, height: 25)
+                                            Spacer()
+                                            Circle()
+                                                .frame(width: 25, height: 25)
                                                 .foregroundColor(.white)
                                                 .overlay(
-                                                    Text("Save")
+                                                    Image(systemName: "pin.fill")
+                                                        .foregroundColor(.black)
+                                                        .rotationEffect(.degrees(45))
+                                                )
+                                                .onTapGesture {
+                                                    pinImage(image: NSImage(data: image)!)
+                                                }
+                                        }
+                                        Spacer()
+                                        HStack{
+                                            Circle()
+                                                .frame(width: 25, height: 25)
+                                                .foregroundColor(.white)
+                                                .overlay(
+                                                    Image(systemName: "pencil")
                                                         .foregroundColor(.black)
                                                 )
                                                 .onTapGesture {
-                                                    saveImage(image)
+                                                    saveToCloudImage(image: NSImage(data: image)!)
+                                                }
+                                            Spacer()
+                                            Circle()
+                                                .frame(width: 25, height: 25)
+                                                .foregroundColor(.white)
+                                                .overlay(
+                                                    Image(systemName: "icloud.and.arrow.up.fill")
+                                                        .foregroundColor(.black)
+                                                )
+                                                .onTapGesture {
+                                                    openImageInNewWindow(image: NSImage(data: image)!)
                                                 }
                                         }
                                     }
-                                        .rotationEffect(.degrees(180))
-                                        .opacity(isHovered ? 1.0 : 0.0)
-                                        
-                                )
-                                .onHover { hovering in
-                                        isHovered = hovering
+                                    .padding(5)
+                                    VStack{
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .frame(width: 50, height: 25)
+                                            .foregroundColor(.white)
+                                            .overlay(
+                                                Text("Copy")
+                                                    .foregroundColor(.black)
+                                            )
+                                            .onTapGesture {
+                                                copyImage(image)
+                                            }
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .frame(width: 50, height: 25)
+                                            .foregroundColor(.white)
+                                            .overlay(
+                                                Text("Save")
+                                                    .foregroundColor(.black)
+                                            )
+                                            .onTapGesture {
+                                                saveImage(image)
+                                            }
+                                    }
                                 }
-                                .draggable(Image(nsImage: NSImage(data: image)!))
-                            
-                              
+                                    .rotationEffect(.degrees(180))
+                                    .opacity(isHovered ? 1.0 : 0.0)
+                                )
                         )
+                )
                 .focusable(false)
                 .onTapGesture {
                     openImageInNewWindow(image: NSImage(data: image)!)
                 }
-               
-            }
+                .onHover { hovering in
+                        isHovered = hovering
+                }
+        }
 }
 
 func openImageInNewWindow(image: NSImage) {
@@ -144,10 +138,26 @@ func openImageInNewWindow(image: NSImage) {
 
 func editImage(image: NSImage) {
     print("edit image")
+    let imageViewController = NSViewController()
+    let imageView = NSImageView(frame: NSRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
+    
+    imageView.image = image
+    imageViewController.view = imageView
+    
+    let imageWindow = NSWindow(contentViewController: imageViewController)
+    imageWindow.makeKeyAndOrderFront(nil)
 }
 
 func pinImage(image: NSImage) {
     print("pin image")
+    let imageViewController = NSViewController()
+    let imageView = NSImageView(frame: NSRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
+    
+    imageView.image = image
+    imageViewController.view = imageView
+    
+    let imageWindow = NSWindow(contentViewController: imageViewController)
+    imageWindow.makeKeyAndOrderFront(nil)
 }
 
 func saveToCloudImage(image: NSImage) {
