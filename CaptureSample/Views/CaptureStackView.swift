@@ -13,9 +13,7 @@ struct CaptureStackView: View {
    @State var capturedImages: [ImageData]
     var body: some View {
         VStack {
-            if capturedImages.isEmpty {
-               
-            } else {
+            if !capturedImages.isEmpty {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20){
                         ForEach(capturedImages.reversed(), id: \.self) { image in
@@ -62,7 +60,9 @@ struct CaptureStackView: View {
     private func deleteImage(_ image: ImageData) {
                MyApplication.appDelegate?.deleteImage(image)
         if let index = capturedImages.firstIndex(of: image) {
-                      capturedImages.remove(at: index)
+            withAnimation{
+                capturedImages.remove(at: index)
+            }
                    }
        }
 }
