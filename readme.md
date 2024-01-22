@@ -11,17 +11,52 @@ Most tasks in the project will be:
 - Some macOS window magic (which I think I have figured out already, so you don't have to figure it out, just use the existing approach)
 
 # TODO
-- Currently there is a semi-transparent cross on the screen that remains in the same position where the mouse was when starting the app, while the actual cross moves around
-- Stack of captures does not appear if the app is invoked with a keyboard shortcut (Shift + Cmd + 7), which is how the app should appear in the first place, us entering capture mode by default is simply for debugging purposes
-- Currently if you hover over the screenshot in the stack, the buttons appear but not always disappear as the mouse leaves the area
-- Drag and drop of the screenshot from the stack to other applications
-- More window magic needed (a good starting point is the current panel windows that we use)
-  - If I click anywhere outside of the stack, the stack should remain visible. This is the current behavior of cleanshot, ant is very convenient when you don't want to lose the stack of screenshots you have taken
-  - When running xcode in full screen mode
-    - [With an additional monitor] The screenshot area (blue) appears on a different screen that Xcode is running on
-    - [With a single screen] The fullscreen space gets switched from to a desktop space, and only then the blue area appears
 - Cleanup example code from the original capture project by apple
-- Release on the app store
+- Clean unused actions
+- Menu bar with ...
+  - Icon - use a placeholder, [kirill] create a logo
+  - GitHub link
+  - Quit
+- Open source
+- [kirill] Release on the app store
+
+- Getting users
+- We can ask Maccy to do a shout out if we will be open source
+
+- Quick actions
+  - Design - [kirill] Figma create intial design, Oleg + Kirill brainstorm
+  - Share menu
+    - List of 'blessed apps' - telegram, slack, gmail (web app, we would need google drive integration to add attachments), etc.
+    - Edit the list manually 
+    - Research - can we extract individual items from the list of apps that support sharing?
+      - Re-implement - see if anyone did this?
+  - Save to common folders (for example icloud?)
+    - Can we get path where we ended up saving the file?
+    - Persistence for the list of folder user likes to use
+    - They should be able to edit / pin them manually
+  - Save to cloud 
+    - ICloud - research
+    - [Later] Google drive - research
+- Persistence - how to implement?
+  - Swift Data - lets give the shity tech a try :D
+  - We can go the 'easy' route and just use UserDefaults
+
+- Create user stories / flows
+Create an example 'story' of how the user would interact with the app and how they use screenshots.
+
+PostHog - 1 million events free
+
+- Onboarding (assume they have the native screenshot app)
+  - Do we target to remove the default shortcuts? 
+    - maybe just target shift cmd 4?
+    - shoft cmd 3 - also easy to replace - its a subset 
+    - shift cmd 5 - for video - we don't touch it - no support :D
+  - We need to show to the user how to replace the system shortcuts - cleanshot did it reaaaaly well
+
+
+# Later
+- Tutorials - suggest drag and drop
+  - Some global persistent state to know for example the user dragged 3+ times - so don't show the hint anymore
 
 # Detailed functionality and implementation notes
 
@@ -79,18 +114,32 @@ How it looks like: ![Alt text](./assets/cleanshot-screenshot-examples.png)
 
 ## Shortcut actions
 - The value add is to be able to do things you often do. For example when I save a screenshot I sometimes want to save it to desktop, other times I want to save it to a specific folder. I want to be able to add shortcuts to locations where save them.
+- Automatically name the screenshot - We can do this with vision API
 - Re-impelement share menu on macos. I want as a quick action to have send to Isaiah, Steve, Max etc.
   - Telegram
+    - Move share menu to top overlay where copy / save is 
     - https://talk.automators.fm/t/sending-a-message-from-shortcuts-to-telegram/13551
     - Macos for instance does not have telegram shortcut. So accessibility integration becomes even more important. Technically we can record any action on the screen and replay it.
     - Deep links don't support opening a chat with a specific user and adding attachments to it. https://core.telegram.org/api/links
       - Create a PR to telegram MacOS app
+    - [Dead 8 years] telegram-cli https://www.omgubuntu.co.uk/2016/10/use-telegram-cli-in-terminal-ubuntu
+    - [Gucii] https://github.com/xtrime-ru/TelegramApiServer
+      - But would have to ask the user to login ... thats a lot to ask lol. Maybe if we are fully open source? Still deeplinks would be preferred
+  - Upload to drive
+    - Sales point - security, don't trust us, trust google / apple
+  - Icloud - save to some folder
+    - Oleg to check if we can create a link
   - Slack - probably more important :D
     - slack://user?team={TEAM_ID}&id={USER_ID}
     - https://api.slack.com/reference/deep-linking
+  - Teams
   - Gmail
     - https://stackoverflow.com/a/8852679
     - We can upload to google drive and then send a link to the file in the body easily, or just use share google drive API ... but they have to be a google user I think
+
+- Sending to my contacts on telegram for example, would be another benefit. Basically invoking a shortcut action on the screenshot.
+  - https://talk.automators.fm/t/sending-a-message-from-shortcuts-to-telegram/13551
+  - Macos for instance does not have telegram shortcut. So accessibility integration becomes even more important. Technically we can record any action on the screen and replay it.
 
 ## Annotations
 
@@ -104,6 +153,9 @@ How it looks like: ![Alt text](./assets/cleanshot-screenshot-examples.png)
   - Majority of the code seems to be bookkeeping as always :D, tool selection, coordinate translation, mouse tracking, etc.
   - Was rejected from AppStore repeatedly :(
 
+- Telegram drawing contest https://github.com/Serfodi/MediaEditing/tree/main
+
+- SwiftUI 10+ stars, not researched further https://github.com/gahntpo/DrawingApp-Youtube-tutorial/tree/main
 - SwiftUI 16 stars, simple, but better looking than below https://github.com/gahntpo/DrawingApp
 - SwiftUI 26 stars, very simple drawing https://github.com/Ytemiloluwa/DrawingApp
 
@@ -119,3 +171,15 @@ How it looks like: ![Alt text](./assets/cleanshot-screenshot-examples.png)
 - Brew
 - https://www.irradiatedsoftware.com/help/accessibility/index.php
 - Similar websites for distribution (there is one that cleanshot is bundled with)
+
+
+## Done
+- Currently there is a semi-transparent cross on the screen that remains in the same position where the mouse was when starting the app, while the actual cross moves around
+- Stack of captures does not appear if the app is invoked with a keyboard shortcut (Shift + Cmd + 7), which is how the app should appear in the first place, us entering capture mode by default is simply for debugging purposes
+- Currently if you hover over the screenshot in the stack, the buttons appear but not always disappear as the mouse leaves the area
+- Drag and drop of the screenshot from the stack to other applications
+- More window magic needed (a good starting point is the current panel windows that we use)
+  - If I click anywhere outside of the stack, the stack should remain visible. This is the current behavior of cleanshot, ant is very convenient when you don't want to lose the stack of screenshots you have taken
+  - When running xcode in full screen mode
+    - [With an additional monitor] The screenshot area (blue) appears on a different screen that Xcode is running on
+    - [With a single screen] The fullscreen space gets switched from to a desktop space, and only then the blue area appears
