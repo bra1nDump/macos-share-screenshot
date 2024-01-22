@@ -31,11 +31,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // Probably something to do with not being able to bind commands when no UI is visible
     // Try - create a random window
     let cmdShiftSeven = HotKey(key: .seven, modifiers: [.command, .shift])
-
+    private var isScreenshotInProgress = false
     func applicationDidFinishLaunching(_ notification: Notification) {
         createStatusBarItem()
         
         func startScreenshot() {
+            guard !isScreenshotInProgress else {
+                       return
+                   }
+                   isScreenshotInProgress = true
             if let existingPreview = overlayWindow?.screenshotPreview {
                 existingPreview.removeFromSuperview()
             }
@@ -44,10 +48,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             let screenRect = NSScreen.main?.frame ?? NSRect.zero
             self.overlayWindow = OverlayPanel(contentRect: screenRect)
+            overlayWindow?.makeKeyAndOrderFront(nil)
             overlayWindow?.onComplete = { [self] capturedImageData in
                    self.capturedImages.append(capturedImageData!)
                 let newCapturePreview = ScreenshotPreviewPanel(imageData: capturedImages)
+                NSApp.activate(ignoringOtherApps: true)
                        newCapturePreview.orderFront(nil)
+                newCapturePreview.makeFirstResponder(newCapturePreview)
+                self.currentPreviewPanel = newCapturePreview
+                isScreenshotInProgress = false
                 self.currentPreviewPanel = newCapturePreview
                       }
         }

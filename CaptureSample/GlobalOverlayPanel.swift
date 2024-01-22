@@ -26,6 +26,9 @@ class OverlayPanel: NSPanel {
     override var canBecomeKey: Bool {
         get { return true }
     }
+      override var canBecomeMain: Bool {
+          return true
+      }
     var screenshotPreview: NSImageView?
     var onComplete: ((Data?) -> Void)?
     // Initializer for OverlayPanel
@@ -46,7 +49,8 @@ class OverlayPanel: NSPanel {
         // Track the mouse
         self.acceptsMouseMovedEvents = true
         self.ignoresMouseEvents = false
-        self.backgroundColor = .blue.withAlphaComponent(0.2)
+      //  self.backgroundColor = NSColor.blue.withAlphaComponent(0.2)
+        self.backgroundColor = .clear
         
         let nsHostingContentView = NSHostingView(rootView: CaptureOverlayView(
             initialMousePosition: convertToSwiftUICoordinates(NSEvent.mouseLocation, in: self),

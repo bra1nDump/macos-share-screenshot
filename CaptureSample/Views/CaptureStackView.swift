@@ -13,18 +13,13 @@ struct CaptureStackView: View {
    @State var capturedImages: [ImageData]
     var body: some View {
         VStack {
-            if capturedImages.isEmpty {
-                Text("No Captured Images")
-                    .foregroundColor(.gray)
-                    .padding()
-                    .onAppear{
-                        print("zero")
-                    }
-            } else {
+            if !capturedImages.isEmpty {
                 ScrollView(showsIndicators: false) {
-                    ForEach(capturedImages.reversed(), id: \.self) { image in
-                        ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage)
+                    VStack(spacing: 20){
+                        ForEach(capturedImages.reversed(), id: \.self) { image in
+                            ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage)
                         }
+                    }
                 }
                 .rotationEffect(.degrees(180))
             }
@@ -37,6 +32,7 @@ struct CaptureStackView: View {
             let pasteboard = NSPasteboard.general
             pasteboard.clearContents()
             pasteboard.writeObjects([nsImage])
+            deleteImage(image)
         }
     }
     private func saveImage(_ image: ImageData) {
@@ -53,6 +49,7 @@ struct CaptureStackView: View {
                 }
                 do {
                     try imageData.write(to: url)
+                    deleteImage(image)
                     print("Image saved to Desktop")
                 } catch {
                     print("Error saving image: \(error)")
@@ -63,8 +60,10 @@ struct CaptureStackView: View {
     private func deleteImage(_ image: ImageData) {
                MyApplication.appDelegate?.deleteImage(image)
         if let index = capturedImages.firstIndex(of: image) {
-                      capturedImages.remove(at: index)
-                   }
+            withAnimation{
+                capturedImages.remove(at: index)
+            }
+        }
        }
 }
 
