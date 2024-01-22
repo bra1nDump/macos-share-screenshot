@@ -53,7 +53,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                    self.capturedImages.append(capturedImageData!)
                 let newCapturePreview = ScreenshotPreviewPanel(imageData: capturedImages)
                 NSApp.activate(ignoringOtherApps: true)
-                newCapturePreview.level = .floating
                        newCapturePreview.orderFront(nil)
                 newCapturePreview.makeFirstResponder(newCapturePreview)
                 self.currentPreviewPanel = newCapturePreview

@@ -10,9 +10,6 @@ import SwiftUI
 import Cocoa
 
 class ScreenshotPreviewPanel: NSPanel {
-    override var canBecomeKey: Bool {
-            return true
-        }
     init(imageData: [ImageData]) {
         let previewRect = NSRect(x: -20, y: 0, width: 300, height: 950)
         super.init(contentRect: previewRect, styleMask: .borderless, backing: .buffered, defer: false)
@@ -20,27 +17,13 @@ class ScreenshotPreviewPanel: NSPanel {
         self.isFloatingPanel = true
         self.worksWhenModal = true
         self.isOpaque = false
-        self.level = .mainMenu
-        self.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+        self.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .fullScreenAuxiliary]
+        self.hidesOnDeactivate = false
         let hostingView = NSHostingView(rootView: CaptureStackView(capturedImages: imageData))
         hostingView.frame = previewRect
         self.contentView?.addSubview(hostingView)
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-}
-
-class AlwaysOnTopWindowController: NSWindowController {
-    
-    override func windowDidLoad() {
-        super.windowDidLoad()
-        
-        if let window = self.window {
-            window.level = .floating
-            window.isOpaque = false
-            window.backgroundColor = NSColor.clear
-            window.hasShadow = false
-        }
     }
 }

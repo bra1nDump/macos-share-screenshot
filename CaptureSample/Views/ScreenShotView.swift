@@ -128,10 +128,8 @@ struct ScreenShotView: View {
 func openImageInNewWindow(image: NSImage) {
     let imageViewController = NSViewController()
     let imageView = NSImageView(frame: NSRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
-    
     imageView.image = image
     imageViewController.view = imageView
-    
     let imageWindow = NSWindow(contentViewController: imageViewController)
     imageWindow.makeKeyAndOrderFront(nil)
 }
@@ -140,10 +138,8 @@ func editImage(image: NSImage) {
     print("edit image")
     let imageViewController = NSViewController()
     let imageView = NSImageView(frame: NSRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
-    
     imageView.image = image
     imageViewController.view = imageView
-    
     let imageWindow = NSWindow(contentViewController: imageViewController)
     imageWindow.makeKeyAndOrderFront(nil)
 }
@@ -152,12 +148,11 @@ func pinImage(image: NSImage) {
     print("pin image")
     let imageViewController = NSViewController()
     let imageView = NSImageView(frame: NSRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
-    
     imageView.image = image
     imageViewController.view = imageView
-    
     let imageWindow = NSWindow(contentViewController: imageViewController)
     imageWindow.makeKeyAndOrderFront(nil)
+    imageWindow.hidesOnDeactivate = false
 }
 
 func saveToCloudImage(image: NSImage) {

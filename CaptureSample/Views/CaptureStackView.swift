@@ -63,7 +63,7 @@ struct CaptureStackView: View {
             withAnimation{
                 capturedImages.remove(at: index)
             }
-                   }
+        }
        }
 }
 
