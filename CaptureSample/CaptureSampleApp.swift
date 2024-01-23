@@ -71,28 +71,55 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func createStatusBarItem() {
         statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        
+
         if let item = statusBarItem {
-            item.button?.title = "lol" // TODO: replace with image
+            // Set the button's image (placeholder, replace with your own image)
+            if let image = NSImage(systemSymbolName: "camera.on.rectangle", accessibilityDescription: nil) {
+                   item.button?.image = image
+               }
+            
+            // Set the action and target
             item.button?.action = #selector(statusBarItemClicked(_:))
             item.button?.target = self
         }
     }
+
+    @objc func statusBarItemClicked(_ sender: AnyObject?) {
+        print("Status bar item clicked")
+
+        // Create a menu
+        let contextMenu = NSMenu()
+
+        // Add GitHub link
+        let githubMenuItem = NSMenuItem(title: "GitHub", action: #selector(openGitHub), keyEquivalent: "")
+        contextMenu.addItem(githubMenuItem)
+
+        // Add a separator
+        contextMenu.addItem(NSMenuItem.separator())
+
+        // Add Quit item
+        let quitMenuItem = NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: "q")
+        contextMenu.addItem(quitMenuItem)
+
+        // Set the menu to the status bar item
+        statusBarItem?.menu = contextMenu
+    }
+
+    @objc func openGitHub() {
+        // Replace "YOUR_GITHUB_URL" with the actual GitHub link
+        if let url = URL(string: "https://github.com/bra1nDump/macos-share-shot") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+
+    @objc func quitApplication() {
+        NSApplication.shared.terminate(self)
+    }
+
     @objc func deleteImage(_ image: ImageData) {
         if let index = capturedImages.firstIndex(of: image) {
             capturedImages.remove(at: index)
         }
-    }
-    @objc func statusBarItemClicked(_ sender: AnyObject?) {
-        print("Status bar item clicked")
-
-        // Show the menu with a single example item: "Hello World".
-        let menuItem = NSMenuItem(title: "Hello World", action: nil, keyEquivalent: "")
-        contextMenu.addItem(menuItem)
-        statusBarItem?.menu = contextMenu
-        
-
-        // Handle the action when the status bar item is clicked
     }
 
     // Implement any other necessary AppDelegate methods here

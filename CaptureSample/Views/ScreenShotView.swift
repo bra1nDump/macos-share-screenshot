@@ -49,47 +49,13 @@ struct ScreenShotView: View {
                                                     deleteImage(image)
                                                 }
                                             Spacer()
-                                            Circle()
-                                                .frame(width: 25, height: 25)
-                                                .foregroundColor(.white)
-                                                .overlay(
-                                                    Image(systemName: "pin.fill")
-                                                        .foregroundColor(.black)
-                                                        .rotationEffect(.degrees(45))
-                                                )
-                                                .onTapGesture {
-                                                    pinImage(image: NSImage(data: image)!)
-                                                }
                                         }
                                         Spacer()
-                                        HStack{
-                                            Circle()
-                                                .frame(width: 25, height: 25)
-                                                .foregroundColor(.white)
-                                                .overlay(
-                                                    Image(systemName: "pencil")
-                                                        .foregroundColor(.black)
-                                                )
-                                                .onTapGesture {
-                                                    saveToCloudImage(image: NSImage(data: image)!)
-                                                }
-                                            Spacer()
-                                            Circle()
-                                                .frame(width: 25, height: 25)
-                                                .foregroundColor(.white)
-                                                .overlay(
-                                                    Image(systemName: "icloud.and.arrow.up.fill")
-                                                        .foregroundColor(.black)
-                                                )
-                                                .onTapGesture {
-                                                    openImageInNewWindow(image: NSImage(data: image)!)
-                                                }
-                                        }
                                     }
                                     .padding(5)
-                                    VStack{
+                                    VStack(spacing: 15){
                                         RoundedRectangle(cornerRadius: 20)
-                                            .frame(width: 50, height: 25)
+                                            .frame(width: 75, height: 30)
                                             .foregroundColor(.white)
                                             .overlay(
                                                 Text("Copy")
@@ -99,7 +65,7 @@ struct ScreenShotView: View {
                                                 copyImage(image)
                                             }
                                         RoundedRectangle(cornerRadius: 20)
-                                            .frame(width: 50, height: 25)
+                                            .frame(width: 75, height: 30)
                                             .foregroundColor(.white)
                                             .overlay(
                                                 Text("Save")
@@ -132,27 +98,6 @@ func openImageInNewWindow(image: NSImage) {
     imageViewController.view = imageView
     let imageWindow = NSWindow(contentViewController: imageViewController)
     imageWindow.makeKeyAndOrderFront(nil)
-}
-
-func editImage(image: NSImage) {
-    print("edit image")
-    let imageViewController = NSViewController()
-    let imageView = NSImageView(frame: NSRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
-    imageView.image = image
-    imageViewController.view = imageView
-    let imageWindow = NSWindow(contentViewController: imageViewController)
-    imageWindow.makeKeyAndOrderFront(nil)
-}
-
-func pinImage(image: NSImage) {
-    print("pin image")
-    let imageViewController = NSViewController()
-    let imageView = NSImageView(frame: NSRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
-    imageView.image = image
-    imageViewController.view = imageView
-    let imageWindow = NSWindow(contentViewController: imageViewController)
-    imageWindow.makeKeyAndOrderFront(nil)
-    imageWindow.hidesOnDeactivate = false
 }
 
 func saveToCloudImage(image: NSImage) {

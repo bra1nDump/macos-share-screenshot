@@ -8,6 +8,8 @@
 
 import SwiftUI
 import AppKit
+import Cocoa
+
 
 struct CaptureStackView: View {
    @State var capturedImages: [ImageData]
@@ -18,6 +20,19 @@ struct CaptureStackView: View {
                     VStack(spacing: 20){
                         ForEach(capturedImages.reversed(), id: \.self) { image in
                             ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage)
+                                .contextMenu {
+                                      Button {
+                                          print("Share")
+                                      } label: {
+                                          Label("Share", systemImage: "globe")
+                                      }
+
+                                      Button {
+                                        deleteImage(image)
+                                      } label: {
+                                          Label("Delete", systemImage: "location.circle")
+                                      }
+                                  }
                         }
                     }
                 }
@@ -65,5 +80,6 @@ struct CaptureStackView: View {
             }
         }
        }
+    
 }
 
