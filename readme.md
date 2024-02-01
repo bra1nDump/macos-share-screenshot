@@ -11,12 +11,6 @@ Most tasks in the project will be:
 - Some macOS window magic (which I think I have figured out already, so you don't have to figure it out, just use the existing approach)
 
 # TODO
-- Cleanup example code from the original capture project by apple
-- Clean unused actions
-- Menu bar with ...
-  - Icon - use a placeholder, [kirill] create a logo
-  - GitHub link
-  - Quit
 - Open source
 - [kirill] Release on the app store
 
@@ -183,3 +177,9 @@ How it looks like: ![Alt text](./assets/cleanshot-screenshot-examples.png)
   - When running xcode in full screen mode
     - [With an additional monitor] The screenshot area (blue) appears on a different screen that Xcode is running on
     - [With a single screen] The fullscreen space gets switched from to a desktop space, and only then the blue area appears
+- Cleanup example code from the original capture project by apple
+- Menu bar with ...
+  - Icon - use a placeholder, [kirill] create a logo
+  - GitHub link
+  - Quit
+- Clean unused actions

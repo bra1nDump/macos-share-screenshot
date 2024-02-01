@@ -11,11 +11,17 @@ import AppKit
 
 struct ScreenShotView: View {
     var image: ImageData
+    @State private var fileURL: URL?
     @State private var isHovered = false
     var saveImage: ((ImageData) -> Void)
     var copyImage: ((ImageData) -> Void)
     var deleteImage: ((ImageData) -> Void)
+    var saveImageDesktop: ((ImageData) -> Void)
     var body: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .frame(width: 201, height: 152)
+            .foregroundColor(.clear)
+            .overlay(
             Image(nsImage: NSImage(data: image)!)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
@@ -25,8 +31,14 @@ struct ScreenShotView: View {
                 .draggable(Image(nsImage: NSImage(data: image)!))
                 .rotationEffect(.degrees(180))
                 .blur(radius: isHovered ? 5.0 : 0)
+                .cornerRadius(20)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 10)
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.gray, lineWidth: 1)
+                        .opacity(!isHovered ? 1.0 : 0.0)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
                         .stroke(Color.white, lineWidth: 1)
                         .rotationEffect(.degrees(180))
                         .opacity(isHovered ? 1.0 : 0.0)
@@ -74,6 +86,16 @@ struct ScreenShotView: View {
                                             .onTapGesture {
                                                 saveImage(image)
                                             }
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .frame(width: 75, height: 30)
+                                            .foregroundColor(.white)
+                                            .overlay(
+                                                Text("Save to Desk")
+                                                    .foregroundColor(.black)
+                                            )
+                                            .onTapGesture {
+                                                saveImageDesktop(image)
+                                            }
                                     }
                                 }
                                     .rotationEffect(.degrees(180))
@@ -88,7 +110,14 @@ struct ScreenShotView: View {
                 .onHover { hovering in
                         isHovered = hovering
                 }
+           )
         }
+
+       func copyURLToClipboard(url: URL) {
+           let pasteboard = NSPasteboard.general
+           pasteboard.clearContents()
+           pasteboard.setString(url.absoluteString, forType: .string)
+       }
 }
 
 func openImageInNewWindow(image: NSImage) {
