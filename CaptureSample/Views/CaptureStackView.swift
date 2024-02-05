@@ -10,6 +10,7 @@ import SwiftUI
 import AppKit
 import Cocoa
 import Foundation
+import SwiftUiSharing
 
 
 struct CaptureStackView: View {
@@ -23,7 +24,12 @@ struct CaptureStackView: View {
                             ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveImageDesktop: saveImageToDesktop)
                                 .contextMenu {
                                       Button {
-                                          print("Share")
+                                          //shareButtonClicked(image)
+                                          CommandGroup(replacing: .newItem){
+                                              NSSharingService.sharingMenu(title: "Share") {
+                                                  return capturedImages.description
+                                              }
+                                          }
                                       } label: {
                                           Label("Share", systemImage: "globe")
                                       }
@@ -43,6 +49,18 @@ struct CaptureStackView: View {
         .padding(.bottom, 60)
         .padding(20)
     }
+    private func shareButtonClicked(_ image: ImageData) {
+        let textToShare = ""
+        let sharingPicker = NSSharingServicePicker(items: [textToShare, NSImage(data: image) as Any])
+        sharingPicker.delegate = NSSharingDelegate()
+
+        if let keyWindow = NSApp.keyWindow, let contentView = keyWindow.contentView {
+            sharingPicker.show(relativeTo: .zero, of: contentView, preferredEdge: .minY)
+        } else {
+            print("Unable to show NSSharingServicePicker: keyWindow or contentView is nil.")
+        }
+    }
+
     private func copyToClipboard(_ image: ImageData) {
         if let nsImage = NSImage(data: image) {
             let pasteboard = NSPasteboard.general
@@ -172,5 +190,60 @@ struct UserSettings {
         set {
             UserDefaults.standard.set(newValue, forKey: "securityScopedURL")
         }
+    }
+}
+
+class ViewController: NSViewController {
+
+    @IBAction func shareButtonClicked(_ sender: NSButton) {
+        let textToShare = "Текст для обмена"
+        let imageToShare = NSImage(named: "yourImage")!
+
+        let sharingPicker = NSSharingServicePicker(items: [textToShare, imageToShare])
+        sharingPicker.delegate = self
+
+        // Отображаем NSSharingServicePicker
+        sharingPicker.show(relativeTo: sender.bounds, of: sender, preferredEdge: .minY)
+    }
+
+    func setClipboard(text: String) {
+        // Реализуйте свою логику установки текста в буфер обмена здесь
+    }
+}
+
+extension ViewController: NSSharingServicePickerDelegate {
+    func sharingServicePicker(_ sharingServicePicker: NSSharingServicePicker, sharingServicesForItems items: [Any], proposedSharingServices proposedServices: [NSSharingService]) -> [NSSharingService] {
+        guard let image = NSImage(named: NSImage.Name("copy")) else {
+            return proposedServices
+        }
+        
+        var share = proposedServices
+        let customService = NSSharingService(title: "Copy Text", image: image, alternateImage: image, handler: {
+            if let text = items.first as? String {
+                self.setClipboard(text: text)
+            }
+        })
+        share.insert(customService, at: 0)
+        
+        return share
+    }
+}
+
+class NSSharingDelegate: NSObject, NSSharingServicePickerDelegate {
+    func sharingServicePicker(_ sharingServicePicker: NSSharingServicePicker, sharingServicesForItems items: [Any], proposedSharingServices proposedServices: [NSSharingService]) -> [NSSharingService] {
+        guard let image = NSImage(named: "copy") else {
+            return proposedServices
+        }
+
+        var share = proposedServices
+        let customService = NSSharingService(title: "Copy Text", image: image, alternateImage: image, handler: {
+            if let text = items.first as? String {
+                // Реализуйте свою логику установки текста в буфер обмена здесь
+                print("Sharing text:", text)
+            }
+        })
+        share.insert(customService, at: 0)
+
+        return share
     }
 }

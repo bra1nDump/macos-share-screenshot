@@ -49,7 +49,6 @@ class OverlayPanel: NSPanel {
         // Track the mouse
         self.acceptsMouseMovedEvents = true
         self.ignoresMouseEvents = false
-      //  self.backgroundColor = NSColor.blue.withAlphaComponent(0.2)
         self.backgroundColor = .clear
         
         let nsHostingContentView = NSHostingView(rootView: CaptureOverlayView(

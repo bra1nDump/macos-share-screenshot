@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B45A9812B718309002DB208 /* SwiftUiSharing in Frameworks */ = {isa = PBXBuildFile; productRef = 8B45A9802B718309002DB208 /* SwiftUiSharing */; };
 		8B579DAF2B5C881700620804 /* PinScreenShotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B579DAE2B5C881700620804 /* PinScreenShotView.swift */; };
 		8B6934E32B495D29003BFDDF /* ScreenshotPreviewPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6934E22B495D29003BFDDF /* ScreenshotPreviewPanel.swift */; };
 		8B6E04CD2B4F4CB600DD5CDB /* ScreenShotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */; };
@@ -67,6 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B45A9812B718309002DB208 /* SwiftUiSharing in Frameworks */,
 				D269967A2B2EAB0600CADFDC /* HotKey in Frameworks */,
 				D26996772B2EAA7100CADFDC /* LaunchAtLogin in Frameworks */,
 			);
@@ -192,6 +194,7 @@
 			packageProductDependencies = (
 				D26996762B2EAA7100CADFDC /* LaunchAtLogin */,
 				D26996792B2EAB0600CADFDC /* HotKey */,
+				8B45A9802B718309002DB208 /* SwiftUiSharing */,
 			);
 			productName = CaptureIt;
 			productReference = C4B0DAA7276BA4460015082A /* CaptureSample.app */;
@@ -226,6 +229,7 @@
 			packageReferences = (
 				D26996752B2EAA7100CADFDC /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */,
 				D26996782B2EAB0600CADFDC /* XCRemoteSwiftPackageReference "HotKey" */,
+				8B45A97F2B718309002DB208 /* XCRemoteSwiftPackageReference "SwiftUiSharing" */,
 			);
 			productRefGroup = C4B0DAA8276BA4460015082A /* Products */;
 			projectDirPath = "";
@@ -498,6 +502,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		8B45A97F2B718309002DB208 /* XCRemoteSwiftPackageReference "SwiftUiSharing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Appracatappra/SwiftUiSharing.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.7;
+			};
+		};
 		D26996752B2EAA7100CADFDC /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin-Modern";
