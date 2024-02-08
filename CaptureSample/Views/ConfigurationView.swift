@@ -50,7 +50,7 @@ struct ConfigurationView: View {
                                         .tag(SCDisplay?.some(display))
                                 }
                             }
-                            
+                    
                         case .window:
                             Picker("Window", selection: $screenRecorder.selectedWindow) {
                                 ForEach(screenRecorder.availableWindows, id: \.self) { window in

@@ -529,6 +529,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8B45A9802B718309002DB208 /* SwiftUiSharing */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B45A97F2B718309002DB208 /* XCRemoteSwiftPackageReference "SwiftUiSharing" */;
+			productName = SwiftUiSharing;
+		};
 		D26996762B2EAA7100CADFDC /* LaunchAtLogin */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D26996752B2EAA7100CADFDC /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */;

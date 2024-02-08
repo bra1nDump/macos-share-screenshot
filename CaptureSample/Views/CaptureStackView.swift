@@ -14,6 +14,7 @@ import SwiftUiSharing
 
 
 struct CaptureStackView: View {
+    
    @State var capturedImages: [ImageData]
     var body: some View {
         VStack {
@@ -21,19 +22,18 @@ struct CaptureStackView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20){
                         ForEach(capturedImages.reversed(), id: \.self) { image in
-                            ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveImageDesktop: saveImageToDesktop)
+                            ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage)
                                 .contextMenu {
                                       Button {
-                                          //shareButtonClicked(image)
-                                          CommandGroup(replacing: .newItem){
-                                              NSSharingService.sharingMenu(title: "Share") {
-                                                  return capturedImages.description
-                                              }
-                                          }
+                                          shareImage(image)
                                       } label: {
                                           Label("Share", systemImage: "globe")
                                       }
-
+                                    Button {
+                                        shareImageInTelegram(image)
+                                    } label: {
+                                        Label("Share in Telegram", systemImage: "globe")
+                                    }
                                       Button {
                                         deleteImage(image)
                                       } label: {
@@ -49,6 +49,12 @@ struct CaptureStackView: View {
         .padding(.bottom, 60)
         .padding(20)
     }
+    func shareImage(_ image: ImageData) {
+        if let nsImage = NSImage(data: image) {
+            let sharingService = NSSharingService(named: .composeMessage)
+             sharingService?.perform(withItems: [nsImage])
+         }
+     }
     private func shareButtonClicked(_ image: ImageData) {
         let textToShare = ""
         let sharingPicker = NSSharingServicePicker(items: [textToShare, NSImage(data: image) as Any])
@@ -88,63 +94,13 @@ struct CaptureStackView: View {
                 do {
                     try imageData.write(to: url)
                     deleteImage(image)
-                    print("Image saved to Desktop")
+                    print("Image saved")
                 } catch {
                     print("Error saving image: \(error)")
                 }
             }
         }
     }
-    private func saveImageToDesktop(_ image: ImageData) {
-        if let savedURL = UserSettings.securityScopedURL {
-            DispatchQueue.global(qos: .background).async {
-                let saveURL = savedURL.appendingPathComponent("image.png")
-                guard let nsImage = NSImage(data: image),
-                      let tiffData = nsImage.tiffRepresentation,
-                      let bitmapImageRep = NSBitmapImageRep(data: tiffData),
-                      let imageData = bitmapImageRep.representation(using: .png, properties: [:]) else {
-                    return
-                }
-
-                do {
-                    try imageData.write(to: saveURL)
-                    deleteImage(image)
-                    print("Image saved to selected directory")
-                } catch {
-                    print("Error saving image: \(error)")
-                }
-
-                savedURL.stopAccessingSecurityScopedResource()
-            }
-        } else {
-            // Если сохраненного пути нет, запросить разрешение у пользователя
-            requestUserPermission { securityScopedURL in
-                guard let securityScopedURL = securityScopedURL else {
-                    print("Security scoped URL not available.")
-                    return
-                }
-
-                let saveURL = securityScopedURL.appendingPathComponent("image.png")
-
-                guard let nsImage = NSImage(data: image),
-                      let tiffData = nsImage.tiffRepresentation,
-                      let bitmapImageRep = NSBitmapImageRep(data: tiffData),
-                      let imageData = bitmapImageRep.representation(using: .png, properties: [:]) else {
-                    return
-                }
-                do {
-                    try imageData.write(to: saveURL)
-                    deleteImage(image)
-                    print("Image saved to selected directory")
-                } catch {
-                    print("Error saving image: \(error)")
-                }
-
-                securityScopedURL.stopAccessingSecurityScopedResource()
-            }
-        }
-    }
-
     private func requestUserPermission(completion: @escaping (URL?) -> Void) {
             if let savedURL = UserSettings.securityScopedURL {
                 completion(savedURL)
@@ -179,6 +135,39 @@ struct CaptureStackView: View {
             }
         }
        }
+    func saveImageToFile(_ image: NSImage) -> URL? {
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return nil
+        }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd_HHmmss"
+        let dateString = formatter.string(from: Date())
+        let fileName = "image_\(dateString).png"
+        let fileURL = documentsDirectory.appendingPathComponent(fileName)
+        guard let imageData = image.tiffRepresentation,
+              let imageRep = NSBitmapImageRep(data: imageData),
+              let pngData = imageRep.representation(using: .png, properties: [:]) else {
+            return nil
+        }
+
+        do {
+            try pngData.write(to: fileURL)
+            return fileURL
+        } catch {
+            print("Error: \(error.localizedDescription)")
+            return nil
+        }
+    }
+    func shareImageInTelegram(_ image: ImageData) {
+        guard let nsImage = NSImage(data: image) else {
+            return
+        }
+
+        let imageURL = saveImageToFile(nsImage)
+
+        let telegramURL = URL(string: "tg://send?photo=\(imageURL)")!
+        NSWorkspace.shared.open(telegramURL)
+    }
     
 }
 
@@ -238,7 +227,6 @@ class NSSharingDelegate: NSObject, NSSharingServicePickerDelegate {
         var share = proposedServices
         let customService = NSSharingService(title: "Copy Text", image: image, alternateImage: image, handler: {
             if let text = items.first as? String {
-                // Реализуйте свою логику установки текста в буфер обмена здесь
                 print("Sharing text:", text)
             }
         })

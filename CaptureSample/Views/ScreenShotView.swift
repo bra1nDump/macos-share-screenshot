@@ -16,7 +16,6 @@ struct ScreenShotView: View {
     var saveImage: ((ImageData) -> Void)
     var copyImage: ((ImageData) -> Void)
     var deleteImage: ((ImageData) -> Void)
-    var saveImageDesktop: ((ImageData) -> Void)
     var body: some View {
         RoundedRectangle(cornerRadius: 20)
             .frame(width: 201, height: 152)
@@ -64,7 +63,7 @@ struct ScreenShotView: View {
                                         }
                                         Spacer()
                                     }
-                                    .padding(5)
+                                    .padding(7)
                                     VStack(spacing: 15){
                                         RoundedRectangle(cornerRadius: 20)
                                             .frame(width: 75, height: 30)
@@ -86,17 +85,7 @@ struct ScreenShotView: View {
                                             .onTapGesture {
                                                 saveImage(image)
                                             }
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .frame(width: 75, height: 30)
-                                            .foregroundColor(.white)
-                                            .overlay(
-                                                Text("Save to Desk")
-                                                    .foregroundColor(.black)
-                                            )
-                                            .onTapGesture {
-                                                saveImageDesktop(image)
-                                            }
-                                    }
+                                 }
                                 }
                                     .rotationEffect(.degrees(180))
                                     .opacity(isHovered ? 1.0 : 0.0)

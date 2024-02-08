@@ -228,7 +228,6 @@ struct CaptureOverlayView: View {
     }
 
     private func createCaptureView(frame: CGRect) -> some View {
-        // Add saving the screenshot and displaying the preview
         DispatchQueue.main.async {
             if let screenshot = captureScreenshot(rect: frame),
                let imageData = screenshot.tiffRepresentation,
