@@ -25,15 +25,11 @@ struct CaptureStackView: View {
                             ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage)
                                 .contextMenu {
                                       Button {
-                                          shareImage(image)
+                                        //  shareImage(image)
+                                          shareAction(image)
                                       } label: {
                                           Label("Share", systemImage: "globe")
                                       }
-                                    Button {
-                                        shareImageInTelegram(image)
-                                    } label: {
-                                        Label("Share in Telegram", systemImage: "globe")
-                                    }
                                       Button {
                                         deleteImage(image)
                                       } label: {
@@ -55,6 +51,15 @@ struct CaptureStackView: View {
              sharingService?.perform(withItems: [nsImage])
          }
      }
+    func shareAction(_ image: ImageData) {
+        if let nsImage = NSImage(data: image) {
+            let sharingServicePicker = NSSharingServicePicker(items: [nsImage])
+            
+            if let contentView = NSApp.mainWindow?.contentView {
+                sharingServicePicker.show(relativeTo: .zero, of: contentView.superview!, preferredEdge: .minY)
+            }
+        }
+    }
     private func shareButtonClicked(_ image: ImageData) {
         let textToShare = ""
         let sharingPicker = NSSharingServicePicker(items: [textToShare, NSImage(data: image) as Any])
@@ -158,17 +163,6 @@ struct CaptureStackView: View {
             return nil
         }
     }
-    func shareImageInTelegram(_ image: ImageData) {
-        guard let nsImage = NSImage(data: image) else {
-            return
-        }
-
-        let imageURL = saveImageToFile(nsImage)
-
-        let telegramURL = URL(string: "tg://send?photo=\(imageURL)")!
-        NSWorkspace.shared.open(telegramURL)
-    }
-    
 }
 
 struct UserSettings {
@@ -191,12 +185,10 @@ class ViewController: NSViewController {
         let sharingPicker = NSSharingServicePicker(items: [textToShare, imageToShare])
         sharingPicker.delegate = self
 
-        // Отображаем NSSharingServicePicker
         sharingPicker.show(relativeTo: sender.bounds, of: sender, preferredEdge: .minY)
     }
 
     func setClipboard(text: String) {
-        // Реализуйте свою логику установки текста в буфер обмена здесь
     }
 }
 

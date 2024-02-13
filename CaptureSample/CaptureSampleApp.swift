@@ -77,7 +77,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if let image = NSImage(systemSymbolName: "camera.on.rectangle", accessibilityDescription: nil) {
                    item.button?.image = image
                }
-            
             // Set the action and target
             item.button?.action = #selector(statusBarItemClicked(_:))
             item.button?.target = self
@@ -106,7 +105,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func openGitHub() {
-        // Replace "YOUR_GITHUB_URL" with the actual GitHub link
         if let url = URL(string: "https://github.com/bra1nDump/macos-share-shot") {
             NSWorkspace.shared.open(url)
         }

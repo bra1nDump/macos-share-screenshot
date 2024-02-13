@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		8B45A9812B718309002DB208 /* SwiftUiSharing in Frameworks */ = {isa = PBXBuildFile; productRef = 8B45A9802B718309002DB208 /* SwiftUiSharing */; };
-		8B579DAF2B5C881700620804 /* PinScreenShotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B579DAE2B5C881700620804 /* PinScreenShotView.swift */; };
 		8B6934E32B495D29003BFDDF /* ScreenshotPreviewPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6934E22B495D29003BFDDF /* ScreenshotPreviewPanel.swift */; };
 		8B6E04CD2B4F4CB600DD5CDB /* ScreenShotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */; };
 		8BBAE2842B4689260079CCD4 /* CaptureStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */; };
@@ -34,7 +33,6 @@
 
 /* Begin PBXFileReference section */
 		7C6C99F1D4B6E3EBA3A7B7DF /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		8B579DAE2B5C881700620804 /* PinScreenShotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinScreenShotView.swift; sourceTree = "<group>"; };
 		8B6934E22B495D29003BFDDF /* ScreenshotPreviewPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotPreviewPanel.swift; sourceTree = "<group>"; };
 		8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenShotView.swift; sourceTree = "<group>"; };
 		8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureStackView.swift; sourceTree = "<group>"; };
@@ -90,7 +88,6 @@
 			children = (
 				8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */,
 				8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */,
-				8B579DAE2B5C881700620804 /* PinScreenShotView.swift */,
 				C4B0DABC276BA4B50015082A /* CapturePreview.swift */,
 				C4EB90D328108656006A595C /* ConfigurationView.swift */,
 				C471DFFD280A0968001D24C9 /* AudioLevelsView.swift */,
@@ -264,7 +261,6 @@
 				C44093752816EC9C00FB8386 /* AudioPlayer.swift in Sources */,
 				C470F0812811C5CB00D29309 /* ScreenRecorder.swift in Sources */,
 				C4B0DABA276BA49F0015082A /* CaptureSampleApp.swift in Sources */,
-				8B579DAF2B5C881700620804 /* PinScreenShotView.swift in Sources */,
 				8BBAE2842B4689260079CCD4 /* CaptureStackView.swift in Sources */,
 				C471DFFE280A0968001D24C9 /* AudioLevelsView.swift in Sources */,
 				8B6E04CD2B4F4CB600DD5CDB /* ScreenShotView.swift in Sources */,

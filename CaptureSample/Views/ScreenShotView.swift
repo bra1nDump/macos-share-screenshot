@@ -95,6 +95,7 @@ struct ScreenShotView: View {
                 .focusable(false)
                 .onTapGesture {
                     openImageInNewWindow(image: NSImage(data: image)!)
+                        
                 }
                 .onHover { hovering in
                         isHovered = hovering
