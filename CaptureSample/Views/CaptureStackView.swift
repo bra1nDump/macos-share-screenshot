@@ -12,6 +12,8 @@ import Cocoa
 import Foundation
 import SwiftUiSharing
 
+//import EasySwiftUI
+
 
 struct CaptureStackView: View {
     
@@ -28,12 +30,16 @@ struct CaptureStackView: View {
                                         //  shareImage(image)
                                           shareAction(image)
                                       } label: {
-                                          Label("Share", systemImage: "globe")
+                                          HStack{
+                                              Image(systemName: "square.and.arrow.up")
+                                              Text("Share")
+                                          }
                                       }
                                       Button {
                                         deleteImage(image)
                                       } label: {
-                                          Label("Delete", systemImage: "location.circle")
+                                          Image(systemName: "location.circle")
+                                                      Text("Delete")
                                       }
                                   }
                         }
@@ -225,5 +231,24 @@ class NSSharingDelegate: NSObject, NSSharingServicePickerDelegate {
         share.insert(customService, at: 0)
 
         return share
+    }
+}
+extension NSSharingService {
+    private static let items = NSSharingService.sharingServices(forItems: [""])
+    static func submenu(text: String) -> some View {
+        return Menu(
+            content: {
+                ForEach(items, id: \.title) { item in
+                    Button(action: { item.perform(withItems: []) }) {
+                        Image(nsImage: item.image)
+                        Text(item.title)
+                    }
+                }
+            },
+            label: {
+                Text("Share")
+                Image(systemName: "chevron.right")
+            }
+        )
     }
 }

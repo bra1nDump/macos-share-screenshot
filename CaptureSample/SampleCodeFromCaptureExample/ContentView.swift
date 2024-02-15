@@ -22,10 +22,7 @@ struct ContentView: View {
     
     var body: some View {
         HSplitView {
-            ConfigurationView(screenRecorder: screenRecorder, userStopped: $userStopped)
-                .frame(minWidth: 280, maxWidth: 280)
-                .disabled(disableInput)
-            
+          
             // TODO: Put the screenshot here for debugging? I mean why not just place it in the bottom left?
             screenRecorder.capturePreview
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
