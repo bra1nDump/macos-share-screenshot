@@ -93,10 +93,6 @@ struct ScreenShotView: View {
                         )
                 )
                 .focusable(false)
-                .onTapGesture {
-                    openImageInNewWindow(image: NSImage(data: image)!)
-                        
-                }
                 .onHover { hovering in
                         isHovered = hovering
                 }
@@ -108,17 +104,4 @@ struct ScreenShotView: View {
            pasteboard.clearContents()
            pasteboard.setString(url.absoluteString, forType: .string)
        }
-}
-
-func openImageInNewWindow(image: NSImage) {
-    let imageViewController = NSViewController()
-    let imageView = NSImageView(frame: NSRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
-    imageView.image = image
-    imageViewController.view = imageView
-    let imageWindow = NSWindow(contentViewController: imageViewController)
-    imageWindow.makeKeyAndOrderFront(nil)
-}
-
-func saveToCloudImage(image: NSImage) {
-    print("save to cloud image")
 }
