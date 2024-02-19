@@ -16,6 +16,7 @@ struct ScreenShotView: View {
     var saveImage: ((ImageData) -> Void)
     var copyImage: ((ImageData) -> Void)
     var deleteImage: ((ImageData) -> Void)
+    var shareImage: ((ImageData) -> Void)
     var body: some View {
         RoundedRectangle(cornerRadius: 20)
             .frame(width: 201, height: 152)
@@ -60,6 +61,20 @@ struct ScreenShotView: View {
                                                     deleteImage(image)
                                                 }
                                             Spacer()
+                                            HStack{
+                                                Circle()
+                                                    .frame(width: 25, height: 25)
+                                                    .foregroundColor(.white)
+                                                    .overlay(
+                                                        Image(systemName: "square.and.arrow.up")
+                                                            .foregroundColor(.black)
+                                                            .offset(y:-2)
+                                                    )
+                                                    .onTapGesture {
+                                                        shareImage(image)
+                                                    }
+                                            }
+
                                         }
                                         Spacer()
                                     }
