@@ -27,18 +27,15 @@ struct CaptureStackView: View {
                             ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage)
                                 .contextMenu {
                                       Button {
-                                        //  shareImage(image)
-                                          shareAction(image)
+                                          saveImageToDesktop(image)
                                       } label: {
                                           HStack{
-                                              Image(systemName: "square.and.arrow.up")
-                                              Text("Share")
+                                              Text("Save to Desktop")
                                           }
                                       }
                                       Button {
                                         deleteImage(image)
                                       } label: {
-                                          Image(systemName: "location.circle")
                                                       Text("Delete")
                                       }
                                   }
@@ -86,6 +83,45 @@ struct CaptureStackView: View {
             deleteImage(image)
         }
     }
+    private func saveImageToDesktop(_ image: ImageData) {
+        guard let nsImage = NSImage(data: image) else {
+            print("Unable to convert ImageData to NSImage.")
+            return
+        }
+
+        let desktopURL = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first
+
+        guard let desktop = desktopURL else {
+            print("Unable to access desktop directory.")
+            return
+        }
+
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
+        let formattedDate = dateFormatter.string(from: currentDate)
+        let fileName = "CapturedImage_\(formattedDate).png"
+
+        let filePath = desktop.appendingPathComponent(fileName)
+
+        do {
+            guard let tiffData = nsImage.tiffRepresentation,
+                  let bitmapImageRep = NSBitmapImageRep(data: tiffData),
+                  let pngData = bitmapImageRep.representation(using: .png, properties: [:]) else {
+                print("Error converting image to PNG format.")
+                return
+            }
+
+            try pngData.write(to: filePath)
+            deleteImage(image)
+            print("Image saved to desktop.")
+        } catch {
+            print("Error saving image: \(error)")
+        }
+    }
+
+
+
     private func saveImage(_ image: ImageData) {
         guard let nsImage = NSImage(data: image) else { return }
         let savePanel = NSSavePanel()

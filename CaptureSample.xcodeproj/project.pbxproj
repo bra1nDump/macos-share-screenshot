@@ -12,15 +12,10 @@
 		8B6E04CD2B4F4CB600DD5CDB /* ScreenShotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */; };
 		8BBAE2842B4689260079CCD4 /* CaptureStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */; };
 		C44093732816EC8800FB8386 /* Synth.aif in Resources */ = {isa = PBXBuildFile; fileRef = C44093722816EC8800FB8386 /* Synth.aif */; };
-		C44093752816EC9C00FB8386 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44093742816EC9C00FB8386 /* AudioPlayer.swift */; };
-		C470F0812811C5CB00D29309 /* ScreenRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C470F0802811C5CB00D29309 /* ScreenRecorder.swift */; };
-		C471DFFB2809F440001D24C9 /* PowerMeter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C471DFF92809F440001D24C9 /* PowerMeter.swift */; };
 		C4B0DAAF276BA4480015082A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C4B0DAAE276BA4480015082A /* Assets.xcassets */; };
 		C4B0DAB2276BA4480015082A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C4B0DAB1276BA4480015082A /* Preview Assets.xcassets */; };
 		C4B0DABA276BA49F0015082A /* CaptureSampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B0DAB9276BA49F0015082A /* CaptureSampleApp.swift */; };
-		C4B0DABE276BA4B50015082A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B0DABB276BA4B50015082A /* ContentView.swift */; };
 		C4B0DABF276BA4B50015082A /* CapturePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B0DABC276BA4B50015082A /* CapturePreview.swift */; };
-		C4B0DAC0276BA4B50015082A /* CaptureEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B0DABD276BA4B50015082A /* CaptureEngine.swift */; };
 		D255C43D2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D255C43C2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift */; };
 		D255C43F2B31D1D200A0C7B2 /* OverlayPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D255C43E2B31D1D200A0C7B2 /* OverlayPanelView.swift */; };
 		D26996772B2EAA7100CADFDC /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = D26996762B2EAA7100CADFDC /* LaunchAtLogin */; };
@@ -36,17 +31,12 @@
 		8D89E0E7125AFE6B4E2E6500 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		9AEEB9169F5D7FC75E6B35A2 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 		C44093722816EC8800FB8386 /* Synth.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = Synth.aif; sourceTree = "<group>"; };
-		C44093742816EC9C00FB8386 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
-		C470F0802811C5CB00D29309 /* ScreenRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenRecorder.swift; sourceTree = "<group>"; };
-		C471DFF92809F440001D24C9 /* PowerMeter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerMeter.swift; sourceTree = "<group>"; };
 		C4B0DAA7276BA4460015082A /* CaptureSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CaptureSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4B0DAAE276BA4480015082A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = ../CaptureSample/Assets.xcassets; sourceTree = "<group>"; };
 		C4B0DAB1276BA4480015082A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C4B0DAB3276BA4480015082A /* CaptureSample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = CaptureSample.entitlements; path = ../CaptureSample/CaptureSample.entitlements; sourceTree = "<group>"; };
 		C4B0DAB9276BA49F0015082A /* CaptureSampleApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CaptureSampleApp.swift; path = ../CaptureSample/CaptureSampleApp.swift; sourceTree = "<group>"; };
-		C4B0DABB276BA4B50015082A /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		C4B0DABC276BA4B50015082A /* CapturePreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CapturePreview.swift; sourceTree = "<group>"; };
-		C4B0DABD276BA4B50015082A /* CaptureEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureEngine.swift; sourceTree = "<group>"; };
 		D255C4362B30077000A0C7B2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D255C43C2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = convertToSwiftUICoordinates.swift; sourceTree = "<group>"; };
 		D255C43E2B31D1D200A0C7B2 /* OverlayPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayPanelView.swift; sourceTree = "<group>"; };
@@ -118,7 +108,6 @@
 			isa = PBXGroup;
 			children = (
 				D255C4362B30077000A0C7B2 /* Info.plist */,
-				D255C4402B31D1F900A0C7B2 /* SampleCodeFromCaptureExample */,
 				D255C43E2B31D1D200A0C7B2 /* OverlayPanelView.swift */,
 				D255C43C2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift */,
 				D269967D2B2EB12700CADFDC /* GlobalOverlayPanel.swift */,
@@ -149,18 +138,6 @@
 				9AEEB9169F5D7FC75E6B35A2 /* SampleCode.xcconfig */,
 			);
 			name = Configuration;
-			sourceTree = "<group>";
-		};
-		D255C4402B31D1F900A0C7B2 /* SampleCodeFromCaptureExample */ = {
-			isa = PBXGroup;
-			children = (
-				C470F0802811C5CB00D29309 /* ScreenRecorder.swift */,
-				C4B0DABD276BA4B50015082A /* CaptureEngine.swift */,
-				C471DFF92809F440001D24C9 /* PowerMeter.swift */,
-				C44093742816EC9C00FB8386 /* AudioPlayer.swift */,
-				C4B0DABB276BA4B50015082A /* ContentView.swift */,
-			);
-			path = SampleCodeFromCaptureExample;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -248,17 +225,12 @@
 			files = (
 				D255C43F2B31D1D200A0C7B2 /* OverlayPanelView.swift in Sources */,
 				C4B0DABF276BA4B50015082A /* CapturePreview.swift in Sources */,
-				C4B0DAC0276BA4B50015082A /* CaptureEngine.swift in Sources */,
-				C44093752816EC9C00FB8386 /* AudioPlayer.swift in Sources */,
-				C470F0812811C5CB00D29309 /* ScreenRecorder.swift in Sources */,
 				C4B0DABA276BA49F0015082A /* CaptureSampleApp.swift in Sources */,
 				8BBAE2842B4689260079CCD4 /* CaptureStackView.swift in Sources */,
 				8B6E04CD2B4F4CB600DD5CDB /* ScreenShotView.swift in Sources */,
 				D269967E2B2EB12700CADFDC /* GlobalOverlayPanel.swift in Sources */,
 				8B6934E32B495D29003BFDDF /* ScreenshotPreviewPanel.swift in Sources */,
 				D255C43D2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift in Sources */,
-				C4B0DABE276BA4B50015082A /* ContentView.swift in Sources */,
-				C471DFFB2809F440001D24C9 /* PowerMeter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -304,7 +276,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -368,7 +340,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

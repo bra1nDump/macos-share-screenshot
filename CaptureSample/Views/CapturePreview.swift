@@ -19,12 +19,7 @@ struct CapturePreview: NSViewRepresentable {
     func makeNSView(context: Context) -> CaptureVideoPreview {
         CaptureVideoPreview(layer: contentLayer)
     }
-    
-    // Called by ScreenRecorder as it receives new video frames.
-    func updateFrame(_ frame: CapturedFrame) {
-        contentLayer.contents = frame.surface
-    }
-    
+   
     // The view isn't updatable. Updates to the layer's content are done in outputFrame(frame:).
     func updateNSView(_ nsView: CaptureVideoPreview, context: Context) {}
     
