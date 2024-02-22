@@ -11,7 +11,6 @@
 		8B6934E32B495D29003BFDDF /* ScreenshotPreviewPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6934E22B495D29003BFDDF /* ScreenshotPreviewPanel.swift */; };
 		8B6E04CD2B4F4CB600DD5CDB /* ScreenShotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */; };
 		8BBAE2842B4689260079CCD4 /* CaptureStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */; };
-		C44093732816EC8800FB8386 /* Synth.aif in Resources */ = {isa = PBXBuildFile; fileRef = C44093722816EC8800FB8386 /* Synth.aif */; };
 		C4B0DAAF276BA4480015082A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C4B0DAAE276BA4480015082A /* Assets.xcassets */; };
 		C4B0DAB2276BA4480015082A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C4B0DAB1276BA4480015082A /* Preview Assets.xcassets */; };
 		C4B0DABA276BA49F0015082A /* CaptureSampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B0DAB9276BA49F0015082A /* CaptureSampleApp.swift */; };
@@ -30,7 +29,6 @@
 		8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureStackView.swift; sourceTree = "<group>"; };
 		8D89E0E7125AFE6B4E2E6500 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		9AEEB9169F5D7FC75E6B35A2 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
-		C44093722816EC8800FB8386 /* Synth.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = Synth.aif; sourceTree = "<group>"; };
 		C4B0DAA7276BA4460015082A /* CaptureSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CaptureSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4B0DAAE276BA4480015082A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = ../CaptureSample/Assets.xcassets; sourceTree = "<group>"; };
 		C4B0DAB1276BA4480015082A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -77,14 +75,6 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		C44093712816EC7800FB8386 /* Audio */ = {
-			isa = PBXGroup;
-			children = (
-				C44093722816EC8800FB8386 /* Synth.aif */,
-			);
-			path = Audio;
-			sourceTree = "<group>";
-		};
 		C4B0DA9E276BA4460015082A = {
 			isa = PBXGroup;
 			children = (
@@ -116,7 +106,6 @@
 				D266C9A32B2FB87A001D7B66 /* ShowAndHideCursor.h */,
 				D266C99D2B2FB18B001D7B66 /* ShareShot-Bridging-Header.h */,
 				C41D1B1D2814BD230033613F /* Views */,
-				C44093712816EC7800FB8386 /* Audio */,
 				C4B0DAAE276BA4480015082A /* Assets.xcassets */,
 				C4B0DAB3276BA4480015082A /* CaptureSample.entitlements */,
 				C4B0DAB0276BA4480015082A /* Preview Content */,
@@ -212,7 +201,6 @@
 			files = (
 				C4B0DAB2276BA4480015082A /* Preview Assets.xcassets in Resources */,
 				C4B0DAAF276BA4480015082A /* Assets.xcassets in Resources */,
-				C44093732816EC8800FB8386 /* Synth.aif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

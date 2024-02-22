@@ -10,9 +10,7 @@ import SwiftUI
 import AppKit
 import Cocoa
 import Foundation
-import SwiftUiSharing
-
-//import EasySwiftUI
+import CloudKit
 
 
 struct CaptureStackView: View {
@@ -24,19 +22,33 @@ struct CaptureStackView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20){
                         ForEach(capturedImages.reversed(), id: \.self) { image in
-                            ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage)
+                            ScreenShotView(image: image, saveImage: saveImageToDesktop, copyImage: copyToClipboard, deleteImage: deleteImage)
                                 .contextMenu {
+                                    Button {
+                                      saveImageToICloud(image)
+                                    } label: {
+                                        HStack{
+                                            Text("Save to iCloud")
+                                        }
+                                    }
+                                    Button {
+                                       shareAction(image)
+                                    } label: {
+                                        HStack{
+                                            Text("Share...")
+                                        }
+                                    }
                                       Button {
-                                          saveImageToDesktop(image)
+                                         saveImage(image)
                                       } label: {
                                           HStack{
-                                              Text("Save to Desktop")
+                                              Text("Save as")
                                           }
                                       }
                                       Button {
                                         deleteImage(image)
                                       } label: {
-                                                      Text("Delete")
+                                          Text("Delete")
                                       }
                                   }
                         }
@@ -48,33 +60,15 @@ struct CaptureStackView: View {
         .padding(.bottom, 60)
         .padding(20)
     }
-    func shareImage(_ image: ImageData) {
-        if let nsImage = NSImage(data: image) {
-            let sharingService = NSSharingService(named: .composeMessage)
-             sharingService?.perform(withItems: [nsImage])
-         }
-     }
-    func shareAction(_ image: ImageData) {
-        if let nsImage = NSImage(data: image) {
-            let sharingServicePicker = NSSharingServicePicker(items: [nsImage])
-            
-            if let contentView = NSApp.mainWindow?.contentView {
-                sharingServicePicker.show(relativeTo: .zero, of: contentView.superview!, preferredEdge: .minY)
-            }
-        }
-    }
-    private func shareButtonClicked(_ image: ImageData) {
-        let textToShare = ""
-        let sharingPicker = NSSharingServicePicker(items: [textToShare, NSImage(data: image) as Any])
-        sharingPicker.delegate = NSSharingDelegate()
+    func shareAction(_ imageData: ImageData) {
+           let sharingPicker = NSSharingServicePicker(items: [NSImage(data: imageData) as Any])
+           if let mainWindow = MyApplication.appDelegate?.currentPreviewPanel{
+               sharingPicker.show(relativeTo: mainWindow.contentView!.subviews.first!.bounds, of: mainWindow.contentView!.subviews.first!.subviews.first!, preferredEdge: .maxY)
 
-        if let keyWindow = NSApp.keyWindow, let contentView = keyWindow.contentView {
-            sharingPicker.show(relativeTo: .zero, of: contentView, preferredEdge: .minY)
-        } else {
-            print("Unable to show NSSharingServicePicker: keyWindow or contentView is nil.")
-        }
-    }
-
+           } else {
+               print("No windows available.")
+           }
+       }
     private func copyToClipboard(_ image: ImageData) {
         if let nsImage = NSImage(data: image) {
             let pasteboard = NSPasteboard.general
@@ -119,9 +113,6 @@ struct CaptureStackView: View {
             print("Error saving image: \(error)")
         }
     }
-
-
-
     private func saveImage(_ image: ImageData) {
         guard let nsImage = NSImage(data: image) else { return }
         let savePanel = NSSavePanel()
@@ -173,6 +164,105 @@ struct CaptureStackView: View {
                 }
             }
         }
+  private func saveImageToICloud(_ image: ImageData) {
+        guard let nsImage = NSImage(data: image) else {
+            print("Unable to convert ImageData to NSImage.")
+            return
+        }
+
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            print("Unable to access documents directory.")
+            return
+        }
+
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
+        let formattedDate = dateFormatter.string(from: currentDate)
+        let fileName = "CapturedImage_\(formattedDate).png"
+
+        let fileURL = documentsDirectory.appendingPathComponent(fileName)
+
+        guard let tiffData = nsImage.tiffRepresentation,
+              let bitmapImageRep = NSBitmapImageRep(data: tiffData),
+              let pngData = bitmapImageRep.representation(using: .png, properties: [:]) else {
+            print("Error converting image to PNG format.")
+            return
+        }
+
+        do {
+            try pngData.write(to: fileURL)
+
+            // Save to iCloud
+            saveFileToICloud(fileURL: fileURL) { iCloudURL in
+                // Handle iCloud saving completion (e.g., show a notification)
+                if let iCloudURL = iCloudURL {
+                    print("Image saved to iCloud. URL: \(iCloudURL)")
+                    // Optionally, copy the iCloud URL to the clipboard
+                    let pasteboard = NSPasteboard.general
+                    pasteboard.clearContents()
+                    pasteboard.writeObjects([iCloudURL as NSPasteboardWriting])
+                } else {
+                    print("Error saving image to iCloud.")
+                }
+            }
+
+            deleteImage(image)
+        } catch {
+            print("Error saving image: \(error)")
+        }
+    }
+
+    private func saveFileToICloud(fileURL: URL, completion: @escaping (URL?) -> Void) {
+        let recordID = CKRecord.ID(recordName: "UniqueRecordName")
+        let record = CKRecord(recordType: "YourRecordType", recordID: recordID)
+        
+        let asset = CKAsset(fileURL: fileURL)
+        record["file"] = asset
+        
+        let container = CKContainer.default()
+        let privateDatabase = container.privateCloudDatabase
+        
+        privateDatabase.save(record) { (record, error) in
+            if let error = error {
+                print("Error saving to iCloud: \(error.localizedDescription)")
+                completion(nil)
+            } else {
+                print("File successfully saved to iCloud")
+                
+                // Create a share for the record
+                let share = CKShare(rootRecord: record!)
+                share[CKShare.SystemFieldKey.title] = "Shared Image"
+                
+                // Save the share to iCloud
+                privateDatabase.save(share) { (share, error) in
+                    if let error = error {
+                        print("Error creating share: \(error.localizedDescription)")
+                        completion(nil)
+                    } else {
+                        // Construct the share URL manually
+                        guard let recordName = share?.recordID.recordName else {
+                            print("Error getting record name.")
+                            completion(nil)
+                            return
+                        }
+                        let shareURLString = "https://www.icloud.com/share/#\(recordName)"
+                        if let shareURL = URL(string: shareURLString) {
+                            completion(shareURL)
+                        } else {
+                            print("Error constructing share URL.")
+                            completion(nil)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+
 
     private func deleteImage(_ image: ImageData) {
                MyApplication.appDelegate?.deleteImage(image)
@@ -215,76 +305,5 @@ struct UserSettings {
         set {
             UserDefaults.standard.set(newValue, forKey: "securityScopedURL")
         }
-    }
-}
-
-class ViewController: NSViewController {
-
-    @IBAction func shareButtonClicked(_ sender: NSButton) {
-        let textToShare = "Текст для обмена"
-        let imageToShare = NSImage(named: "yourImage")!
-
-        let sharingPicker = NSSharingServicePicker(items: [textToShare, imageToShare])
-        sharingPicker.delegate = self
-
-        sharingPicker.show(relativeTo: sender.bounds, of: sender, preferredEdge: .minY)
-    }
-
-    func setClipboard(text: String) {
-    }
-}
-
-extension ViewController: NSSharingServicePickerDelegate {
-    func sharingServicePicker(_ sharingServicePicker: NSSharingServicePicker, sharingServicesForItems items: [Any], proposedSharingServices proposedServices: [NSSharingService]) -> [NSSharingService] {
-        guard let image = NSImage(named: NSImage.Name("copy")) else {
-            return proposedServices
-        }
-        
-        var share = proposedServices
-        let customService = NSSharingService(title: "Copy Text", image: image, alternateImage: image, handler: {
-            if let text = items.first as? String {
-                self.setClipboard(text: text)
-            }
-        })
-        share.insert(customService, at: 0)
-        
-        return share
-    }
-}
-
-class NSSharingDelegate: NSObject, NSSharingServicePickerDelegate {
-    func sharingServicePicker(_ sharingServicePicker: NSSharingServicePicker, sharingServicesForItems items: [Any], proposedSharingServices proposedServices: [NSSharingService]) -> [NSSharingService] {
-        guard let image = NSImage(named: "copy") else {
-            return proposedServices
-        }
-
-        var share = proposedServices
-        let customService = NSSharingService(title: "Copy Text", image: image, alternateImage: image, handler: {
-            if let text = items.first as? String {
-                print("Sharing text:", text)
-            }
-        })
-        share.insert(customService, at: 0)
-
-        return share
-    }
-}
-extension NSSharingService {
-    private static let items = NSSharingService.sharingServices(forItems: [""])
-    static func submenu(text: String) -> some View {
-        return Menu(
-            content: {
-                ForEach(items, id: \.title) { item in
-                    Button(action: { item.perform(withItems: []) }) {
-                        Image(nsImage: item.image)
-                        Text(item.title)
-                    }
-                }
-            },
-            label: {
-                Text("Share")
-                Image(systemName: "chevron.right")
-            }
-        )
     }
 }
