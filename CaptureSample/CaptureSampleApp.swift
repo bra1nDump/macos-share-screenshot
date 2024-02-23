@@ -7,6 +7,7 @@ The entry point into this app.
 import Cocoa
 import HotKey
 import SwiftUI
+import ScreenCaptureKit
 
 @main
 struct MyApplication {
@@ -33,6 +34,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let cmdShiftSeven = HotKey(key: .seven, modifiers: [.command, .shift])
     private var isScreenshotInProgress = false
     func applicationDidFinishLaunching(_ notification: Notification) {
+        if hasScreenRecordingPermission() {
+                   print("Screen record permission on")
+               } else {
+                   print("Screen record permission off")
+               }
+
         createStatusBarItem()
         
         func startScreenshot() {
@@ -68,7 +75,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             startScreenshot()
         }
     }
-
+    private func hasScreenRecordingPermission() -> Bool {
+           let access = AXIsProcessTrustedWithOptions(["AXTrustedCheckOptionPrompt": true] as CFDictionary)
+           return access
+       }
     private func createStatusBarItem() {
         statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
@@ -82,7 +92,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             item.button?.target = self
         }
     }
-
     @objc func statusBarItemClicked(_ sender: AnyObject?) {
         print("Status bar item clicked")
 

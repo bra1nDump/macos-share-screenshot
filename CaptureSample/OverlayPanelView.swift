@@ -202,16 +202,27 @@ struct CaptureOverlayView: View {
             .frame(width: frame.width, height: frame.height)
             .position(x: frame.midX, y: frame.midY)
     }
-    private func captureScreenshot(rect: CGRect) -> NSImage? {
-          let cgImage = CGDisplayCreateImage(CGMainDisplayID(), rect: rect)!
-          return NSImage(cgImage: cgImage, size: rect.size)
-      }
-  
-    func captureScreenshotKit(rect: CGRect, windows: [SCWindow], display: SCDisplay) async throws -> NSImage? {
-        let availableWindows = windows.filter { window in
-            Bundle.main.bundleIdentifier != window.owningApplication?.bundleIdentifier
+    func getShareableContent() async throws -> SCDisplay? {
+        return try await withCheckedThrowingContinuation { continuation in
+            SCShareableContent.getWithCompletionHandler { availableContent, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    guard let availableContent = availableContent else {
+                        continuation.resume(returning: nil)
+                        return
+                    }
+                    guard let display = availableContent.displays.first else {
+                        continuation.resume(returning: nil)
+                        return
+                    }
+                    continuation.resume(returning: display)
+                }
+            }
         }
-        let filter = SCContentFilter(display: display, including: availableWindows)
+    }
+    func captureScreenshotKit(rect: CGRect, display: SCDisplay) async throws -> NSImage? {
+        let filter = SCContentFilter(display: display, excludingWindows: [])
 
         if #available(macOS 14.0, *) {
             let config = SCStreamConfiguration.defaultConfig(width: Int(rect.width), height: Int(rect.height))
@@ -226,10 +237,36 @@ struct CaptureOverlayView: View {
         }
         return nil
     }
+    private func captureScreenshot(rect: CGRect) -> NSImage? {
+        guard let cgImage = CGDisplayCreateImage(CGMainDisplayID(), rect: rect) else {
+            return nil
+        }
+        let capturedImage = NSImage(cgImage: cgImage, size: rect.size)
+        guard capturedImage.isValid else {
+            return nil
+        }
+        return capturedImage
+    }
+    private func captureScreenshotT(rect: CGRect) -> NSImage? {
+        let group = DispatchGroup()
+        var resultImage: NSImage?
+        Task {
+            group.enter()
+            do {
+                resultImage = try await captureScreenshotKit(rect: rect, display: getShareableContent()!)
+            } catch {
+                print("Error capturing image: \(error)")
+            }
+            group.leave()
+        }
+        group.wait()
 
+        return resultImage
+    }
     private func createCaptureView(frame: CGRect) -> some View {
         DispatchQueue.main.async {
             if let screenshot = captureScreenshot(rect: frame),
+               
                let imageData = screenshot.tiffRepresentation,
                !capturedImages.contains(imageData) {
                 capturedImages.append(imageData)
@@ -249,8 +286,18 @@ struct CaptureOverlayView: View {
 }
 
 typealias ImageData = Data
-
+func getShareableContent() {
+  SCShareableContent.getWithCompletionHandler { availableContent, error in
+    guard let availableContent = availableContent else {
+      return
+    }
+    guard let display = availableContent.displays.first else {  // TODO: multi-display support
+      return
+    }
+  }
+}
 func captureScreen(windows: [SCWindow], display: SCDisplay) async throws -> CGImage? {
+ 
     let availableWindows = windows.filter { window in
         Bundle.main.bundleIdentifier != window.owningApplication?.bundleIdentifier
     }
