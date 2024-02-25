@@ -22,7 +22,7 @@ struct CaptureStackView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20){
                         ForEach(capturedImages.reversed(), id: \.self) { image in
-                            ScreenShotView(image: image, saveImage: saveImageToDesktop, copyImage: copyToClipboard, deleteImage: deleteImage)
+                            ScreenShotView(image: image, saveImage: saveImageToDesktop, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction)
                                 .contextMenu {
                                     Button {
                                       saveImageToICloud(image)
@@ -31,25 +31,6 @@ struct CaptureStackView: View {
                                             Text("Save to iCloud")
                                         }
                                     }
-                                    Button {
-                                       shareAction(image)
-                                    } label: {
-                                        HStack{
-                                            Text("Share...")
-                                        }
-                                    }
-                                      Button {
-                                         saveImage(image)
-                                      } label: {
-                                          HStack{
-                                              Text("Save as")
-                                          }
-                                      }
-                                      Button {
-                                        deleteImage(image)
-                                      } label: {
-                                          Text("Delete")
-                                      }
                                   }
                         }
                     }

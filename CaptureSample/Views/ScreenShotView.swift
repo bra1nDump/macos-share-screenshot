@@ -16,6 +16,8 @@ struct ScreenShotView: View {
     var saveImage: ((ImageData) -> Void)
     var copyImage: ((ImageData) -> Void)
     var deleteImage: ((ImageData) -> Void)
+    var saveToDesktopImage: ((ImageData) -> Void)
+    var shareImage: ((ImageData) -> Void)
     var body: some View {
         RoundedRectangle(cornerRadius: 20)
             .frame(width: 201, height: 152)
@@ -62,6 +64,19 @@ struct ScreenShotView: View {
                                             Spacer()
                                         }
                                         Spacer()
+                                        HStack{
+                                            Spacer()
+                                            Circle()
+                                                .frame(width: 25, height: 25)
+                                                .foregroundColor(.white)
+                                                .overlay(
+                                                    Image(systemName: "xmark")
+                                                        .foregroundColor(.black)
+                                                )
+                                                .onTapGesture {
+                                                    shareImage(image)
+                                                }
+                                        }
                                     }
                                     .padding(7)
                                     VStack(spacing: 15){
@@ -79,7 +94,17 @@ struct ScreenShotView: View {
                                             .frame(width: 75, height: 30)
                                             .foregroundColor(.white)
                                             .overlay(
-                                                Text("Save")
+                                                Text("Save to Desktop")
+                                                    .foregroundColor(.black)
+                                            )
+                                            .onTapGesture {
+                                                saveToDesktopImage(image)
+                                            }
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .frame(width: 75, height: 30)
+                                            .foregroundColor(.white)
+                                            .overlay(
+                                                Text("Save as")
                                                     .foregroundColor(.black)
                                             )
                                             .onTapGesture {
