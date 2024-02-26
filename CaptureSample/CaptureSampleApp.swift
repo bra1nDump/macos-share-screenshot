@@ -21,87 +21,100 @@ struct MyApplication {
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    var currentPreviewPanel: ScreenshotPreviewPanel?
-    var statusBarItem: NSStatusItem?
-    var capturedImages: [ImageData] = []
-    // The menu that drops down from the menu bar item.
-    var contextMenu: NSMenu = NSMenu()
+    /// Overlay that blocks user interaction without switching key window.
+    /// - Removes standard cursor while tracking the mouse position
+    /// - Adds a SwiftUI overlay that draws the area selection
     var overlayWindow: OverlayPanel?
+    
+    /// Each screenshot is added to a stack on the bottom left
+    var currentPreviewPanel: ScreenshotPreviewPanel?
+    var capturedImages: [ImageData] = []
+    
+    // TODO: Shouldn't this be a computed var { overlayWindow != nil }
+    private var isScreenshotInProgress = false
+    
+    /// Menu bar
+    var statusBarItem: NSStatusItem!
+    var contextMenu: NSMenu = NSMenu()
+    
     // Does not work when moved outside of COntentView
     // Probably something to do with not being able to bind commands when no UI is visible
     // Try - create a random window
     let cmdShiftSeven = HotKey(key: .seven, modifiers: [.command, .shift])
-    private var isScreenshotInProgress = false
+    
     func applicationDidFinishLaunching(_ notification: Notification) {
-        createStatusBarItem()
+        setupStatusBarItem()
         
-        func startScreenshot() {
-            guard !isScreenshotInProgress else {
-                       return
-                   }
-                   isScreenshotInProgress = true
-            if let existingPreview = overlayWindow?.screenshotPreview {
-                existingPreview.removeFromSuperview()
-            }
-            if let existingPreviewPanel = self.currentPreviewPanel {
-                    existingPreviewPanel.orderOut(nil)
-                }
-            let screenRect = NSScreen.main?.frame ?? NSRect.zero
-            self.overlayWindow = OverlayPanel(contentRect: screenRect)
-            overlayWindow?.makeKeyAndOrderFront(nil)
-            overlayWindow?.onComplete = { [self] capturedImageData in
-                   self.capturedImages.append(capturedImageData!)
-                let newCapturePreview = ScreenshotPreviewPanel(imageData: capturedImages)
-                NSApp.activate(ignoringOtherApps: true)
-                       newCapturePreview.orderFront(nil)
-                newCapturePreview.makeFirstResponder(newCapturePreview)
-                self.currentPreviewPanel = newCapturePreview
-                isScreenshotInProgress = false
-                self.currentPreviewPanel = newCapturePreview
-                      }
-        }
-        // DEBUGGING
+        #if DEBUG
         startScreenshot()
+        #endif
 
-        cmdShiftSeven.keyDownHandler = {
+        cmdShiftSeven.keyDownHandler = { [weak self] in
             // Make sure the old window is dismissed
-            startScreenshot()
+            self?.startScreenshot()
         }
     }
+    
+    @objc
+    func startScreenshot() {
+        // Screenshot area selection already in progress
+        guard overlayWindow == nil else {
+            return
+        }
+        
+        // This is expected to be visible if we take the second screenshot in a row
+        // We will re-show this after the screenshot is complete - or we cancel (might not work right now)
+        if let existingPreviewPanel = self.currentPreviewPanel {
+            existingPreviewPanel.orderOut(nil)
+        }
+        
+        // Configure and show screenshot area selection
+        let screenRect = NSScreen.main?.frame ?? NSRect.zero
+        let screenshotAreaSelectionNoninteractiveWindow = OverlayPanel(contentRect: screenRect)
+        screenshotAreaSelectionNoninteractiveWindow.onComplete = { [self] capturedImageData in
+            self.capturedImages.append(capturedImageData!)
+            
+            // Magic configuration to show the panel, combined with the panel's configuration results in
+            // the app not taking away focus from the current app, yet still appearing.
+            // Some of the configuraiton might be discardable - further fiddling might reveal what.
+            let newCapturePreview = ScreenshotPreviewPanel(imageData: capturedImages)
+            NSApp.activate(ignoringOtherApps: true)
+            newCapturePreview.orderFront(nil)
+            newCapturePreview.makeFirstResponder(newCapturePreview)
+            
+            self.currentPreviewPanel = newCapturePreview
+            isScreenshotInProgress = false
+            
+            self.overlayWindow = nil
+        }
+        
+        screenshotAreaSelectionNoninteractiveWindow.makeKeyAndOrderFront(nil)
+        self.overlayWindow = screenshotAreaSelectionNoninteractiveWindow
+    }
 
-    private func createStatusBarItem() {
+    private func setupStatusBarItem() {
         statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-
-        if let item = statusBarItem {
-            // Set the button's image (placeholder, replace with your own image)
-            if let image = NSImage(systemSymbolName: "camera.on.rectangle", accessibilityDescription: nil) {
-                   item.button?.image = image
-               }
-            // Set the action and target
-            item.button?.action = #selector(statusBarItemClicked(_:))
-            item.button?.target = self
-        }
-    }
-
-    @objc func statusBarItemClicked(_ sender: AnyObject?) {
-        print("Status bar item clicked")
-
+        
+        let statusBarItemLogo = NSImage(systemSymbolName: "camera.on.rectangle", accessibilityDescription: nil)
+        statusBarItem.button?.image = statusBarItemLogo
+        
         // Create a menu
         let contextMenu = NSMenu()
-
-        // Add GitHub link
+        
+        // GitHub link
+        let screenshot = NSMenuItem(title: "Screenshot", action: #selector(startScreenshot), keyEquivalent: "Shift+Cmd+7")
         let githubMenuItem = NSMenuItem(title: "GitHub", action: #selector(openGitHub), keyEquivalent: "")
-        contextMenu.addItem(githubMenuItem)
-
-        // Add a separator
-        contextMenu.addItem(NSMenuItem.separator())
-
-        // Add Quit item
-        let quitMenuItem = NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: "q")
-        contextMenu.addItem(quitMenuItem)
-
+        let quitMenuItem = NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: "Cmd+Q")
+        
+        _ = [
+            screenshot,
+            githubMenuItem,
+            NSMenuItem.separator(),
+            quitMenuItem,
+        ].map(contextMenu.addItem)
+        
         // Set the menu to the status bar item
-        statusBarItem?.menu = contextMenu
+        statusBarItem.menu = contextMenu
     }
 
     @objc func openGitHub() {

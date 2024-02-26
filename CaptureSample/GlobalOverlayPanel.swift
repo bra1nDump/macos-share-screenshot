@@ -29,8 +29,9 @@ class OverlayPanel: NSPanel {
       override var canBecomeMain: Bool {
           return true
       }
-    var screenshotPreview: NSImageView?
+    
     var onComplete: ((Data?) -> Void)?
+    
     // Initializer for OverlayPanel
     init(contentRect: NSRect) {
         // Style mask passed here is key! Changing it later will not have the same effect!
@@ -54,13 +55,11 @@ class OverlayPanel: NSPanel {
         let nsHostingContentView = NSHostingView(rootView: CaptureOverlayView(
             initialMousePosition: convertToSwiftUICoordinates(NSEvent.mouseLocation, in: self),
             onComplete: { imageData in
-                           if let imageData = imageData {
-                               print("Got image!")
-                               self.createScreen(imageData)  // Moved capture logic to createScreen
-                           } else {
-                               print("User canceled")
-                               self.cleanupAndClose()
-                           }
+                // If image data is nil - still call on complete for proper cleanup of the panel
+                self.onComplete?(imageData)
+                
+                            self.contentView = nil
+                            self.close()
                            
                            cShowCursor()
                        }
@@ -71,19 +70,6 @@ class OverlayPanel: NSPanel {
         makeKeyAndOrderFront(self)
 
         cHideCursor()
-    }
-    private func createScreen(_ imageData: Data) {
-           onComplete?(imageData)  // Call onComplete with the captured image data
-           cShowCursor()
-           self.contentView = nil
-           self.close()
-       }
-    private func cleanupAndClose() {
-        cShowCursor()
-        
-        // To make sure its removed - the swiftUI view still seems to remain in memory - strange
-        self.contentView = nil
-        self.close()
     }
 }
 
