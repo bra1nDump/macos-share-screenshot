@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8B45A9812B718309002DB208 /* SwiftUiSharing in Frameworks */ = {isa = PBXBuildFile; productRef = 8B45A9802B718309002DB208 /* SwiftUiSharing */; };
 		8B6934E32B495D29003BFDDF /* ScreenshotPreviewPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6934E22B495D29003BFDDF /* ScreenshotPreviewPanel.swift */; };
 		8B6E04CD2B4F4CB600DD5CDB /* ScreenShotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */; };
+		8B9846D22B88DCB60026B21F /* ScreenRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B9846D12B88DCB60026B21F /* ScreenRecorder.swift */; };
 		8BBAE2842B4689260079CCD4 /* CaptureStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */; };
 		C44093732816EC8800FB8386 /* Synth.aif in Resources */ = {isa = PBXBuildFile; fileRef = C44093722816EC8800FB8386 /* Synth.aif */; };
 		C4B0DAAF276BA4480015082A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C4B0DAAE276BA4480015082A /* Assets.xcassets */; };
@@ -26,6 +26,7 @@
 		7C6C99F1D4B6E3EBA3A7B7DF /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		8B6934E22B495D29003BFDDF /* ScreenshotPreviewPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotPreviewPanel.swift; sourceTree = "<group>"; };
 		8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenShotView.swift; sourceTree = "<group>"; };
+		8B9846D12B88DCB60026B21F /* ScreenRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenRecorder.swift; sourceTree = "<group>"; };
 		8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureStackView.swift; sourceTree = "<group>"; };
 		8D89E0E7125AFE6B4E2E6500 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		9AEEB9169F5D7FC75E6B35A2 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
@@ -48,7 +49,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B45A9812B718309002DB208 /* SwiftUiSharing in Frameworks */,
 				D269967A2B2EAB0600CADFDC /* HotKey in Frameworks */,
 				D26996772B2EAA7100CADFDC /* LaunchAtLogin in Frameworks */,
 			);
@@ -72,14 +72,6 @@
 				8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		C44093712816EC7800FB8386 /* Audio */ = {
-			isa = PBXGroup;
-			children = (
-				C44093722816EC8800FB8386 /* Synth.aif */,
-			);
-			path = Audio;
 			sourceTree = "<group>";
 		};
 		C4B0DA9E276BA4460015082A = {
@@ -113,7 +105,6 @@
 				D266C9A32B2FB87A001D7B66 /* ShowAndHideCursor.h */,
 				D266C99D2B2FB18B001D7B66 /* ShareShot-Bridging-Header.h */,
 				C41D1B1D2814BD230033613F /* Views */,
-				C44093712816EC7800FB8386 /* Audio */,
 				C4B0DAAE276BA4480015082A /* Assets.xcassets */,
 				C4B0DAB3276BA4480015082A /* CaptureSample.entitlements */,
 				C4B0DAB0276BA4480015082A /* Preview Content */,
@@ -156,7 +147,6 @@
 			packageProductDependencies = (
 				D26996762B2EAA7100CADFDC /* LaunchAtLogin */,
 				D26996792B2EAB0600CADFDC /* HotKey */,
-				8B45A9802B718309002DB208 /* SwiftUiSharing */,
 			);
 			productName = CaptureIt;
 			productReference = C4B0DAA7276BA4460015082A /* CaptureSample.app */;
@@ -191,7 +181,6 @@
 			packageReferences = (
 				D26996752B2EAA7100CADFDC /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */,
 				D26996782B2EAB0600CADFDC /* XCRemoteSwiftPackageReference "HotKey" */,
-				8B45A97F2B718309002DB208 /* XCRemoteSwiftPackageReference "SwiftUiSharing" */,
 			);
 			productRefGroup = C4B0DAA8276BA4460015082A /* Products */;
 			projectDirPath = "";
@@ -209,7 +198,6 @@
 			files = (
 				C4B0DAB2276BA4480015082A /* Preview Assets.xcassets in Resources */,
 				C4B0DAAF276BA4480015082A /* Assets.xcassets in Resources */,
-				C44093732816EC8800FB8386 /* Synth.aif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,7 +260,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -336,7 +324,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -360,6 +348,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = CaptureSample/CaptureSample.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -375,8 +364,10 @@
 				INFOPLIST_FILE = CaptureSample/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareScreenshot;
 				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to capture the screen";
 				INFOPLIST_KEY_NSDesktopFolderUsageDescription = "We need access to the desktop to save files.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need access to capture the screen";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -399,24 +390,26 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = CaptureSample/CaptureSample.entitlements;
-				CODE_SIGN_IDENTITY = "Mac Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"CaptureSample/Preview Content\"";
-				DEVELOPMENT_TEAM = A55978949T;
+				DEVELOPMENT_TEAM = 9NYCJV4J3K;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CaptureSample/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareScreenshot;
 				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to capture the screen";
 				INFOPLIST_KEY_NSDesktopFolderUsageDescription = "We need access to the desktop to save files.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need access to capture the screen";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -456,14 +449,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		8B45A97F2B718309002DB208 /* XCRemoteSwiftPackageReference "SwiftUiSharing" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Appracatappra/SwiftUiSharing.git";
-			requirement = {
-				kind = exactVersion;
-				version = 1.0.7;
-			};
-		};
 		D26996752B2EAA7100CADFDC /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin-Modern";
@@ -483,11 +468,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		8B45A9802B718309002DB208 /* SwiftUiSharing */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8B45A97F2B718309002DB208 /* XCRemoteSwiftPackageReference "SwiftUiSharing" */;
-			productName = SwiftUiSharing;
-		};
 		D26996762B2EAA7100CADFDC /* LaunchAtLogin */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D26996752B2EAA7100CADFDC /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */;

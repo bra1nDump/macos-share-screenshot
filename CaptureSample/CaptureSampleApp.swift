@@ -7,6 +7,7 @@ The entry point into this app.
 import Cocoa
 import HotKey
 import SwiftUI
+import ScreenCaptureKit
 
 @main
 struct MyApplication {
