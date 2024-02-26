@@ -155,7 +155,6 @@ struct CaptureStackView: View {
             print("Unable to access documents directory.")
             return
         }
-
         let currentDate = Date()
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMdd_HHmmss"

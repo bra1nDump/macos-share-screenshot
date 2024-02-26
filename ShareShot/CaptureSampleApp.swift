@@ -1,4 +1,6 @@
 /*
+See LICENSE folder for this sample’s licensing information.
+
 Abstract:
 The entry point into this app.
 */
@@ -43,11 +45,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusBarItem()
-        if hasScreenRecordingPermission() {
-                   print("Screen record permission on")
-               } else {
-                   print("Screen record permission off")
-               }
+        
         #if DEBUG
         startScreenshot()
         #endif
@@ -119,10 +117,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Set the menu to the status bar item
         statusBarItem.menu = contextMenu
     }
-    private func hasScreenRecordingPermission() -> Bool {
-           let access = AXIsProcessTrustedWithOptions(["AXTrustedCheckOptionPrompt": true] as CFDictionary)
-           return access
-       }
+
     @objc func openGitHub() {
         if let url = URL(string: "https://github.com/bra1nDump/macos-share-shot") {
             NSWorkspace.shared.open(url)

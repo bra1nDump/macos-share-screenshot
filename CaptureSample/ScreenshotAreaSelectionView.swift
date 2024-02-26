@@ -1,5 +1,5 @@
 //
-//  OverlayPanelView.swift
+//  ScreenshotAreaSelectionView.swift
 //  CaptureSample
 //
 //  Created by Kirill Dubovitskiy on 12/19/23.
@@ -17,7 +17,8 @@ import ScreenCaptureKit
 // I can probably create it once the app starts and actually add stuff to it later on
 
 // Define your SwiftUI view
-struct CaptureOverlayView: View {
+struct ScreenshotAreaSelectionView
+: View {
     @State private var capturedImageData: ImageData?
     @State private var capturedImages: [ImageData] = []
     enum CaptureOverlayState {

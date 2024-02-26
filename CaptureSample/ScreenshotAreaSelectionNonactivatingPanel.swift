@@ -1,5 +1,5 @@
 //
-//  GlobalOverlayWindow.swift
+//  ScreenshotAreaSelectionNonactivatingPanel.swift
 //  CaptureSample
 //
 //  Created by Kirill Dubovitskiy on 12/16/23.
@@ -22,7 +22,7 @@ import Cocoa
 // - It allows to get keyboard events
 //
 // Most of this was eye balled and copied from pixel picker / Maccy projects
-class OverlayPanel: NSPanel {
+class ScreenshotAreaSelectionNonactivatingPanel: NSPanel {
     override var canBecomeKey: Bool {
         get { return true }
     }
@@ -52,7 +52,7 @@ class OverlayPanel: NSPanel {
         self.ignoresMouseEvents = false
         self.backgroundColor = .clear
         
-        let nsHostingContentView = NSHostingView(rootView: CaptureOverlayView(
+        let nsHostingContentView = NSHostingView(rootView: ScreenshotAreaSelectionView(
             initialMousePosition: convertToSwiftUICoordinates(NSEvent.mouseLocation, in: self),
             onComplete: { imageData in
                 // If image data is nil - still call on complete for proper cleanup of the panel

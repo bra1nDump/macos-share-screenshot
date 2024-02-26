@@ -1,5 +1,5 @@
 //
-//  ScreenshotPreviewPanel.swift
+//  ScreenshotStackPanel.swift
 //  CaptureSample
 //
 //  Created by Oleg Yakushin on 1/6/24.
@@ -9,7 +9,7 @@
 import SwiftUI
 import Cocoa
 
-class ScreenshotPreviewPanel: NSPanel {
+class ScreenshotStackPanel: NSPanel {
     init(imageData: [ImageData]) {
         let previewRect = NSRect(x: 0, y: 0, width: 300, height: 950)
         super.init(contentRect: previewRect, styleMask: .borderless, backing: .buffered, defer: false)
