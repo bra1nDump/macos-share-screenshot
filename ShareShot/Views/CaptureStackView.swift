@@ -22,16 +22,10 @@ struct CaptureStackView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20){
                         ForEach(capturedImages.reversed(), id: \.self) { image in
-                            ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction)
-                                .contextMenu {
-                                    Button {
-                                      saveImageToICloud(image)
-                                    } label: {
-                                        HStack{
-                                            Text("Save to iCloud")
-                                        }
-                                    }
-                                  }
+                            ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction, saveToiCloud: saveImageToICloud)
+                                .onTapGesture {
+                                   openImageInPreview(image: NSImage(data: image)!)
+                                }
                         }
                     }
                 }
@@ -159,7 +153,7 @@ struct CaptureStackView: View {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
         let formattedDate = dateFormatter.string(from: currentDate)
-        let fileName = "CapturedImage_\(formattedDate).png"
+        let fileName = "ShareShot_\(formattedDate).png"
 
         let fileURL = documentsDirectory.appendingPathComponent(fileName)
 
@@ -192,7 +186,6 @@ struct CaptureStackView: View {
             print("Error saving image: \(error)")
         }
     }
-
   private func saveFileToICloud(fileURL: URL, completion: @escaping (URL?) -> Void) {
             let recordID = CKRecord.ID(recordName: "UniqueRecordName")
             let record = CKRecord(recordType: "YourRecordType", recordID: recordID)
@@ -238,7 +231,6 @@ struct CaptureStackView: View {
                 }
             }
         }
-    
     private func deleteImage(_ image: ImageData) {
         ShareShotApp.appDelegate?.deleteImage(image)
         if let index = capturedImages.firstIndex(of: image) {
@@ -246,6 +238,22 @@ struct CaptureStackView: View {
                 capturedImages.remove(at: index)
             }
         }
+    }
+   
+    func openImageInPreview(image: NSImage) {
+        let temporaryDirectoryURL = FileManager.default.temporaryDirectory
+        let temporaryImageURL = temporaryDirectoryURL.appendingPathComponent("ShareShot.png")
+        if let imageData = image.tiffRepresentation, let bitmapRep = NSBitmapImageRep(data: imageData) {
+            if let pngData = bitmapRep.representation(using: .png, properties: [:]) {
+                do {
+                    try pngData.write(to: temporaryImageURL)
+                } catch {
+                    print("Failed to save temporary image: \(error)")
+                    return
+                }
+            }
+        }
+        NSWorkspace.shared.open(temporaryImageURL)
     }
 }
 struct UserSettings {

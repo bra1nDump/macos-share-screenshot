@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		8B6934E32B495D29003BFDDF /* ScreenshotStackPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6934E22B495D29003BFDDF /* ScreenshotStackPanel.swift */; };
 		8B6E04CD2B4F4CB600DD5CDB /* ScreenShotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */; };
+		8BB5A2F52B8E6EB300292962 /* CaptureSampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A115922B8DED31003A69FF /* CaptureSampleApp.swift */; };
+		8BB5A2F62B8E6F4000292962 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2A115942B8DEDE1003A69FF /* Assets.xcassets */; };
 		8BBAE2842B4689260079CCD4 /* CaptureStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */; };
 		8BEBDCFF2B8D3AD4006C6B96 /* ScreenshotAreaSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D255C43E2B31D1D200A0C7B2 /* ScreenshotAreaSelectionView.swift */; };
 		8BEBDD012B8D3AD4006C6B96 /* CaptureStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */; };
@@ -200,6 +202,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BB5A2F62B8E6F4000292962 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -219,6 +222,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BEBDCFF2B8D3AD4006C6B96 /* ScreenshotAreaSelectionView.swift in Sources */,
+				8BB5A2F52B8E6EB300292962 /* CaptureSampleApp.swift in Sources */,
 				8BEBDD012B8D3AD4006C6B96 /* CaptureStackView.swift in Sources */,
 				8BEBDD022B8D3AD4006C6B96 /* ScreenShotView.swift in Sources */,
 				8BEBDD032B8D3AD4006C6B96 /* ScreenshotAreaSelectionNonactivatingPanel.swift in Sources */,
