@@ -77,19 +77,6 @@ struct ScreenShotView: View {
                                             }
                                         }
                                         Spacer()
-                                        HStack{
-                                            Spacer()
-                                            Circle()
-                                                .frame(width: 25, height: 25)
-                                                .foregroundColor(.white)
-                                                .overlay(
-                                                    Image(systemName: "xmark")
-                                                        .foregroundColor(.black)
-                                                )
-                                                .onTapGesture {
-                                                    shareImage(image)
-                                                }
-                                        }
                                     }
                                     .padding(7)
                                     VStack(spacing: 15){
