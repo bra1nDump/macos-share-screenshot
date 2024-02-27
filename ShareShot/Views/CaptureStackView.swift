@@ -22,7 +22,7 @@ struct CaptureStackView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20){
                         ForEach(capturedImages.reversed(), id: \.self) { image in
-                            ScreenShotView(image: image, saveImage: saveImageToDesktop, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction)
+                            ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction)
                                 .contextMenu {
                                     Button {
                                       saveImageToICloud(image)
@@ -64,7 +64,7 @@ struct CaptureStackView: View {
             return
         }
 
-        let desktopURL = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first
+        let desktopURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
 
         guard let desktop = desktopURL else {
             print("Unable to access desktop directory.")

@@ -1,6 +1,4 @@
 /*
-See LICENSE folder for this sample’s licensing information.
-
 Abstract:
 The entry point into this app.
 */
@@ -31,9 +29,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var currentPreviewPanel: ScreenshotStackPanel?
     var capturedImages: [ImageData] = []
     
-    // TODO: Shouldn't this be a computed var { overlayWindow != nil }
-    private var isScreenshotInProgress = false
-    
     /// Menu bar
     var statusBarItem: NSStatusItem!
     var contextMenu: NSMenu = NSMenu()
@@ -46,6 +41,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusBarItem()
         
+        // TODO: We might want to ask for permissions before trying to screen record using CGRequestScreenCaptureAccess()
+        // Probably should do this before allowing the user to proceed with the screenshot
+        // That api is known to show settings only once: https://stackoverflow.com/questions/75617005/how-to-show-screen-recording-permission-programmatically-using-swiftui
+        // so we might want to track if we shown this before, maybe show additional info to the user suggesting to go to settings
+        // but do not open the area selection - no point
+        if hasScreenRecordingPermission() {
+                   print("Screen record permission on")
+               } else {
+                   print("Screen record permission off")
+               }
         #if DEBUG
         startScreenshot()
         #endif
@@ -72,20 +77,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Configure and show screenshot area selection
         let screenRect = NSScreen.main?.frame ?? NSRect.zero
         let screenshotAreaSelectionNoninteractiveWindow = ScreenshotAreaSelectionNonactivatingPanel(contentRect: screenRect)
+        
         screenshotAreaSelectionNoninteractiveWindow.onComplete = { [self] capturedImageData in
-            self.capturedImages.append(capturedImageData!)
+            // If image data is nil:
+            //   - We canceled by either clicking and doing a single pixel selection
+            //   - Or by pressing escape
+            // Either way show the stack, unless its empty
             
-            // Magic configuration to show the panel, combined with the panel's configuration results in
-            // the app not taking away focus from the current app, yet still appearing.
-            // Some of the configuraiton might be discardable - further fiddling might reveal what.
-            let newCapturePreview = ScreenshotStackPanel(imageData: capturedImages)
-            NSApp.activate(ignoringOtherApps: true)
-            newCapturePreview.orderFront(nil)
-            newCapturePreview.makeFirstResponder(newCapturePreview)
+            if let capturedImageData {
+                // 0th element is top of the stack
+                capturedImages.insert(capturedImageData, at: 0)
+            }
+
+            if !capturedImages.isEmpty {
+                // Magic configuration to show the panel, combined with the panel's configuration results in
+                // the app not taking away focus from the current app, yet still appearing.
+                // Some of the configuraiton might be discardable - further fiddling might reveal what.
+                let newCapturePreview = ScreenshotStackPanel(imageData: capturedImages)
+                NSApp.activate(ignoringOtherApps: true)
+                newCapturePreview.orderFront(nil)
+                newCapturePreview.makeFirstResponder(newCapturePreview)
+                
+                self.currentPreviewPanel = newCapturePreview
+            }
             
-            self.currentPreviewPanel = newCapturePreview
-            isScreenshotInProgress = false
-            
+            // Always destroy the screenshot area selection panel
             self.overlayWindow = nil
         }
         
@@ -96,14 +112,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func setupStatusBarItem() {
         statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         
-        let statusBarItemLogo = NSImage(systemSymbolName: "camera.on.rectangle", accessibilityDescription: nil)
+        let statusBarItemLogo = NSImage(named: NSImage.Name("LogoForStatusBarItem"))!
+        // https://stackoverflow.com/questions/33703966/osx-status-bar-image-sizing-cocoa#:~:text=The%20size%20of%20the%20image%20should%20be%20set%20to%20(18.0%2C%2018.0)
+        statusBarItemLogo.size = NSSize(width: 18, height: 18)
         statusBarItem.button?.image = statusBarItemLogo
         
         // Create a menu
         let contextMenu = NSMenu()
         
         // GitHub link
-        let screenshot = NSMenuItem(title: "Screenshot", action: #selector(startScreenshot), keyEquivalent: "Shift+Cmd+7")
+        let screenshot = NSMenuItem(title: "Screenshot", action: #selector(startScreenshot), keyEquivalent: "Cmd+Shift+7")
         let githubMenuItem = NSMenuItem(title: "GitHub", action: #selector(openGitHub), keyEquivalent: "")
         let quitMenuItem = NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: "Cmd+Q")
         
@@ -117,7 +135,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Set the menu to the status bar item
         statusBarItem.menu = contextMenu
     }
-
+    private func hasScreenRecordingPermission() -> Bool {
+           let access = AXIsProcessTrustedWithOptions(["AXTrustedCheckOptionPrompt": true] as CFDictionary)
+        
+        
+           return access
+       }
     @objc func openGitHub() {
         if let url = URL(string: "https://github.com/bra1nDump/macos-share-shot") {
             NSWorkspace.shared.open(url)
