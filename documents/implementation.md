@@ -30,7 +30,7 @@ The rule of thumb:
 - When we move the mouse to a different screen, the screenshot stack should follow 
 
 ## Stack of Screenshot Cards
-How it looks like: ![Alt text](./assets/cleanshot-screenshot-examples.png)
+How it looks like: ![Alt text](../assets/cleanshot-screenshot-examples.png)
 
 - Have a sticky stack of screenshots on the left bottom that stays there until explicitly dismissed by the user, see examples of cleanshot
   - The difficult thing here is to make it sticky, but not take focus from other applications. I think we can use the same exact approach as we do with the window for screenshot selection. We can just create a similar window to that one with roughly the same configurations, but only show on the left column of the screen. The windows will never be active at the same time.
