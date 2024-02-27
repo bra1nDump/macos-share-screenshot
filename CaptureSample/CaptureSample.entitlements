@@ -5,7 +5,7 @@
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array/>
 	<key>com.apple.security.app-sandbox</key>
-	<false/>
+	<true/>
 	<key>com.apple.security.automation.apple-events</key>
 	<true/>
 	<key>com.apple.security.device.camera</key>

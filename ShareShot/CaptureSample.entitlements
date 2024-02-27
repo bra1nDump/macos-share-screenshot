@@ -4,7 +4,11 @@
 <dict>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array/>
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
 	<key>com.apple.security.automation.apple-events</key>
+	<true/>
+	<key>com.apple.security.files.user-selected.read-write</key>
 	<true/>
 </dict>
 </plist>

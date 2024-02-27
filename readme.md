@@ -166,7 +166,6 @@ How it looks like: ![Alt text](./assets/cleanshot-screenshot-examples.png)
 - https://www.irradiatedsoftware.com/help/accessibility/index.php
 - Similar websites for distribution (there is one that cleanshot is bundled with)
 
-
 ## Done
 - Currently there is a semi-transparent cross on the screen that remains in the same position where the mouse was when starting the app, while the actual cross moves around
 - Stack of captures does not appear if the app is invoked with a keyboard shortcut (Shift + Cmd + 7), which is how the app should appear in the first place, us entering capture mode by default is simply for debugging purposes
