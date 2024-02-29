@@ -46,11 +46,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // That api is known to show settings only once: https://stackoverflow.com/questions/75617005/how-to-show-screen-recording-permission-programmatically-using-swiftui
         // so we might want to track if we shown this before, maybe show additional info to the user suggesting to go to settings
         // but do not open the area selection - no point
-        if hasScreenRecordingPermission() {
-                   print("Screen record permission on")
-               } else {
-                   print("Screen record permission off")
-               }
+        let defaults = UserDefaults.standard
+        if !defaults.bool(forKey: "HasLaunchedBefore") {
+            showScreenRecordingPermissionAlert()
+            return
+        }
+        defaults.set(true, forKey: "HasLaunchedBefore")
         #if DEBUG
         startScreenshot()
         #endif
@@ -135,12 +136,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Set the menu to the status bar item
         statusBarItem.menu = contextMenu
     }
-    private func hasScreenRecordingPermission() -> Bool {
-           let access = AXIsProcessTrustedWithOptions(["AXTrustedCheckOptionPrompt": true] as CFDictionary)
-        
-        
-           return access
-       }
+    @objc func showScreenRecordingPermissionAlert() {
+        let alert = NSAlert()
+        alert.messageText = "Screen Recording Permission Required"
+        alert.informativeText = "To use this app, please grant screen recording permission in System Preferences > Security & Privacy > Privacy > Screen Recording."
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "Open System Preferences")
+        alert.addButton(withTitle: "Cancel")
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
+            NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture")!)
+        } else {
+        }
+        NSApplication.shared.terminate(self)
+    }
     @objc func openGitHub() {
         if let url = URL(string: "https://github.com/bra1nDump/macos-share-shot") {
             NSWorkspace.shared.open(url)

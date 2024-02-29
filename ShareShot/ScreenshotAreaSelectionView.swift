@@ -9,6 +9,7 @@
 import SwiftUI
 import Carbon
 import ScreenCaptureKit
+import AVFoundation
 // Current problem:
 // When app not in actual focus (title visible) - no view is rendered, mouse moves come through
 // When app is in focus - it renders the view, but mouse moves don't come

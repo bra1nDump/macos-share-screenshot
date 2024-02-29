@@ -14,7 +14,6 @@ import CloudKit
 
 
 struct CaptureStackView: View {
-    
     @State var capturedImages: [ImageData]
     var body: some View {
         VStack {
@@ -89,31 +88,39 @@ struct CaptureStackView: View {
         }
     }
     private func saveImage(_ image: ImageData) {
-        guard let nsImage = NSImage(data: image) else { return }
-        let savePanel = NSSavePanel()
-        let currentDate = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd.MM.yyyy HH:mm"
-        let formattedDate = dateFormatter.string(from: currentDate)
-        savePanel.nameFieldStringValue = "CaptureSample - \(formattedDate).png"
-        savePanel.message = "Select a directory to save the image"
-        savePanel.begin { response in
-            if response == .OK, let url = savePanel.url {
-                guard let tiffData = nsImage.tiffRepresentation,
-                      let bitmapImageRep = NSBitmapImageRep(data: tiffData),
-                      let imageData = bitmapImageRep.representation(using: .png, properties: [:]) else {
-                    return
-                }
-                do {
-                    try imageData.write(to: url)
-                    deleteImage(image)
-                    print("Image saved")
-                } catch {
-                    print("Error saving image: \(error)")
+        var lastThreeSavedPaths: [URL] = [] // TODO: create model for recent folders
+            guard let nsImage = NSImage(data: image) else { return }
+            let savePanel = NSSavePanel()
+            let currentDate = Date()
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd.MM.yyyy HH:mm"
+            let formattedDate = dateFormatter.string(from: currentDate)
+            savePanel.nameFieldStringValue = "CaptureSample - \(formattedDate).png"
+            savePanel.message = "Select a directory to save the image"
+            
+            savePanel.begin { response in
+                if response == .OK, let url = savePanel.url {
+                   print(url)
+                    lastThreeSavedPaths.append(url)
+                    if lastThreeSavedPaths.count > 3 {
+                      lastThreeSavedPaths.removeLast()
+                    }
+                    
+                    guard let tiffData = nsImage.tiffRepresentation,
+                          let bitmapImageRep = NSBitmapImageRep(data: tiffData),
+                          let imageData = bitmapImageRep.representation(using: .png, properties: [:]) else {
+                        return
+                    }
+                    do {
+                        try imageData.write(to: url)
+                        deleteImage(image)
+                        print("Image saved")
+                    } catch {
+                        print("Error saving image: \(error)")
+                    }
                 }
             }
         }
-    }
     private func requestUserPermission(completion: @escaping (URL?) -> Void) {
         if let savedURL = UserSettings.securityScopedURL {
             completion(savedURL)
@@ -139,7 +146,7 @@ struct CaptureStackView: View {
             }
         }
     }
-  private func saveImageToICloud(_ image: ImageData) {
+    private func saveImageToICloud(_ image: ImageData) {
         guard let nsImage = NSImage(data: image) else {
             print("Unable to convert ImageData to NSImage.")
             return
@@ -186,7 +193,7 @@ struct CaptureStackView: View {
             print("Error saving image: \(error)")
         }
     }
-  private func saveFileToICloud(fileURL: URL, completion: @escaping (URL?) -> Void) {
+    private func saveFileToICloud(fileURL: URL, completion: @escaping (URL?) -> Void) {
             let recordID = CKRecord.ID(recordName: "UniqueRecordName")
             let record = CKRecord(recordType: "YourRecordType", recordID: recordID)
             
@@ -239,7 +246,6 @@ struct CaptureStackView: View {
             }
         }
     }
-   
     func openImageInPreview(image: NSImage) {
         let temporaryDirectoryURL = FileManager.default.temporaryDirectory
         let temporaryImageURL = temporaryDirectoryURL.appendingPathComponent("ShareShot.png")
