@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B42E47C2B9675780048BCD0 /* FolderLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5E62242B93DA1D00455929 /* FolderLink.swift */; };
 		8B5E62252B93DA1D00455929 /* FolderLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5E62242B93DA1D00455929 /* FolderLink.swift */; };
 		8B5E62272B93E78C00455929 /* ImageEditorWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5E62262B93E78C00455929 /* ImageEditorWindow.swift */; };
 		8B6934E32B495D29003BFDDF /* ScreenshotStackPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6934E22B495D29003BFDDF /* ScreenshotStackPanel.swift */; };
@@ -240,6 +241,7 @@
 				8BEBDD012B8D3AD4006C6B96 /* CaptureStackView.swift in Sources */,
 				8BEBDD022B8D3AD4006C6B96 /* ScreenShotView.swift in Sources */,
 				8BEBDD032B8D3AD4006C6B96 /* ScreenshotAreaSelectionNonactivatingPanel.swift in Sources */,
+				8B42E47C2B9675780048BCD0 /* FolderLink.swift in Sources */,
 				8BEBDD042B8D3AD4006C6B96 /* ScreenshotStackPanel.swift in Sources */,
 				8BEBDD052B8D3AD4006C6B96 /* convertToSwiftUICoordinates.swift in Sources */,
 			);

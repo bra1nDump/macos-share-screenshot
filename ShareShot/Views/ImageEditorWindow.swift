@@ -11,7 +11,7 @@ import Cocoa
 
 class ImageEditorWindowController: NSWindowController, NSWindowDelegate {
     private var imageView: NSImageView!
-
+    var openImage: ((ImageData) -> Void)?
     convenience init() {
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 600, height: 400),
                               styleMask: [.closable, .resizable, .miniaturizable, .fullSizeContentView],

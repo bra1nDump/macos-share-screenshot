@@ -106,8 +106,6 @@ struct ScreenshotAreaSelectionView: View {
     var body: some View {
         GeometryReader { geometry in
             createOverlayView(geometry: geometry)
-                // This adds additional layer so double the color
-               // .background(Color.gray.opacity(0.2))
                 .onDisappear {
                     print("on dissapear")
                     eventMonitors.stopMonitoringEvents()
@@ -185,10 +183,10 @@ struct ScreenshotAreaSelectionView: View {
 
     private func createCrosshairView(center: CGPoint) -> some View {
         Path { path in
-            path.move(to: CGPoint(x: center.x - 4, y: center.y))
-            path.addLine(to: CGPoint(x: center.x + 4, y: center.y))
-            path.move(to: CGPoint(x: center.x, y: center.y - 4))
-            path.addLine(to: CGPoint(x: center.x, y: center.y + 4))
+            path.move(to: CGPoint(x: center.x - 8, y: center.y))
+            path.addLine(to: CGPoint(x: center.x + 8, y: center.y))
+            path.move(to: CGPoint(x: center.x, y: center.y - 8))
+            path.addLine(to: CGPoint(x: center.x, y: center.y + 8))
         }
         .stroke(Color.blue, lineWidth: 1)
     }
@@ -224,7 +222,6 @@ struct ScreenshotAreaSelectionView: View {
     }
     func captureScreenshotKit(rect: CGRect, display: SCDisplay) async throws -> NSImage? {
         let filter = SCContentFilter(display: display, excludingWindows: [])
-
         if #available(macOS 14.0, *) {
             let config = SCStreamConfiguration.defaultConfig(width: Int(rect.width), height: Int(rect.height))
             
@@ -276,8 +273,6 @@ struct ScreenshotAreaSelectionView: View {
         }
         return EmptyView()
     }
-      
-    
     static private func toFrame(anchorPoint: CGPoint, virtualCursorPosition: CGPoint) -> CGRect {
         CGRect(x: min(anchorPoint.x, virtualCursorPosition.x),
                y: min(anchorPoint.y, virtualCursorPosition.y),
@@ -285,24 +280,21 @@ struct ScreenshotAreaSelectionView: View {
                height: abs(anchorPoint.y - virtualCursorPosition.y))
     }
 }
-
 typealias ImageData = Data
 func getShareableContent() {
   SCShareableContent.getWithCompletionHandler { availableContent, error in
     guard let availableContent = availableContent else {
       return
     }
-    guard let display = availableContent.displays.first else {  // TODO: multi-display support
+      guard availableContent.displays.first != nil else {
       return
     }
   }
 }
 func captureScreen(windows: [SCWindow], display: SCDisplay) async throws -> CGImage? {
- 
     let availableWindows = windows.filter { window in
         Bundle.main.bundleIdentifier != window.owningApplication?.bundleIdentifier
     }
-
     let filter = SCContentFilter(display: display, including: availableWindows)
 
     if #available(macOS 14.0, *) {
@@ -318,7 +310,6 @@ func captureScreen(windows: [SCWindow], display: SCDisplay) async throws -> CGIm
         return nil
     }
 }
-
 extension SCStreamConfiguration {
     static func defaultConfig(width: Int, height: Int) -> SCStreamConfiguration {
         let config = SCStreamConfiguration()

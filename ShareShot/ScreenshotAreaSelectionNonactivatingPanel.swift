@@ -65,7 +65,6 @@ class ScreenshotAreaSelectionNonactivatingPanel: NSPanel {
                        }
         ))
         self.contentView = nsHostingContentView
-        
         // Additional window setup
         makeKeyAndOrderFront(self)
 

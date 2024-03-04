@@ -30,7 +30,7 @@ class FolderManager {
     func getRecentFolders() -> [FolderLink] {
         return recentFolders
     }
-    private func saveToUserDefaults() {
+   func saveToUserDefaults() {
         do {
             let encoder = JSONEncoder()
             let data = try encoder.encode(recentFolders)

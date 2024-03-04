@@ -87,40 +87,39 @@ struct CaptureStackView: View {
             print("Error saving image: \(error)")
         }
     }
-    private func saveImage(_ image: ImageData) {
-        var lastThreeSavedPaths: [URL] = [] // TODO: create model for recent folders
-            guard let nsImage = NSImage(data: image) else { return }
-            let savePanel = NSSavePanel()
-            let currentDate = Date()
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "dd.MM.yyyy HH:mm"
-            let formattedDate = dateFormatter.string(from: currentDate)
-            savePanel.nameFieldStringValue = "CaptureSample - \(formattedDate).png"
-            savePanel.message = "Select a directory to save the image"
-            
-            savePanel.begin { response in
-                if response == .OK, let url = savePanel.url {
-                   print(url)
-                    lastThreeSavedPaths.append(url)
-                    if lastThreeSavedPaths.count > 3 {
-                      lastThreeSavedPaths.removeLast()
-                    }
-                    
-                    guard let tiffData = nsImage.tiffRepresentation,
-                          let bitmapImageRep = NSBitmapImageRep(data: tiffData),
-                          let imageData = bitmapImageRep.representation(using: .png, properties: [:]) else {
-                        return
-                    }
-                    do {
-                        try imageData.write(to: url)
-                        deleteImage(image)
-                        print("Image saved")
-                    } catch {
-                        print("Error saving image: \(error)")
-                    }
+    func saveImage(_ image: ImageData) {
+        guard let nsImage = NSImage(data: image) else { return }
+        let savePanel = NSSavePanel()
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd.MM.yyyy HH:mm"
+        let formattedDate = dateFormatter.string(from: currentDate)
+        savePanel.nameFieldStringValue = "CaptureSample - \(formattedDate).png"
+        savePanel.message = "Select a directory to save the image"
+        let folderManager = FolderManager()
+        folderManager.loadFromUserDefaults()
+        savePanel.begin { response in
+            if response == .OK, let url = savePanel.url {
+                folderManager.addFolderLink(name: formattedDate, url: url)
+
+                guard let tiffData = nsImage.tiffRepresentation,
+                      let bitmapImageRep = NSBitmapImageRep(data: tiffData),
+                      let imageData = bitmapImageRep.representation(using: .png, properties: [:]) else {
+                    return
                 }
+                do {
+                    try imageData.write(to: url)
+                    deleteImage(image)
+                    print("Image saved")
+                } catch {
+                    print("Error saving image: \(error)")
+                }
+                folderManager.saveToUserDefaults()
+                print(folderManager.getRecentFolders())
             }
         }
+    }
+
     private func requestUserPermission(completion: @escaping (URL?) -> Void) {
         if let savedURL = UserSettings.securityScopedURL {
             completion(savedURL)
@@ -146,6 +145,28 @@ struct CaptureStackView: View {
             }
         }
     }
+    func saveImageURL(at fileURL: URL, _ image: ImageData) {
+           do {
+               guard let nsImage = NSImage(data: image) else {
+                   print("Unable to convert ImageData to NSImage.")
+                   return
+               }
+
+               let imageData: Data
+               if let tiffData = nsImage.tiffRepresentation,
+                  let bitmapImageRep = NSBitmapImageRep(data: tiffData) {
+                   imageData = bitmapImageRep.representation(using: .png, properties: [:]) ?? Data()
+               } else {
+                   print("Error converting image to PNG format.")
+                   return
+               }
+
+               try imageData.write(to: fileURL)
+               print("Image saved at \(fileURL.absoluteString)")
+           } catch {
+               print("Error saving image: \(error)")
+           }
+       }
     private func saveImageToICloud(_ image: ImageData) {
         guard let nsImage = NSImage(data: image) else {
             print("Unable to convert ImageData to NSImage.")

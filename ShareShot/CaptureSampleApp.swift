@@ -132,7 +132,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             NSMenuItem.separator(),
             quitMenuItem,
         ].map(contextMenu.addItem)
-        
+    
         // Set the menu to the status bar item
         statusBarItem.menu = contextMenu
     }
