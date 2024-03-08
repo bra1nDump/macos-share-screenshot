@@ -26,9 +26,9 @@ class ScreenshotAreaSelectionNonactivatingPanel: NSPanel {
     override var canBecomeKey: Bool {
         get { return true }
     }
-      override var canBecomeMain: Bool {
-          return true
-      }
+    override var canBecomeMain: Bool {
+        return true
+    }
     
     var onComplete: ((Data?) -> Void)?
     
@@ -36,17 +36,17 @@ class ScreenshotAreaSelectionNonactivatingPanel: NSPanel {
     init(contentRect: NSRect) {
         // Style mask passed here is key! Changing it later will not have the same effect!
         super.init(contentRect: contentRect, styleMask: .nonactivatingPanel, backing: .buffered, defer: true)
-
+        
         // Not quite sure what it does, sounds like it makes this float over other models
         self.isFloatingPanel = true
         
         // How does the window behave across collections (I assume this means ctrl + up, spaces managment)
         // We might need to further update the styleMask above to get the right combination, but good enough for now
         self.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .fullScreenAuxiliary]
-
+        
         // Special behavior for models
         self.worksWhenModal = true
-
+        
         // Track the mouse
         self.acceptsMouseMovedEvents = true
         self.ignoresMouseEvents = false
@@ -58,16 +58,16 @@ class ScreenshotAreaSelectionNonactivatingPanel: NSPanel {
                 // If image data is nil - still call on complete for proper cleanup of the panel
                 self.onComplete?(imageData)
                 
-                            self.contentView = nil
-                            self.close()
-                           
-                           cShowCursor()
-                       }
+                self.contentView = nil
+                self.close()
+                
+                cShowCursor()
+            }
         ))
         self.contentView = nsHostingContentView
         // Additional window setup
         makeKeyAndOrderFront(self)
-
+        
         cHideCursor()
     }
 }

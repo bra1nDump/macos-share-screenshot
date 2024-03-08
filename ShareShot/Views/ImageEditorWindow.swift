@@ -18,14 +18,14 @@ class ImageEditorWindowController: NSWindowController, NSWindowDelegate {
                               backing: .buffered,
                               defer: false)
         self.init(window: window)
-
+        
         window.title = "Image Editor"
         window.delegate = self
         window.center()
-
+        
         setupUI()
     }
-
+    
     private func setupUI() {
         imageView = NSImageView(frame: NSRect(x: 20, y: 20, width: 400, height: 300))
         imageView.imageScaling = .scaleProportionallyUpOrDown
@@ -38,11 +38,11 @@ class ImageEditorWindowController: NSWindowController, NSWindowDelegate {
         saveButton.frame = NSRect(x: 440, y: 200, width: 140, height: 30)
         window?.contentView?.addSubview(saveButton)
     }
-
+    
     @objc private func openImage(_ sender: Any) {
         let openPanel = NSOpenPanel()
         openPanel.allowedFileTypes = ["jpg", "jpeg", "png"]
-
+        
         openPanel.begin { response in
             if response == .OK, let imageURL = openPanel.url {
                 let image = NSImage(contentsOf: imageURL)
@@ -50,13 +50,12 @@ class ImageEditorWindowController: NSWindowController, NSWindowDelegate {
             }
         }
     }
-
+    
     @objc private func saveImage(_ sender: Any) {
         guard let image = imageView.image else {
-            // Handle the case when there is no image
             return
         }
-
+        
         let savePanel = NSSavePanel()
         savePanel.allowedFileTypes = ["png", "jpg", "jpeg"]
         savePanel.begin { response in
@@ -65,7 +64,7 @@ class ImageEditorWindowController: NSWindowController, NSWindowDelegate {
                     // Handle the case when there is an issue with image representation
                     return
                 }
-
+                
                 do {
                     try data.write(to: saveURL, options: .atomic)
                 } catch {

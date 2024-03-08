@@ -49,13 +49,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let defaults = UserDefaults.standard
         if !defaults.bool(forKey: "HasLaunchedBefore") {
             showScreenRecordingPermissionAlert()
-            return
         }
         defaults.set(true, forKey: "HasLaunchedBefore")
-        #if DEBUG
+#if DEBUG
         startScreenshot()
-        #endif
-
+#endif
+        
         cmdShiftSeven.keyDownHandler = { [weak self] in
             // Make sure the old window is dismissed
             self?.startScreenshot()
@@ -89,7 +88,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 // 0th element is top of the stack
                 capturedImages.insert(capturedImageData, at: 0)
             }
-
+            
             if !capturedImages.isEmpty {
                 // Magic configuration to show the panel, combined with the panel's configuration results in
                 // the app not taking away focus from the current app, yet still appearing.
@@ -109,7 +108,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         screenshotAreaSelectionNoninteractiveWindow.makeKeyAndOrderFront(nil)
         self.overlayWindow = screenshotAreaSelectionNoninteractiveWindow
     }
-
+    
     private func setupStatusBarItem() {
         statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         
@@ -121,21 +120,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Create a menu
         let contextMenu = NSMenu()
         
-        // GitHub link
-        let screenshot = NSMenuItem(title: "Screenshot", action: #selector(startScreenshot), keyEquivalent: "Cmd+Shift+7")
+        let screenshot = NSMenuItem(title: "Screenshot", action: #selector(startScreenshot), keyEquivalent: "7")
+        screenshot.keyEquivalentModifierMask = [.command, .shift]
         let githubMenuItem = NSMenuItem(title: "GitHub", action: #selector(openGitHub), keyEquivalent: "")
-        let quitMenuItem = NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: "Cmd+Q")
-        
+        let quitMenuItem = NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: "Q")
+        quitMenuItem.keyEquivalentModifierMask = [.command, .shift]
         _ = [
             screenshot,
             githubMenuItem,
             NSMenuItem.separator(),
             quitMenuItem,
         ].map(contextMenu.addItem)
-    
+        
         // Set the menu to the status bar item
         statusBarItem.menu = contextMenu
     }
+    
     @objc func showScreenRecordingPermissionAlert() {
         let alert = NSAlert()
         alert.messageText = "Screen Recording Permission Required"
@@ -148,24 +148,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture")!)
         } else {
         }
-        NSApplication.shared.terminate(self)
     }
+    
     @objc func openGitHub() {
         if let url = URL(string: "https://github.com/bra1nDump/macos-share-shot") {
             NSWorkspace.shared.open(url)
         }
     }
-
+    
     @objc func quitApplication() {
         NSApplication.shared.terminate(self)
     }
-
+    
     @objc func deleteImage(_ image: ImageData) {
         if let index = capturedImages.firstIndex(of: image) {
             capturedImages.remove(at: index)
         }
     }
-
+    
     // Implement any other necessary AppDelegate methods here
 }
 

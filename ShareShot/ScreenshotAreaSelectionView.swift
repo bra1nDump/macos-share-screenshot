@@ -35,7 +35,7 @@ struct ScreenshotAreaSelectionView: View {
     // State manager class
     class KeyboardAndMouseEventMonitors: ObservableObject {
         private var globalMonitors: [Any?] = []
-
+        
         func startMonitoringEvents(onMouseDown: @escaping (CGPoint) -> Void, onMouseUp: @escaping (CGPoint) -> Void, onMouseMove: @escaping (CGPoint) -> Void, onEscape: @escaping () -> Void) {
             print("startMonitoringEvents")
             
@@ -51,7 +51,7 @@ struct ScreenshotAreaSelectionView: View {
                     return event
                 }
             }
-
+            
             globalMonitors = [
                 // This will only work when mouse is not down, we still need it for anchor placement stage
                 NSEvent.addLocalMonitorForEvents(matching: [.mouseMoved], handler: adaptorEventToMousePosition(onMouseMove)),
@@ -78,7 +78,7 @@ struct ScreenshotAreaSelectionView: View {
                 },
             ]
         }
-
+        
         func stopMonitoringEvents() {
             for monitor in globalMonitors {
                 if let monitor {
@@ -93,7 +93,7 @@ struct ScreenshotAreaSelectionView: View {
             stopMonitoringEvents()
         }
     }
-
+    
     let onComplete: (_ imageData: Data?) -> Void
     @ObservedObject private var eventMonitors = KeyboardAndMouseEventMonitors()
     @State private var state: CaptureOverlayState
@@ -164,7 +164,7 @@ struct ScreenshotAreaSelectionView: View {
                 }
         }
     }
-
+    
     @ViewBuilder
     private func createOverlayView(geometry: GeometryProxy) -> some View {
         // Parametrize the cursor parameters and create view based on current state
@@ -180,7 +180,7 @@ struct ScreenshotAreaSelectionView: View {
             }
         }
     }
-
+    
     private func createCrosshairView(center: CGPoint) -> some View {
         Path { path in
             path.move(to: CGPoint(x: center.x - 8, y: center.y))
@@ -190,7 +190,7 @@ struct ScreenshotAreaSelectionView: View {
         }
         .stroke(Color.blue, lineWidth: 1)
     }
-
+    
     private func createSelectionRectangle(anchor: CGPoint, currentPoint: CGPoint) -> some View {
         print("anchor \(anchor) current: \(currentPoint)")
         let frame = Self.toFrame(anchorPoint: anchor, virtualCursorPosition: currentPoint)
@@ -201,6 +201,7 @@ struct ScreenshotAreaSelectionView: View {
             .frame(width: frame.width, height: frame.height)
             .position(x: frame.midX, y: frame.midY)
     }
+    
     func getShareableContent() async throws -> SCDisplay? {
         return try await withCheckedThrowingContinuation { continuation in
             SCShareableContent.getWithCompletionHandler { availableContent, error in
@@ -220,6 +221,7 @@ struct ScreenshotAreaSelectionView: View {
             }
         }
     }
+    
     func captureScreenshotKit(rect: CGRect, display: SCDisplay) async throws -> NSImage? {
         let filter = SCContentFilter(display: display, excludingWindows: [])
         if #available(macOS 14.0, *) {
@@ -235,6 +237,7 @@ struct ScreenshotAreaSelectionView: View {
         }
         return nil
     }
+    
     private func captureScreenshot(rect: CGRect) -> NSImage? {
         guard let cgImage = CGDisplayCreateImage(CGMainDisplayID(), rect: rect) else {
             return nil
@@ -245,6 +248,7 @@ struct ScreenshotAreaSelectionView: View {
         }
         return capturedImage
     }
+    
     private func captureScreenshotT(rect: CGRect) -> NSImage? {
         let group = DispatchGroup()
         var resultImage: NSImage?
@@ -258,14 +262,15 @@ struct ScreenshotAreaSelectionView: View {
             group.leave()
         }
         group.wait()
-
+        
         return resultImage
     }
+    
     private func createCaptureView(frame: CGRect) -> some View {
         DispatchQueue.main.async {
             if let screenshot = captureScreenshot(rect: frame),
                
-               let imageData = screenshot.tiffRepresentation,
+                let imageData = screenshot.tiffRepresentation,
                !capturedImages.contains(imageData) {
                 capturedImages.append(imageData)
                 onComplete(imageData)
@@ -280,36 +285,40 @@ struct ScreenshotAreaSelectionView: View {
                height: abs(anchorPoint.y - virtualCursorPosition.y))
     }
 }
+
 typealias ImageData = Data
+
 func getShareableContent() {
-  SCShareableContent.getWithCompletionHandler { availableContent, error in
-    guard let availableContent = availableContent else {
-      return
+    SCShareableContent.getWithCompletionHandler { availableContent, error in
+        guard let availableContent = availableContent else {
+            return
+        }
+        guard availableContent.displays.first != nil else {
+            return
+        }
     }
-      guard availableContent.displays.first != nil else {
-      return
-    }
-  }
 }
+
 func captureScreen(windows: [SCWindow], display: SCDisplay) async throws -> CGImage? {
     let availableWindows = windows.filter { window in
         Bundle.main.bundleIdentifier != window.owningApplication?.bundleIdentifier
     }
     let filter = SCContentFilter(display: display, including: availableWindows)
-
+    
     if #available(macOS 14.0, *) {
         let image = try? await SCScreenshotManager.captureImage(
-                contentFilter: filter,
-                configuration: SCStreamConfiguration.defaultConfig(
-                        width: display.width,
-                        height: display.height
-                )
+            contentFilter: filter,
+            configuration: SCStreamConfiguration.defaultConfig(
+                width: display.width,
+                height: display.height
+            )
         )
         return image
     } else {
         return nil
     }
 }
+
 extension SCStreamConfiguration {
     static func defaultConfig(width: Int, height: Int) -> SCStreamConfiguration {
         let config = SCStreamConfiguration()

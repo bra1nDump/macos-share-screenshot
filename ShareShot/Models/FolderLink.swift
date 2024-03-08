@@ -27,10 +27,12 @@ class FolderManager {
         }
         saveToUserDefaults()
     }
+    
     func getRecentFolders() -> [FolderLink] {
         return recentFolders
     }
-   func saveToUserDefaults() {
+    
+    func saveToUserDefaults() {
         do {
             let encoder = JSONEncoder()
             let data = try encoder.encode(recentFolders)
@@ -39,6 +41,7 @@ class FolderManager {
             print("Failed to save recent folders to UserDefaults: \(error)")
         }
     }
+    
     func loadFromUserDefaults() {
         if let data = UserDefaults.standard.data(forKey: "recentFolders") {
             do {
