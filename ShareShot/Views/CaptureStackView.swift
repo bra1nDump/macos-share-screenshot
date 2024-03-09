@@ -35,7 +35,7 @@ struct CaptureStackView: View {
         .padding(20)
     }
     
-    func shareAction(_ imageData: ImageData) {
+    private func shareAction(_ imageData: ImageData) {
         let sharingPicker = NSSharingServicePicker(items: [NSImage(data: imageData) as Any])
         if let mainWindow = ShareShotApp.appDelegate?.currentPreviewPanel{
             sharingPicker.show(relativeTo: mainWindow.contentView!.subviews.first!.bounds, of: mainWindow.contentView!.subviews.first!.subviews.first!, preferredEdge: .maxY)
@@ -91,7 +91,7 @@ struct CaptureStackView: View {
         }
     }
     
-    func saveImage(_ image: ImageData) {
+    private func saveImage(_ image: ImageData) {
         guard let nsImage = NSImage(data: image) else { return }
         let savePanel = NSSavePanel()
         let currentDate = Date()
@@ -118,39 +118,15 @@ struct CaptureStackView: View {
                 } catch {
                     print("Error saving image: \(error)")
                 }
+#if SANDBOX
                 folderManager.saveToUserDefaults()
                 print(folderManager.getRecentFolders())
+#endif
             }
         }
     }
     
-    private func requestUserPermission(completion: @escaping (URL?) -> Void) {
-        if let savedURL = UserSettings.securityScopedURL {
-            completion(savedURL)
-        } else {
-            let openPanel = NSOpenPanel()
-            openPanel.canChooseDirectories = true
-            openPanel.canChooseFiles = false
-            openPanel.allowsMultipleSelection = false
-            openPanel.title = "Select a directory to save the image"
-            openPanel.begin { response in
-                if response == .OK, let url = openPanel.url {
-                    do {
-                        let securityScopedURL = try url.startAccessingSecurityScopedResource() ? url : nil
-                        UserSettings.securityScopedURL = securityScopedURL
-                        completion(securityScopedURL)
-                    } catch {
-                        print("Error accessing security scoped resource: \(error)")
-                        completion(nil)
-                    }
-                } else {
-                    completion(nil)
-                }
-            }
-        }
-    }
-    
-    func saveImageURL(at fileURL: URL, _ image: ImageData) {
+    private func saveImageURL(at fileURL: URL, _ image: ImageData) {
         do {
             guard let nsImage = NSImage(data: image) else {
                 print("Unable to convert ImageData to NSImage.")
@@ -178,34 +154,36 @@ struct CaptureStackView: View {
             print("Unable to convert ImageData to NSImage.")
             return
         }
-        
+
+        // Obtain the documents directory
         guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             print("Unable to access documents directory.")
             return
         }
+
+        // Generate a unique filename based on the current date and time
         let currentDate = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
-        let formattedDate = dateFormatter.string(from: currentDate)
-        let fileName = "ShareShot_\(formattedDate).png"
-        
+        let formattedDate = DateFormatter.localizedString(from: currentDate, dateStyle: .short, timeStyle: .short)
+        let fileName = "ShareShot_.png" // TODO: rename, now only for debug
         let fileURL = documentsDirectory.appendingPathComponent(fileName)
-        
+
         guard let tiffData = nsImage.tiffRepresentation,
               let bitmapImageRep = NSBitmapImageRep(data: tiffData),
               let pngData = bitmapImageRep.representation(using: .png, properties: [:]) else {
             print("Error converting image to PNG format.")
             return
         }
-        
+
         do {
+            // Write PNG data to a file in the documents directory
             try pngData.write(to: fileURL)
-            
+
             // Save to iCloud
             saveFileToICloud(fileURL: fileURL) { iCloudURL in
                 // Handle iCloud saving completion (e.g., show a notification)
                 if let iCloudURL = iCloudURL {
                     print("Image saved to iCloud. URL: \(iCloudURL)")
+
                     // Optionally, copy the iCloud URL to the clipboard
                     let pasteboard = NSPasteboard.general
                     pasteboard.clearContents()
@@ -214,12 +192,15 @@ struct CaptureStackView: View {
                     print("Error saving image to iCloud.")
                 }
             }
-            
+
+            // Delete the original image
             deleteImage(image)
         } catch {
             print("Error saving image: \(error)")
         }
     }
+
+
     
     private func saveFileToICloud(fileURL: URL, completion: @escaping (URL?) -> Void) {
         let recordID = CKRecord.ID(recordName: "UniqueRecordName")
@@ -276,7 +257,7 @@ struct CaptureStackView: View {
         }
     }
     
-    func openImageInPreview(image: NSImage) {
+    private func openImageInPreview(image: NSImage) {
         let temporaryDirectoryURL = FileManager.default.temporaryDirectory
         let temporaryImageURL = temporaryDirectoryURL.appendingPathComponent("ShareShot.png")
         if let imageData = image.tiffRepresentation, let bitmapRep = NSBitmapImageRep(data: imageData) {
@@ -290,15 +271,5 @@ struct CaptureStackView: View {
             }
         }
         NSWorkspace.shared.open(temporaryImageURL)
-    }
-}
-struct UserSettings {
-    static var securityScopedURL: URL? {
-        get {
-            return UserDefaults.standard.url(forKey: "securityScopedURL")
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: "securityScopedURL")
-        }
     }
 }

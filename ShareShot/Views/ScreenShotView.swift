@@ -150,10 +150,4 @@ struct ScreenShotView: View {
                     }
             )
     }
-    
-    func copyURLToClipboard(url: URL) {
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        pasteboard.setString(url.absoluteString, forType: .string)
-    }
 }
