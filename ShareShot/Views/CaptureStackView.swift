@@ -164,7 +164,7 @@ struct CaptureStackView: View {
         // Generate a unique filename based on the current date and time
         let currentDate = Date()
         let formattedDate = DateFormatter.localizedString(from: currentDate, dateStyle: .short, timeStyle: .short)
-        let fileName = "ShareShot_.png" // TODO: rename, now only for debug
+        let fileName = "ShareShot_\(UUID().uuidString).png"
         let fileURL = documentsDirectory.appendingPathComponent(fileName)
 
         guard let tiffData = nsImage.tiffRepresentation,
@@ -199,11 +199,9 @@ struct CaptureStackView: View {
             print("Error saving image: \(error)")
         }
     }
-
-
     
     private func saveFileToICloud(fileURL: URL, completion: @escaping (URL?) -> Void) {
-        let recordID = CKRecord.ID(recordName: "UniqueRecordName")
+        let recordID = CKRecord.ID(recordName: UUID().uuidString)
         let record = CKRecord(recordType: "YourRecordType", recordID: recordID)
         
         let asset = CKAsset(fileURL: fileURL)
@@ -213,40 +211,33 @@ struct CaptureStackView: View {
         let privateDatabase = container.privateCloudDatabase
         
         privateDatabase.save(record) { (record, error) in
-            if let error = error {
-                print("Error saving to iCloud: \(error.localizedDescription)")
-                completion(nil)
-            } else {
-                print("File successfully saved to iCloud")
-                
-                // Create a share for the record
-                let share = CKShare(rootRecord: record!)
-                share[CKShare.SystemFieldKey.title] = "Shared Image"
-                
-                // Save the share to iCloud
-                privateDatabase.save(share) { (share, error) in
-                    if let error = error {
-                        print("Error creating share: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("Error saving to iCloud: \(error.localizedDescription)")
+                    completion(nil)
+                } else {
+                    print("File successfully saved to iCloud")
+                    
+                    guard let record = record else {
+                        print("Error: CKRecord is nil")
                         completion(nil)
+                        return
+                    }
+                    
+                    let recordName = record.recordID.recordName
+                    let shareURLString = "https://www.icloud.com/share/#\(recordName)"
+                    if let shareURL = URL(string: shareURLString) {
+                        completion(shareURL)
                     } else {
-                        // Construct the share URL manually
-                        guard let recordName = share?.recordID.recordName else {
-                            print("Error getting record name.")
-                            completion(nil)
-                            return
-                        }
-                        let shareURLString = "https://www.icloud.com/share/#\(recordName)"
-                        if let shareURL = URL(string: shareURLString) {
-                            completion(shareURL)
-                        } else {
-                            print("Error constructing share URL.")
-                            completion(nil)
-                        }
+                        print("Error constructing share URL.")
+                        completion(nil)
                     }
                 }
             }
         }
     }
+
+
     
     private func deleteImage(_ image: ImageData) {
         ShareShotApp.appDelegate?.deleteImage(image)

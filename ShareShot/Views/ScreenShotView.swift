@@ -87,7 +87,7 @@ struct ScreenShotView: View {
                                                     }
                                                 }
                                                 Spacer()
-#if NOSANDBOX
+
                                                 HStack{
                                                     Spacer()
                                                     Circle()
@@ -101,7 +101,7 @@ struct ScreenShotView: View {
                                                             saveToiCloud(image)
                                                         }
                                                 }
-#endif
+
                                             }
                                             .padding(7)
                                             VStack(spacing: 15){
