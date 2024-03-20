@@ -224,6 +224,9 @@ struct CaptureStackView: View {
                         return
                     }
                     
+                    // TODO: When opening this url nothing happens
+                    // Is it possible the record is only sharable inside the app?
+                    // So CloudKit is more just like a database, but cannot actually be used for sharing with other people
                     let recordName = record.recordID.recordName
                     let shareURLString = "https://www.icloud.com/share/#\(recordName)"
                     if let shareURL = URL(string: shareURLString) {
