@@ -30,6 +30,8 @@
 		D269967E2B2EB12700CADFDC /* ScreenshotAreaSelectionNonactivatingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D269967D2B2EB12700CADFDC /* ScreenshotAreaSelectionNonactivatingPanel.swift */; };
 		D2A115932B8DED31003A69FF /* CaptureSampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A115922B8DED31003A69FF /* CaptureSampleApp.swift */; };
 		D2A115952B8DEDE1003A69FF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2A115942B8DEDE1003A69FF /* Assets.xcassets */; };
+		D2C5BC6D2BAA2F08004ACF8A /* KeyboardAndMouseEventMonitors.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C5BC6C2BAA2F08004ACF8A /* KeyboardAndMouseEventMonitors.swift */; };
+		D2C5BC6E2BAA2F08004ACF8A /* KeyboardAndMouseEventMonitors.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C5BC6C2BAA2F08004ACF8A /* KeyboardAndMouseEventMonitors.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +51,7 @@
 		D269967D2B2EB12700CADFDC /* ScreenshotAreaSelectionNonactivatingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotAreaSelectionNonactivatingPanel.swift; sourceTree = "<group>"; };
 		D2A115922B8DED31003A69FF /* CaptureSampleApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureSampleApp.swift; sourceTree = "<group>"; };
 		D2A115942B8DEDE1003A69FF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D2C5BC6C2BAA2F08004ACF8A /* KeyboardAndMouseEventMonitors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAndMouseEventMonitors.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +117,7 @@
 			children = (
 				D255C4362B30077000A0C7B2 /* Info.plist */,
 				D255C43E2B31D1D200A0C7B2 /* ScreenshotAreaSelectionView.swift */,
+				D2C5BC6C2BAA2F08004ACF8A /* KeyboardAndMouseEventMonitors.swift */,
 				D255C43C2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift */,
 				D269967D2B2EB12700CADFDC /* ScreenshotAreaSelectionNonactivatingPanel.swift */,
 				8B6934E22B495D29003BFDDF /* ScreenshotStackPanel.swift */,
@@ -242,6 +246,7 @@
 				8BEBDD022B8D3AD4006C6B96 /* ScreenShotView.swift in Sources */,
 				8BEBDD032B8D3AD4006C6B96 /* ScreenshotAreaSelectionNonactivatingPanel.swift in Sources */,
 				8B42E47C2B9675780048BCD0 /* FolderLink.swift in Sources */,
+				D2C5BC6E2BAA2F08004ACF8A /* KeyboardAndMouseEventMonitors.swift in Sources */,
 				8BEBDD042B8D3AD4006C6B96 /* ScreenshotStackPanel.swift in Sources */,
 				8BEBDD052B8D3AD4006C6B96 /* convertToSwiftUICoordinates.swift in Sources */,
 			);
@@ -255,6 +260,7 @@
 				D2A115932B8DED31003A69FF /* CaptureSampleApp.swift in Sources */,
 				8B5E62272B93E78C00455929 /* ImageEditorWindow.swift in Sources */,
 				8BBAE2842B4689260079CCD4 /* CaptureStackView.swift in Sources */,
+				D2C5BC6D2BAA2F08004ACF8A /* KeyboardAndMouseEventMonitors.swift in Sources */,
 				8B6E04CD2B4F4CB600DD5CDB /* ScreenShotView.swift in Sources */,
 				D269967E2B2EB12700CADFDC /* ScreenshotAreaSelectionNonactivatingPanel.swift in Sources */,
 				8B5E62252B93DA1D00455929 /* FolderLink.swift in Sources */,

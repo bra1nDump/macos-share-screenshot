@@ -16,6 +16,7 @@ struct FolderLink: Codable {
 class FolderManager {
     private var recentFolders: [FolderLink] = []
     private let maxRecentFoldersCount = 3
+    
     func addFolderLink(name: String, url: URL) {
         let newLink = FolderLink(name: name, url: url)
         if let existingIndex = recentFolders.firstIndex(where: { $0.url == url }) {
