@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8B42E47C2B9675780048BCD0 /* FolderLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5E62242B93DA1D00455929 /* FolderLink.swift */; };
 		8B5E62252B93DA1D00455929 /* FolderLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5E62242B93DA1D00455929 /* FolderLink.swift */; };
 		8B5E62272B93E78C00455929 /* ImageEditorWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5E62262B93E78C00455929 /* ImageEditorWindow.swift */; };
 		8B6934E32B495D29003BFDDF /* ScreenshotStackPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6934E22B495D29003BFDDF /* ScreenshotStackPanel.swift */; };
@@ -77,22 +76,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8B5E62222B93D50500455929 /* Models */ = {
+		C41D1B1D2814BD230033613F /* Prorotypes */ = {
 			isa = PBXGroup;
 			children = (
 				8B5E62242B93DA1D00455929 /* FolderLink.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		C41D1B1D2814BD230033613F /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */,
-				8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */,
 				8B5E62262B93E78C00455929 /* ImageEditorWindow.swift */,
 			);
-			path = Views;
+			path = Prorotypes;
 			sourceTree = "<group>";
 		};
 		C4B0DA9E276BA4460015082A = {
@@ -117,18 +107,19 @@
 		C4B0DAA9276BA4460015082A /* ShareShot */ = {
 			isa = PBXGroup;
 			children = (
-				D255C4362B30077000A0C7B2 /* Info.plist */,
+				D2A115922B8DED31003A69FF /* CaptureSampleApp.swift */,
+				D269967D2B2EB12700CADFDC /* ScreenshotAreaSelectionNonactivatingPanel.swift */,
 				D255C43E2B31D1D200A0C7B2 /* ScreenshotAreaSelectionView.swift */,
 				D2C5BC6C2BAA2F08004ACF8A /* KeyboardAndMouseEventMonitors.swift */,
-				D255C43C2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift */,
-				D269967D2B2EB12700CADFDC /* ScreenshotAreaSelectionNonactivatingPanel.swift */,
 				8B6934E22B495D29003BFDDF /* ScreenshotStackPanel.swift */,
-				D2A115922B8DED31003A69FF /* CaptureSampleApp.swift */,
+				8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */,
+				8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */,
+				D255C43C2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift */,
 				D266C9A32B2FB87A001D7B66 /* ShowAndHideCursor.h */,
 				D266C99D2B2FB18B001D7B66 /* ShareShot-Bridging-Header.h */,
+				D255C4362B30077000A0C7B2 /* Info.plist */,
 				D2A115942B8DEDE1003A69FF /* Assets.xcassets */,
-				8B5E62222B93D50500455929 /* Models */,
-				C41D1B1D2814BD230033613F /* Views */,
+				C41D1B1D2814BD230033613F /* Prorotypes */,
 			);
 			path = ShareShot;
 			sourceTree = "<group>";
@@ -247,7 +238,6 @@
 				8BEBDD012B8D3AD4006C6B96 /* CaptureStackView.swift in Sources */,
 				8BEBDD022B8D3AD4006C6B96 /* ScreenShotView.swift in Sources */,
 				8BEBDD032B8D3AD4006C6B96 /* ScreenshotAreaSelectionNonactivatingPanel.swift in Sources */,
-				8B42E47C2B9675780048BCD0 /* FolderLink.swift in Sources */,
 				D2C5BC6E2BAA2F08004ACF8A /* KeyboardAndMouseEventMonitors.swift in Sources */,
 				8BEBDD042B8D3AD4006C6B96 /* ScreenshotStackPanel.swift in Sources */,
 				8BEBDD052B8D3AD4006C6B96 /* convertToSwiftUICoordinates.swift in Sources */,
