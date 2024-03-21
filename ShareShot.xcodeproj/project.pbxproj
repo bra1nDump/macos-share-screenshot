@@ -49,6 +49,7 @@
 		D266C99D2B2FB18B001D7B66 /* ShareShot-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ShareShot-Bridging-Header.h"; sourceTree = "<group>"; };
 		D266C9A32B2FB87A001D7B66 /* ShowAndHideCursor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShowAndHideCursor.h; sourceTree = "<group>"; };
 		D269967D2B2EB12700CADFDC /* ScreenshotAreaSelectionNonactivatingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotAreaSelectionNonactivatingPanel.swift; sourceTree = "<group>"; };
+		D276E0542BACA390000C4C06 /* documents */ = {isa = PBXFileReference; lastKnownFileType = folder; path = documents; sourceTree = "<group>"; };
 		D2A115922B8DED31003A69FF /* CaptureSampleApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureSampleApp.swift; sourceTree = "<group>"; };
 		D2A115942B8DEDE1003A69FF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D2C5BC6C2BAA2F08004ACF8A /* KeyboardAndMouseEventMonitors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAndMouseEventMonitors.swift; sourceTree = "<group>"; };
@@ -97,6 +98,7 @@
 		C4B0DA9E276BA4460015082A = {
 			isa = PBXGroup;
 			children = (
+				D276E0542BACA390000C4C06 /* documents */,
 				8D89E0E7125AFE6B4E2E6500 /* README.md */,
 				C4B0DAA9276BA4460015082A /* ShareShot */,
 				C4B0DAA8276BA4460015082A /* Products */,
