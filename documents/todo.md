@@ -6,6 +6,13 @@
   - Show error that failed to save
 - Drag and drop does not work for all things
 - Simplify or decouple the screenshot view - its currently massive with too many stacks and overlays
+- Onboarding. Similar to cleanshot x
+  - First one should be how to create a screenshot, and should appear in the stack and show the key keyboard combination, or say to select from the menu bar
+  - Suggest drag and drop
+  - Exponential backoff showing the hint above the screenshot
+- Multi-display fix [later]
+  - Have the preview follow the cursor (like on cleanshot)
+  - Be able to screenshot on any display (not just the main / current one)
 
 # Technical decisions
 - Persistence - how to implement?
@@ -13,8 +20,7 @@
   - SwiftData
 
 # Later
-- Tutorials - suggest drag and drop
-  - Some global persistent state to know for example the user dragged 3+ times - so don't show the hint anymore
+
 
 - Analytics PostHog - 1 million events free
 

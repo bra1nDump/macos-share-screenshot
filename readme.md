@@ -10,8 +10,9 @@ CleanShot is a great product, but we think sharing / save / upload shortcuts can
 
 - Free
 - Keeps a stack of recent screenshots and avoid going back and forth between apps
-- Allows to share screenshots in 2 clicks to any app, contact
-- Allows drag and drop to any app
+- Share screenshots in 2 clicks to any app, contact
+- Create iCloud link with 1 click
+- Drag and drop to any app
 
 ## How to install
 
