@@ -160,30 +160,30 @@ struct CaptureStackView: View {
             print("Unable to access documents directory.")
             return
         }
-
+        
         // Generate a unique filename based on the current date and time
         let currentDate = Date()
         let formattedDate = DateFormatter.localizedString(from: currentDate, dateStyle: .short, timeStyle: .short)
         let fileName = "ShareShot_\(UUID().uuidString).png"
         let fileURL = documentsDirectory.appendingPathComponent(fileName)
-
+        
         guard let tiffData = nsImage.tiffRepresentation,
               let bitmapImageRep = NSBitmapImageRep(data: tiffData),
               let pngData = bitmapImageRep.representation(using: .png, properties: [:]) else {
             print("Error converting image to PNG format.")
             return
         }
-
+        
         do {
             // Write PNG data to a file in the documents directory
             try pngData.write(to: fileURL)
-
+            
             // Save to iCloud
             saveFileToICloud(fileURL: fileURL) { iCloudURL in
                 // Handle iCloud saving completion (e.g., show a notification)
                 if let iCloudURL = iCloudURL {
                     print("Image saved to iCloud. URL: \(iCloudURL)")
-
+                    
                     // Optionally, copy the iCloud URL to the clipboard
                     let pasteboard = NSPasteboard.general
                     pasteboard.clearContents()
@@ -192,10 +192,16 @@ struct CaptureStackView: View {
                     print("Error saving image to iCloud.")
                 }
             }
-
+            
             // Delete the original image
             deleteImage(image)
         } catch {
+            let alert = NSAlert()
+            alert.messageText = "Error"
+            alert.informativeText = "Failed to save image to iCloud."
+            alert.addButton(withTitle: "OK")
+            alert.alertStyle = .critical
+            alert.runModal()
             print("Error saving image: \(error)")
         }
     }
@@ -239,7 +245,7 @@ struct CaptureStackView: View {
             }
         }
     }
-
+    
 
     
     private func deleteImage(_ image: ImageData) {

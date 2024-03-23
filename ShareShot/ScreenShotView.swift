@@ -61,82 +61,26 @@ struct ScreenShotView: View {
                                         ZStack{
                                             VStack{
                                                 HStack{
-                                                    Circle()
-                                                        .frame(width: 25, height: 25)
-                                                        .foregroundColor(.white)
-                                                        .overlay(
-                                                            Image(systemName: "xmark")
-                                                                .foregroundColor(.black)
-                                                        )
-                                                        .onTapGesture {
-                                                            deleteImage(image)
-                                                        }
+                                                    CircleButton(systemName: "xmark", action: deleteImage, image: image)
                                                     Spacer()
                                                     HStack{
-                                                        Circle()
-                                                            .frame(width: 25, height: 25)
-                                                            .foregroundColor(.white)
-                                                            .overlay(
-                                                                Image(systemName: "square.and.arrow.up")
-                                                                    .foregroundColor(.black)
-                                                                    .offset(y:-2)
-                                                            )
-                                                            .onTapGesture {
-                                                                shareImage(image)
-                                                            }
+                                                    CircleButton(systemName: "square.and.arrow.up", action: shareImage, image: image)
                                                     }
                                                 }
                                                 Spacer()
-
                                                 HStack{
                                                     Spacer()
-                                                    Circle()
-                                                        .frame(width: 25, height: 25)
-                                                        .foregroundColor(.white)
-                                                        .overlay(
-                                                            Image(systemName: "cloud")
-                                                                .foregroundColor(.black)
-                                                        )
-                                                        .onTapGesture {
-                                                            saveToiCloud(image)
-                                                        }
+                                                CircleButton(systemName: "cloud", action: saveToiCloud, image: image)
                                                 }
-
+                                                
                                             }
                                             .padding(7)
                                             VStack(spacing: 15){
-                                                RoundedRectangle(cornerRadius: 20)
-                                                    .frame(width: 110, height: 30)
-                                                    .foregroundColor(.white)
-                                                    .overlay(
-                                                        Text("Copy")
-                                                            .foregroundColor(.black)
-                                                    )
-                                                    .onTapGesture {
-                                                        copyImage(image)
-                                                    }
+                                                TextButton(text: "Copy", action: copyImage, image: image)
 #if NOSANDBOX
-                                                RoundedRectangle(cornerRadius: 20)
-                                                    .frame(width: 110, height: 30)
-                                                    .foregroundColor(.white)
-                                                    .overlay(
-                                                        Text("Save to Desktop")
-                                                            .foregroundColor(.black)
-                                                    )
-                                                    .onTapGesture {
-                                                        saveToDesktopImage(image)
-                                                    }
+                                                TextButton(text: "Save to Desktop", action: saveToDesktopImage, image: image)
 #endif
-                                                RoundedRectangle(cornerRadius: 20)
-                                                    .frame(width: 110, height: 30)
-                                                    .foregroundColor(.white)
-                                                    .overlay(
-                                                        Text("Save as")
-                                                            .foregroundColor(.black)
-                                                    )
-                                                    .onTapGesture {
-                                                        saveImage(image)
-                                                    }
+                                                TextButton(text: "Save as", action: saveImage, image: image)
                                             }
                                         }
                                             .rotationEffect(.degrees(180))
@@ -149,5 +93,41 @@ struct ScreenShotView: View {
                         isHovered = hovering
                     }
             )
+    }
+}
+
+struct CircleButton: View {
+    let systemName: String
+    let action: ((ImageData) -> Void)
+    var image: ImageData
+    var body: some View {
+        Circle()
+            .frame(width: 25, height: 25)
+            .foregroundColor(.white)
+            .overlay(
+                Image(systemName: systemName)
+                    .foregroundColor(.black)
+            )
+            .onTapGesture {
+                action(image)
+            }
+    }
+}
+
+struct TextButton: View {
+    let text: String
+    let action: ((ImageData) -> Void)
+    var image: ImageData
+    var body: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .frame(width: 110, height: 30)
+            .foregroundColor(.white)
+            .overlay(
+                Text(text)
+                    .foregroundColor(.black)
+            )
+            .onTapGesture {
+                action(image)
+            }
     }
 }
