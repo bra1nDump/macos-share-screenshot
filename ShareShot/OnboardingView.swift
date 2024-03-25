@@ -32,6 +32,7 @@ struct OnboardingFirstView: View {
                 }
             }
             .padding()
+            .frame(width: 500, height: 400)
         }
     }
 }
@@ -59,6 +60,7 @@ struct OnboardingSecondView: View {
             .padding()
         }
         .padding()
+        .frame(width: 500, height: 400)
     }
 }
 
@@ -83,9 +85,23 @@ struct OnboardingThirdView: View {
                 .padding()
         }
         .padding()
+        .frame(width: 500, height: 400)
+    }
+}
+
+struct OnboardingScreenshot: View{
+    var body: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .frame(width: 201, height: 152)
+            .foregroundColor(.gray.opacity(0.7))
+            .overlay(
+                Text("Use ⇧⌘7 for screenshot")
+                    .bold()
+                )
+            .rotationEffect(.degrees(180))
     }
 }
 
 #Preview {
-    OnboardingFirstView()
+    OnboardingScreenshot()
 }

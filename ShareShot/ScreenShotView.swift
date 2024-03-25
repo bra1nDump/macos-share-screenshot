@@ -41,7 +41,6 @@ struct ScreenShotView: View {
                             )
                     })
                     .rotationEffect(.degrees(180))
-                    .blur(radius: isHovered ? 5.0 : 0)
                     .cornerRadius(20)
                     .overlay(
                         RoundedRectangle(cornerRadius: 20)

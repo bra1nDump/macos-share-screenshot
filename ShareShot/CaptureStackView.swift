@@ -15,20 +15,33 @@ import CloudKit
 
 struct CaptureStackView: View {
     @State var capturedImages: [ImageData]
+    @AppStorage("onboardingShown") var onboardingShown = true
     var body: some View {
         VStack {
             if !capturedImages.isEmpty {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20){
+                        
                         ForEach(capturedImages.reversed(), id: \.self) { image in
                             ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction, saveToiCloud: saveImageToICloud)
                                 .onTapGesture {
                                     openImageInPreview(image: NSImage(data: image)!)
                                 }
                         }
+                        if onboardingShown{
+                            withAnimation{
+                                OnboardingScreenshot()
+                                    .onAppear{
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                            onboardingShown = false
+                                        }
+                                    }
+                            }
+                        }
                     }
                 }
                 .rotationEffect(.degrees(180))
+                
             }
         }
         .padding(.bottom, 60)

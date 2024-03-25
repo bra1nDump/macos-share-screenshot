@@ -9,6 +9,7 @@ import ScreenCaptureKit
 
 @main
 struct ShareShotApp {
+    @AppStorage("onboardingShown") static var onboardingShown = false
     static var appDelegate: AppDelegate?
     static func main() {
         let appDelegate = AppDelegate()
@@ -47,12 +48,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // so we might want to track if we shown this before, maybe show additional info to the user suggesting to go to settings
         // but do not open the area selection - no point
         let defaults = UserDefaults.standard
-        if !defaults.bool(forKey: "HasLaunchedBefore") {
-            showScreenRecordingPermissionAlert()
+        if defaults.bool(forKey: "HasLaunchedBefore") {
+            showOnboardingFirstView()
+        } else {
+            startScreenshot()
         }
         defaults.set(true, forKey: "HasLaunchedBefore")
 #if DEBUG
-        startScreenshot()
+      //  startScreenshot()
 #endif
         
         cmdShiftSeven.keyDownHandler = { [weak self] in
@@ -108,6 +111,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         screenshotAreaSelectionNoninteractiveWindow.makeKeyAndOrderFront(nil)
         self.overlayWindow = screenshotAreaSelectionNoninteractiveWindow
     }
+    
+    private func showOnboardingFirstView() {
+        let onboardingFirstView = OnboardingFirstView()
+        let hostingController = NSHostingController(rootView: onboardingFirstView)
+        let windowSize = NSSize(width: 500, height: 500)
+        let window = NSWindow(contentRect: NSRect(origin: .zero, size: windowSize), styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+        
+        if let screenFrame = NSScreen.main?.visibleFrame {
+            let x = screenFrame.origin.x + (screenFrame.size.width - windowSize.width) / 2
+            let y = screenFrame.origin.y - (screenFrame.size.height - windowSize.height) / 2
+            let origin = NSPoint(x: x, y: y)
+            window.setFrameOrigin(origin)
+        }
+        
+        window.contentViewController = hostingController
+        window.makeKeyAndOrderFront(nil)
+    }
+
     
     private func setupStatusBarItem() {
         statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)

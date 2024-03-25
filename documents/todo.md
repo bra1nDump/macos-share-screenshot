@@ -3,13 +3,9 @@
 
 - Keep working with Sandbox for now (no saving in common locations with one click, system saver needed)
 - iCloud fix link
-  - Show error that failed to save
 - Drag and drop does not work for all things
-- Simplify or decouple the screenshot view - its currently massive with too many stacks and overlays
 - Onboarding. Similar to cleanshot x
-  - First one should be how to create a screenshot, and should appear in the stack and show the key keyboard combination, or say to select from the menu bar
   - Suggest drag and drop
-  - Exponential backoff showing the hint above the screenshot
 - Multi-display fix [later]
   - Have the preview follow the cursor (like on cleanshot)
   - Be able to screenshot on any display (not just the main / current one)
@@ -56,3 +52,8 @@
 
 - Create user stories / flows
   - Create an example 'story' of how the user would interact with the app and how they use screenshots
+# Done
+  - Show error that failed to save 
+ - Simplify or decouple the screenshot view - its currently massive with too many stacks and overlays
+   - First one should be how to create a screenshot, and should appear in the stack and show the key keyboard combination, or say to select from the menu bar
+     - Exponential backoff showing the hint above the screenshot
