@@ -30,17 +30,6 @@ struct ScreenShotView: View {
                     .frame(width: 200, height: 150)
                     .background(Color.clear)
                     .cornerRadius(10)
-                    .draggable(Image(nsImage: NSImage(data: image)!), preview: {
-                        Image(nsImage: NSImage(data: image)!)
-                            .frame(width: 100, height: 75)
-                            .cornerRadius(10)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.gray, lineWidth: 1)
-                                    .opacity(!isHovered ? 1.0 : 0.0)
-                            )
-                    })
-                    .rotationEffect(.degrees(180))
                     .cornerRadius(20)
                     .overlay(
                         RoundedRectangle(cornerRadius: 20)
@@ -50,7 +39,6 @@ struct ScreenShotView: View {
                     .overlay(
                         RoundedRectangle(cornerRadius: 20)
                             .stroke(Color.white, lineWidth: 1)
-                            .rotationEffect(.degrees(180))
                             .opacity(isHovered ? 1.0 : 0.0)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 10)
@@ -82,7 +70,6 @@ struct ScreenShotView: View {
                                                 TextButton(text: "Save as", action: saveImage, image: image)
                                             }
                                         }
-                                            .rotationEffect(.degrees(180))
                                             .opacity(isHovered ? 1.0 : 0.0)
                                     )
                             )
@@ -91,6 +78,9 @@ struct ScreenShotView: View {
                     .onHover { hovering in
                         isHovered = hovering
                     }
+                    .onDrag {
+                                            NSItemProvider(object: NSImage(data: image)!)
+                                        }
             )
     }
 }

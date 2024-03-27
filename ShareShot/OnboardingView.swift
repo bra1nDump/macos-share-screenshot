@@ -67,6 +67,31 @@ struct OnboardingSecondView: View {
 struct OnboardingThirdView: View {
     var body: some View {
         VStack{
+            Image(systemName: "plus.square.on.square")
+                .resizable()
+                .frame(width: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/, height: 100)
+            Text("Drag and Grop")
+                .bold()
+                .font(.largeTitle)
+                .padding()
+            Text("More options in status bar.")
+            RoundedRectangle(cornerRadius: 15)
+                .frame(width: 150, height: 40)
+                .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
+                .overlay(
+                Text("Next")
+                    .bold()
+                )
+                .padding()
+        }
+        .padding()
+        .frame(width: 500, height: 400)
+    }
+}
+
+struct OnboardingFourthView: View {
+    var body: some View {
+        VStack{
             Image(systemName: "gear")
                 .resizable()
                 .frame(width: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/, height: 100)
@@ -102,6 +127,3 @@ struct OnboardingScreenshot: View{
     }
 }
 
-#Preview {
-    OnboardingScreenshot()
-}

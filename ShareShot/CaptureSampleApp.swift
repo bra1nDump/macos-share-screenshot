@@ -48,7 +48,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // so we might want to track if we shown this before, maybe show additional info to the user suggesting to go to settings
         // but do not open the area selection - no point
         let defaults = UserDefaults.standard
-        if defaults.bool(forKey: "HasLaunchedBefore") {
+        if !defaults.bool(forKey: "HasLaunchedBefore") {
             showOnboardingFirstView()
         } else {
             startScreenshot()
