@@ -8,113 +8,89 @@
 
 import SwiftUI
 
-struct OnboardingFirstView: View {
+struct OnboardingView: View {
+    @State private var currentPage = 0
+    var onComplete: () -> Void
+    let screens = [
+        OnboardingScreen(imageName: "Logo",
+                         title: "Welcome to the ShareShot!",
+                         description: "Let's guide you through a quick setup and tailor ShareShot to your preferences."),
+        OnboardingScreen(imageName: "command",
+                         title: "Shortcut for screenshot",
+                         description: "Let's use ⇧⌘7 for screenshot."),
+        OnboardingScreen(imageName: "plus.square.on.square",
+                         title: "Drag and Drop",
+                         description: "More options in status bar."),
+        OnboardingScreen(imageName: "gear",
+                         title: "Set your preferences",
+                         description: "More options in status bar.")
+    ]
     var body: some View {
-        NavigationStack{
-            VStack{
-                Image("Logo")
-                    .resizable()
-                    .frame(width: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/, height: 100)
-                Text("Welcome to the ShareShot!")
-                    .bold()
-                    .font(.largeTitle)
-                    .padding()
-                Text("Let's guide you through a quick setup and tailor ShareShot to your preferences.")
-                NavigationLink(destination: OnboardingSecondView().navigationBarBackButtonHidden()) {
-                    RoundedRectangle(cornerRadius: 15)
-                        .frame(width: 150, height: 40)
-                        .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
-                        .overlay(
+        VStack {
+            ScrollView {
+                OnboardingScreenView(screen: screens[currentPage])
+            }
+            RoundedRectangle(cornerRadius: 20)
+                .frame(width: 150, height: 30)
+                .foregroundColor(.blue)
+                .overlay(
+                    VStack{
+                        if currentPage == 3{
+                            Text("Start")
+                                .bold()
+                                .padding()
+                                .foregroundColor(.white)
+                        }else{
                             Text("Next")
                                 .bold()
-                        )
-                        .padding()
+                                .padding()
+                                .foregroundColor(.white)
+                        }
+                    }
+                )
+                .onTapGesture {
+                    if currentPage == 3{
+                        onComplete()
+                    }else{
+                        currentPage += 1
+                    }
                 }
+                .padding()
+        }
+        .frame(width: 500, height: 400)
+    }
+}
+
+struct OnboardingScreenView: View {
+    let screen: OnboardingScreen
+    var body: some View {
+        VStack {
+            if screen.imageName == "Logo"{
+                Image(screen.imageName)
+                    .resizable()
+                    .frame(width: 100, height: 100)
+            }else{
+                Image(systemName: screen.imageName)
+                    .resizable()
+                    .frame(width: 100, height: 100)
             }
-            .padding()
-            .frame(width: 500, height: 400)
-        }
-    }
-}
-
-struct OnboardingSecondView: View {
-    var body: some View {
-        VStack{
-            Image(systemName: "command")
-                .resizable()
-                .frame(width: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/, height: 100)
-            Text("Shortcut for screnshot")
+            Text(screen.title)
                 .bold()
                 .font(.largeTitle)
                 .padding()
-            Text("Let's use ⇧⌘7 for screenshot.")
-            NavigationLink(destination: OnboardingThirdView().navigationBarBackButtonHidden()) {
-                RoundedRectangle(cornerRadius: 15)
-                    .frame(width: 150, height: 40)
-                    .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
-                    .overlay(
-                        Text("Next")
-                            .bold()
-                    )
-            }
-            .padding()
+            Text(screen.description)
         }
         .padding()
-        .frame(width: 500, height: 400)
     }
 }
 
-struct OnboardingThirdView: View {
-    var body: some View {
-        VStack{
-            Image(systemName: "plus.square.on.square")
-                .resizable()
-                .frame(width: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/, height: 100)
-            Text("Drag and Grop")
-                .bold()
-                .font(.largeTitle)
-                .padding()
-            Text("More options in status bar.")
-            RoundedRectangle(cornerRadius: 15)
-                .frame(width: 150, height: 40)
-                .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
-                .overlay(
-                Text("Next")
-                    .bold()
-                )
-                .padding()
-        }
-        .padding()
-        .frame(width: 500, height: 400)
-    }
+struct OnboardingScreen {
+    let imageName: String
+    let title: String
+    let description: String
 }
 
-struct OnboardingFourthView: View {
-    var body: some View {
-        VStack{
-            Image(systemName: "gear")
-                .resizable()
-                .frame(width: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/, height: 100)
-            Text("Set your preferences")
-                .bold()
-                .font(.largeTitle)
-                .padding()
-            Text("More options in status bar.")
-            RoundedRectangle(cornerRadius: 15)
-                .frame(width: 150, height: 40)
-                .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
-                .overlay(
-                Text("Next")
-                    .bold()
-                )
-                .padding()
-        }
-        .padding()
-        .frame(width: 500, height: 400)
-    }
-}
-
-struct OnboardingScreenshot: View{
+struct OnboardingScreenshot: View {
     var body: some View {
         RoundedRectangle(cornerRadius: 20)
             .frame(width: 201, height: 152)
@@ -122,8 +98,7 @@ struct OnboardingScreenshot: View{
             .overlay(
                 Text("Use ⇧⌘7 for screenshot")
                     .bold()
-                )
+            )
             .rotationEffect(.degrees(180))
     }
 }
-

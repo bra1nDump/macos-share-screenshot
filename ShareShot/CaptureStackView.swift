@@ -21,7 +21,6 @@ struct CaptureStackView: View {
             if !capturedImages.isEmpty {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20){
-                        
                         ForEach(capturedImages.reversed(), id: \.self) { image in
                             ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction, saveToiCloud: saveImageToICloud)
                                 .onTapGesture {
@@ -42,7 +41,6 @@ struct CaptureStackView: View {
                     }
                 }
                 .rotationEffect(.degrees(180))
-                
             }
         }
         .padding(.bottom, 60)
@@ -263,39 +261,40 @@ struct CaptureStackView: View {
     private func saveFileToICloudAnother(fileURL: URL, completion: @escaping (URL?) -> Void) {
         let recordID = CKRecord.ID(recordName: UUID().uuidString)
         let record = CKRecord(recordType: "YourRecordType", recordID: recordID)
-        
         let asset = CKAsset(fileURL: fileURL)
         record["file"] = asset
-        
+
         let container = CKContainer.default()
         let privateDatabase = container.privateCloudDatabase
-        
+
         privateDatabase.save(record) { (record, error) in
             DispatchQueue.main.async {
                 if let error = error {
                     print("Error saving to iCloud: \(error.localizedDescription)")
                     completion(nil)
-                } else {
-                    print("File successfully saved to iCloud")
-                    
-                    guard let record = record else {
-                        print("Error: CKRecord is nil")
-                        completion(nil)
-                        return
-                    }
-                    let recordName = record.recordID.recordName
-                    let shareURLString = "https://www.icloud.com/share/#\(recordName)"
-                    if let shareURL = URL(string: shareURLString) {
-                        completion(shareURL)
-                    } else {
-                        print("Error constructing share URL.")
-                        completion(nil)
-                    }
+                    return
                 }
+
+                guard let record = record else {
+                    print("Error: CKRecord is nil")
+                    completion(nil)
+                    return
+                }
+
+                let recordName = record.recordID.recordName
+                let shareURLString = "https://www.icloud.com/share/#\(recordName)"
+                guard let shareURL = URL(string: shareURLString) else {
+                    print("Error constructing share URL.")
+                    completion(nil)
+                    return
+                }
+
+                print("File successfully saved to iCloud")
+                completion(shareURL)
             }
         }
     }
-    
+
     private func deleteImage(_ image: ImageData) {
         ShareShotApp.appDelegate?.deleteImage(image)
         if let index = capturedImages.firstIndex(of: image) {

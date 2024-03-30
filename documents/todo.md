@@ -3,7 +3,6 @@
 
 - Keep working with Sandbox for now (no saving in common locations with one click, system saver needed)
 - iCloud fix link
-- Onboarding. Similar to cleanshot x
   - Suggest drag and drop
 - Multi-display fix [later]
   - Have the preview follow the cursor (like on cleanshot)
@@ -58,3 +57,4 @@
 - First one should be how to create a screenshot, and should appear in the stack and show the key keyboard combination, or say to select from the menu bar
 - Exponential backoff showing the hint above the screenshot
 - Drag and drop does not work for all things
+- Onboarding. Similar to cleanshot x

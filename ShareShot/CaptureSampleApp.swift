@@ -48,8 +48,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // so we might want to track if we shown this before, maybe show additional info to the user suggesting to go to settings
         // but do not open the area selection - no point
         let defaults = UserDefaults.standard
-        if !defaults.bool(forKey: "HasLaunchedBefore") {
-            showOnboardingFirstView()
+        if defaults.bool(forKey: "HasLaunchedBefore") {
+            showOnboardingView()
         } else {
             startScreenshot()
         }
@@ -112,22 +112,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.overlayWindow = screenshotAreaSelectionNoninteractiveWindow
     }
     
-    private func showOnboardingFirstView() {
-        let onboardingFirstView = OnboardingFirstView()
-        let hostingController = NSHostingController(rootView: onboardingFirstView)
-        let windowSize = NSSize(width: 500, height: 500)
-        let window = NSWindow(contentRect: NSRect(origin: .zero, size: windowSize), styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+    private func showOnboardingView() {
+        let panel = NSPanel(contentRect: NSRect(x: 0, y: 0, width: 500, height: 500),
+                            styleMask: [.titled, .closable, .resizable],
+                            backing: .buffered,
+                            defer: false)
+        let onboardingView = OnboardingView(onComplete: { self.startScreenshot(); panel.close()})
+        let onboardingViewController = NSHostingController(rootView: onboardingView)
+
+        panel.contentView = NSHostingView(rootView: onboardingView)
+        panel.center() // Центрируем панель на экране
+
+        // Устанавливаем panel.level, чтобы панель была поверх других окон
+        panel.level = .floating
         
-        if let screenFrame = NSScreen.main?.visibleFrame {
-            let x = screenFrame.origin.x + (screenFrame.size.width - windowSize.width) / 2
-            let y = screenFrame.origin.y - (screenFrame.size.height - windowSize.height) / 2
-            let origin = NSPoint(x: x, y: y)
-            window.setFrameOrigin(origin)
-        }
-        
-        window.contentViewController = hostingController
-        window.makeKeyAndOrderFront(nil)
+        panel.makeKeyAndOrderFront(nil)
     }
+
+
+
+
 
     
     private func setupStatusBarItem() {
