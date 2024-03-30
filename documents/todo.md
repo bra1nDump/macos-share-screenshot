@@ -1,46 +1,31 @@
-# TODO
-- Kirill - promote
+Lets continue working with Sandbox for now.
 
-- Keep working with Sandbox for now (no saving in common locations with one click, system saver needed)
-- iCloud fix link
-  - Suggest drag and drop
+# TODO Oleg
+- iCloud fix link or abandon for now
+- Onboarding. Similar to cleanshot x
+  - Add show onboarding button as one of the menu items
+- Fix: share menu appears connected to our invisible stack view, not the screenshot being shared
 - Multi-display fix [later]
   - Have the preview follow the cursor (like on cleanshot)
   - Be able to screenshot on any display (not just the main / current one)
 
-# Technical decisions
-- Persistence - how to implement?
-  - AppStorage in SwiftUI
-  - SwiftData
+# TODO Kirill
+- Add login item to menu bar
+- Implement Cmd+Shift+8 to show history - last 5 probably?
+  - Show history in the menu bar - maybe even make draggable?
+  - NSMenuItem.view can be set and this can be a draggable view
+- Maybe close all button when multiple screenshots are shown?
+
+- Promote
 
 # Later
-
-
-- Analytics PostHog - 1 million events free
-
-- Save to cloud 
+- Save to cloud
   - ICloud - research
+    - [impossible] https://stackoverflow.com/a/27934969/5278310
   - [Later] Google drive - research
   - If user is not logged in into iCloud - show error the user
 
-- Onboarding (assume they have the native screenshot app)
-  - Do we target to remove the default shortcuts? 
-    - maybe just target shift cmd 4?
-    - shoft cmd 3 - also easy to replace - its a subset 
-    - shift cmd 5 - for video - we don't touch it - no support :D
-  - We need to show to the user how to replace the system shortcuts - cleanshot did it reaaaaly well
-
-- Quick actions [no-sandbox]
-  - Share menu
-    - [verdict] the easiest way to 
-    - List of 'blessed apps' - telegram, slack, gmail (web app, we would need google drive integration to add attachments), etc.
-    - Edit the list manually 
-    - Research - can we extract individual items from the list of apps that support sharing?
-      - Re-implement - see if anyone did this?
-  - Save to common folders (for example icloud?)
-    - Can we get path where we ended up saving the file?
-    - Persistence for the list of folder user likes to use
-    - They should be able to edit / pin them manually
+- Analytics PostHog - 1 million events free
 
 # Distribution 
 - Open source
@@ -57,4 +42,18 @@
 - First one should be how to create a screenshot, and should appear in the stack and show the key keyboard combination, or say to select from the menu bar
 - Exponential backoff showing the hint above the screenshot
 - Drag and drop does not work for all things
-- Onboarding. Similar to cleanshot x
+
+# Archive
+
+- Quick actions [no-sandbox]
+  - Share menu
+    - [verdict] the easiest way to 
+    - List of 'blessed apps' - telegram, slack, gmail (web app, we would need google drive integration to add attachments), etc.
+      - [impossible] 
+    - Edit the list manually 
+    - Research - can we extract individual items from the list of apps that support sharing?
+      - Re-implement - see if anyone did this?
+  - Save to common folders (for example icloud?)
+    - Can we get path where we ended up saving the file?
+    - Persistence for the list of folder user likes to use
+    - They should be able to edit / pin them manually
