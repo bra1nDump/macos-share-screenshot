@@ -11,6 +11,7 @@ import ScreenCaptureKit
 struct ShareShotApp {
     @AppStorage("onboardingShown") static var onboardingShown = false
     static var appDelegate: AppDelegate?
+    
     static func main() {
         let appDelegate = AppDelegate()
         ShareShotApp.appDelegate = appDelegate
@@ -20,6 +21,33 @@ struct ShareShotApp {
     }
 }
 
+enum StackState {
+    case inactive
+    case userTookAScreenshot
+    case userAskedToShowHistory
+}
+
+class StackModel: ObservableObject {
+    var state: StackState
+    /// Images shown
+    var images: [ImageData]
+    
+    init(state: StackState, images: [ImageData]) {
+        self.state = state
+        self.images = images
+    }
+}
+
+/**
+ * Showing onboarding
+ * Idle
+ * Taking new screenshot
+ *  (optionally some screenshots are already taken)
+ * Showing stack of screenshots
+ *  (could be from history, could be after taking a screenshot)
+ *  - panel showing the view, array of images to show, a way to modify the array from inside the view
+ */
+
 class AppDelegate: NSObject, NSApplicationDelegate {
     /// Overlay that blocks user interaction without switching key window.
     /// - Removes standard cursor while tracking the mouse position
@@ -28,16 +56,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     /// Each screenshot is added to a stack on the bottom left
     var currentPreviewPanel: ScreenshotStackPanel?
-    var capturedImages: [ImageData] = []
+    
+    // Start out empty
+    @StateObject var stackModel = StackModel(state: .inactive, images: [])
     
     /// Menu bar
     var statusBarItem: NSStatusItem!
     var contextMenu: NSMenu = NSMenu()
     
-    // Does not work when moved outside of COntentView
-    // Probably something to do with not being able to bind commands when no UI is visible
-    // Try - create a random window
+    // Hot Keys
+    // Screenshot
     let cmdShiftSeven = HotKey(key: .seven, modifiers: [.command, .shift])
+    // Show screenshot history
+    let cmdShiftEight = HotKey(key: .eight, modifiers: [.command, .shift])
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusBarItem()
@@ -48,19 +79,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // so we might want to track if we shown this before, maybe show additional info to the user suggesting to go to settings
         // but do not open the area selection - no point
         let defaults = UserDefaults.standard
-        if defaults.bool(forKey: "HasLaunchedBefore") {
+        if defaults.bool(forKey: "HasLaunchedBefore") == false {
             showOnboardingView()
         } else {
-            startScreenshot()
-        }
-        defaults.set(true, forKey: "HasLaunchedBefore")
 #if DEBUG
       //  startScreenshot()
 #endif
-        
+        }
+        defaults.set(true, forKey: "HasLaunchedBefore")
+
         cmdShiftSeven.keyDownHandler = { [weak self] in
             // Make sure the old window is dismissed
             self?.startScreenshot()
+        }
+        
+        cmdShiftEight.keyDownHandler = { [weak self] in
+            // TODO:
         }
     }
     
@@ -81,35 +115,74 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let screenRect = NSScreen.main?.frame ?? NSRect.zero
         let screenshotAreaSelectionNoninteractiveWindow = ScreenshotAreaSelectionNonactivatingPanel(contentRect: screenRect)
         
-        screenshotAreaSelectionNoninteractiveWindow.onComplete = { [self] capturedImageData in
+        screenshotAreaSelectionNoninteractiveWindow.onComplete = { [weak self] capturedImageData in
             // If image data is nil:
             //   - We canceled by either clicking and doing a single pixel selection
             //   - Or by pressing escape
             // Either way show the stack, unless its empty
             
-            if let capturedImageData {
-                // 0th element is top of the stack
-                capturedImages.insert(capturedImageData, at: 0)
+            // Always destroy the screenshot area selection panel
+            self?.overlayWindow = nil
+            
+            // New screenshot arrived, we did not just cancel
+            guard let capturedImageData, let self else {
+                return
             }
             
-            if !capturedImages.isEmpty {
+            // TODO: Save image
+            
+            // Use date
+            let screenshotsDirectory = screenshotHistoryUrl()
+            
+            // TODO: Cleanup the old data
+            // Sort by url - they are carefuly formatted. Delete all (usually one) in the tail
+//            FileManager.default.contentsOfDirectory(at: screenshotsDirectory, includingPropertiesForKeys: nil)
+            
+            let newCapturedScreenshotPath = screenshotsDirectory.appendingPathComponent(dateTimeUniqueScreenshotFileName())
+            try? capturedImageData.write(to: newCapturedScreenshotPath)
+            
+            self.stackModel.images.insert(capturedImageData, at: 0)
+
+            // Show panel if now showing already - actually should never be present!
+            if self.currentPreviewPanel == nil {
                 // Magic configuration to show the panel, combined with the panel's configuration results in
                 // the app not taking away focus from the current app, yet still appearing.
                 // Some of the configuraiton might be discardable - further fiddling might reveal what.
-                let newCapturePreview = ScreenshotStackPanel(imageData: capturedImages)
+                let newCapturePreview = ScreenshotStackPanel(stackModelState: _stackModel)
                 NSApp.activate(ignoringOtherApps: true)
                 newCapturePreview.orderFront(nil)
                 newCapturePreview.makeFirstResponder(newCapturePreview)
                 
+                print("New model image count: \(_stackModel.wrappedValue.images.count)")
+                
                 self.currentPreviewPanel = newCapturePreview
             }
-            
-            // Always destroy the screenshot area selection panel
-            self.overlayWindow = nil
         }
         
         screenshotAreaSelectionNoninteractiveWindow.makeKeyAndOrderFront(nil)
         self.overlayWindow = screenshotAreaSelectionNoninteractiveWindow
+    }
+    
+    /// Show history in the same panel as we normally show users
+    func showScreenshotHistoryStack() {
+        let last4Screenshots = lastNScreenshots(n: 4)
+        
+        // Mutate model in-place
+        stackModel.images = last4Screenshots
+        stackModel.state = .userAskedToShowHistory
+        
+        let newCapturePreview = ScreenshotStackPanel(stackModelState: _stackModel)
+        NSApp.activate(ignoringOtherApps: true)
+        newCapturePreview.orderFront(nil)
+        newCapturePreview.makeFirstResponder(newCapturePreview)
+    }
+
+    func lastNScreenshots(n: Int) -> [ImageData] {
+        let screenshotsDirectory = screenshotHistoryUrl()
+        let urls = try! FileManager.default.contentsOfDirectory(at: screenshotsDirectory, includingPropertiesForKeys: nil)
+        let sortedUrls = urls.sorted { $0.path < $1.path }
+        let lastN = sortedUrls.suffix(n)
+        return lastN.compactMap { try? Data(contentsOf: $0) }
     }
     
     private func showOnboardingView() {
@@ -182,12 +255,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @objc func quitApplication() {
         NSApplication.shared.terminate(self)
-    }
-    
-    @objc func deleteImage(_ image: ImageData) {
-        if let index = capturedImages.firstIndex(of: image) {
-            capturedImages.remove(at: index)
-        }
     }
     
     // Implement any other necessary AppDelegate methods here

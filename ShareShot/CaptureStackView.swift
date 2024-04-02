@@ -14,10 +14,18 @@ import CloudKit
 
 
 struct CaptureStackView: View {
-    @State var capturedImages: [ImageData]
+    @StateObject var model: StackModel
     @AppStorage("onboardingShown") var onboardingShown = true
+    
+    init(model: StateObject<StackModel>, onboardingShown: Bool = true) {
+        self._model = model
+        self.onboardingShown = onboardingShown
+    }
+    
     var body: some View {
         VStack {
+            let capturedImages = model.images
+            
             if !capturedImages.isEmpty {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20){
@@ -236,11 +244,8 @@ struct CaptureStackView: View {
     }
 
     private func deleteImage(_ image: ImageData) {
-        ShareShotApp.appDelegate?.deleteImage(image)
-        if let index = capturedImages.firstIndex(of: image) {
-            withAnimation{
-                capturedImages.remove(at: index)
-            }
+        withAnimation {
+            model.images.removeAll(where: { $0 == image })
         }
     }
     
@@ -259,65 +264,19 @@ struct CaptureStackView: View {
         }
         NSWorkspace.shared.open(temporaryImageURL)
     }
+
     
     // MARK: Sandbox only
     private func saveImageToDesktop(_ image: ImageData) {
-        guard let nsImage = NSImage(data: image) else {
-            print("Unable to convert ImageData to NSImage.")
-            return
-        }
-        
         let desktopURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
-        
         guard let desktop = desktopURL else {
             print("Unable to access desktop directory.")
             return
         }
         
-        let currentDate = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
-        let formattedDate = dateFormatter.string(from: currentDate)
-        let fileName = "CapturedImage_\(formattedDate).png"
-        
+        let fileName = dateTimeUniqueScreenshotFileName()
         let filePath = desktop.appendingPathComponent(fileName)
         
-        do {
-            guard let tiffData = nsImage.tiffRepresentation,
-                  let bitmapImageRep = NSBitmapImageRep(data: tiffData),
-                  let pngData = bitmapImageRep.representation(using: .png, properties: [:]) else {
-                print("Error converting image to PNG format.")
-                return
-            }
-            
-            try pngData.write(to: filePath)
-            deleteImage(image)
-            print("Image saved to desktop.")
-        } catch {
-            print("Error saving image: \(error)")
-        }
-    }
-    
-    private func saveImageURL(at fileURL: URL, _ image: ImageData) {
-        do {
-            guard let nsImage = NSImage(data: image) else {
-                print("Unable to convert ImageData to NSImage.")
-                return
-            }
-            
-            let imageData: Data
-            if let tiffData = nsImage.tiffRepresentation,
-               let bitmapImageRep = NSBitmapImageRep(data: tiffData) {
-                imageData = bitmapImageRep.representation(using: .png, properties: [:]) ?? Data()
-            } else {
-                print("Error converting image to PNG format.")
-                return
-            }
-            
-            try imageData.write(to: fileURL)
-            print("Image saved at \(fileURL.absoluteString)")
-        } catch {
-            print("Error saving image: \(error)")
-        }
+        saveImageAsPng(image: image, at: filePath)
     }
 }

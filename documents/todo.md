@@ -19,6 +19,10 @@ Lets continue working with Sandbox for now.
 - Promote
 
 # Later
+We are storing captured images in two places it seems - here and ScreenshotStackPanel
+We should have a shared model on app delegate level that the ScreenshotStackPanel will
+also consume / mutate
+
 - Save to cloud
   - ICloud - research
     - [impossible] https://stackoverflow.com/a/27934969/5278310
