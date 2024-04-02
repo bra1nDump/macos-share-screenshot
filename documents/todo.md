@@ -3,8 +3,8 @@ Lets continue working with Sandbox for now.
 # TODO Oleg
 - iCloud fix link or abandon for now
 - Onboarding. Similar to cleanshot x
-  - Add show onboarding button as one of the menu items
 - Fix: share menu appears connected to our invisible stack view, not the screenshot being shared
+- Fix: Panel for onboarding sometimes disappears
 - Multi-display fix [later]
   - Have the preview follow the cursor (like on cleanshot)
   - Be able to screenshot on any display (not just the main / current one)
@@ -42,6 +42,7 @@ Lets continue working with Sandbox for now.
 - First one should be how to create a screenshot, and should appear in the stack and show the key keyboard combination, or say to select from the menu bar
 - Exponential backoff showing the hint above the screenshot
 - Drag and drop does not work for all things
+- Add show onboarding button as one of the menu items
 
 # Archive
 
@@ -57,3 +58,4 @@ Lets continue working with Sandbox for now.
     - Can we get path where we ended up saving the file?
     - Persistence for the list of folder user likes to use
     - They should be able to edit / pin them manually
+    

@@ -28,14 +28,15 @@ struct CaptureStackView: View {
                                 }
                                 .rotationEffect(.degrees(180))
                         }
-                        if onboardingShown{
-                            withAnimation{
+                        // Toolkit for screanshoot 
+                        if onboardingShown {
+                            withAnimation {
                                 OnboardingScreenshot()
-                                    .onAppear{
+                                    .onAppear {
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                                             onboardingShown = false
                                         }
-                                    }
+                                }
                             }
                         }
                     }
@@ -48,13 +49,22 @@ struct CaptureStackView: View {
     }
     
     private func shareAction(_ imageData: ImageData) {
-        let sharingPicker = NSSharingServicePicker(items: [NSImage(data: imageData) as Any])
-        if let mainWindow = ShareShotApp.appDelegate?.currentPreviewPanel{
-            sharingPicker.show(relativeTo: mainWindow.contentView!.subviews.first!.bounds, of: mainWindow.contentView!.subviews.first!.subviews.first!, preferredEdge: .maxY)
-            
-        } else {
-            print("No windows available.")
+           let sharingPicker = NSSharingServicePicker(items: [NSImage(data: imageData) as Any])
+       
+        if let mainWindow =  ShareShotApp.appDelegate?.currentPreviewPanel?.contentView?.subviews.first?.subviews.first?.subviews.first?.subviews.first?.subviews.first?.subviews.first?.subviews[indexForImage(imageData)!] {
+            sharingPicker.show(relativeTo: mainWindow.bounds, of: mainWindow, preferredEdge: .minX)
+           } else {
+               print("No windows available.")
+           }
+       }
+    
+    private func indexForImage(_ imageData: ImageData) -> Int? {
+        for (index, image) in capturedImages.enumerated() {
+            if image == imageData {
+                return index
+            }
         }
+        return nil
     }
     
     private func copyToClipboard(_ image: ImageData) {
@@ -65,7 +75,7 @@ struct CaptureStackView: View {
             deleteImage(image)
         }
     }
-    
+  
     private func saveImage(_ image: ImageData) {
         guard let nsImage = NSImage(data: image) else { return }
         let savePanel = NSSavePanel()
@@ -144,7 +154,6 @@ struct CaptureStackView: View {
                     print("Error saving image to iCloud.")
                 }
             }
-            
             // Delete the original image
             deleteImage(image)
         } catch {
@@ -197,48 +206,11 @@ struct CaptureStackView: View {
             }
         }
     }
-    
-    private func saveFileToICloudAnother(fileURL: URL, completion: @escaping (URL?) -> Void) {
-        let recordID = CKRecord.ID(recordName: UUID().uuidString)
-        let record = CKRecord(recordType: "YourRecordType", recordID: recordID)
-        let asset = CKAsset(fileURL: fileURL)
-        record["file"] = asset
-
-        let container = CKContainer.default()
-        let privateDatabase = container.privateCloudDatabase
-
-        privateDatabase.save(record) { (record, error) in
-            DispatchQueue.main.async {
-                if let error = error {
-                    print("Error saving to iCloud: \(error.localizedDescription)")
-                    completion(nil)
-                    return
-                }
-
-                guard let record = record else {
-                    print("Error: CKRecord is nil")
-                    completion(nil)
-                    return
-                }
-
-                let recordName = record.recordID.recordName
-                let shareURLString = "https://www.icloud.com/share/#\(recordName)"
-                guard let shareURL = URL(string: shareURLString) else {
-                    print("Error constructing share URL.")
-                    completion(nil)
-                    return
-                }
-
-                print("File successfully saved to iCloud")
-                completion(shareURL)
-            }
-        }
-    }
-
+  
     private func deleteImage(_ image: ImageData) {
         ShareShotApp.appDelegate?.deleteImage(image)
         if let index = capturedImages.firstIndex(of: image) {
-            withAnimation{
+            withAnimation {
                 capturedImages.remove(at: index)
             }
         }

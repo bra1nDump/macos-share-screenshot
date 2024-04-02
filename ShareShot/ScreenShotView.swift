@@ -45,24 +45,24 @@ struct ScreenShotView: View {
                                     .fill(Color.clear)
                                     .frame(width: 195, height: 145)
                                     .overlay(
-                                        ZStack{
-                                            VStack{
-                                                HStack{
+                                        ZStack {
+                                            VStack {
+                                                HStack {
                                                     CircleButton(systemName: "xmark", action: deleteImage, image: image)
                                                     Spacer()
-                                                    HStack{
+                                                    HStack {
                                                     CircleButton(systemName: "square.and.arrow.up", action: shareImage, image: image)
                                                     }
                                                 }
                                                 Spacer()
-                                                HStack{
+                                                HStack {
                                                     Spacer()
                                                 CircleButton(systemName: "cloud", action: saveToiCloud, image: image)
                                                 }
                                                 
                                             }
                                             .padding(7)
-                                            VStack(spacing: 15){
+                                            VStack(spacing: 15) {
                                                 TextButton(text: "Copy", action: copyImage, image: image)
 #if NOSANDBOX
                                                 TextButton(text: "Save to Desktop", action: saveToDesktopImage, image: image)

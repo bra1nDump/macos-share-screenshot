@@ -48,7 +48,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // so we might want to track if we shown this before, maybe show additional info to the user suggesting to go to settings
         // but do not open the area selection - no point
         let defaults = UserDefaults.standard
-        if defaults.bool(forKey: "HasLaunchedBefore") {
+        if !defaults.bool(forKey: "HasLaunchedBefore") {
             showOnboardingView()
         } else {
             startScreenshot()
@@ -112,18 +112,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.overlayWindow = screenshotAreaSelectionNoninteractiveWindow
     }
     
-    private func showOnboardingView() {
+    @objc private func showOnboardingView() {
         let panel = NSPanel(contentRect: NSRect(x: 0, y: 0, width: 500, height: 500),
                             styleMask: [.titled, .closable, .resizable],
                             backing: .buffered,
                             defer: false)
         let onboardingView = OnboardingView(onComplete: { self.startScreenshot(); panel.close()})
-        let onboardingViewController = NSHostingController(rootView: onboardingView)
+        _ = NSHostingController(rootView: onboardingView)
 
         panel.contentView = NSHostingView(rootView: onboardingView)
-        panel.center() // Центрируем панель на экране
-
-        // Устанавливаем panel.level, чтобы панель была поверх других окон
+        panel.center() 
         panel.level = .floating
         
         panel.makeKeyAndOrderFront(nil)
@@ -148,11 +146,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let screenshot = NSMenuItem(title: "Screenshot", action: #selector(startScreenshot), keyEquivalent: "7")
         screenshot.keyEquivalentModifierMask = [.command, .shift]
         let githubMenuItem = NSMenuItem(title: "GitHub", action: #selector(openGitHub), keyEquivalent: "")
+        let onboardingItem = NSMenuItem(title: "Show Onboarding", action: #selector(showOnboardingView), keyEquivalent: "")
         let quitMenuItem = NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: "Q")
         quitMenuItem.keyEquivalentModifierMask = [.command, .shift]
         _ = [
             screenshot,
             githubMenuItem,
+            onboardingItem,
             NSMenuItem.separator(),
             quitMenuItem,
         ].map(contextMenu.addItem)

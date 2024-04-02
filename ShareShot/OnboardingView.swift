@@ -34,13 +34,13 @@ struct OnboardingView: View {
                 .frame(width: 150, height: 30)
                 .foregroundColor(.blue)
                 .overlay(
-                    VStack{
-                        if currentPage == 3{
+                    VStack {
+                        if currentPage == 3 {
                             Text("Start")
                                 .bold()
                                 .padding()
                                 .foregroundColor(.white)
-                        }else{
+                        } else {
                             Text("Next")
                                 .bold()
                                 .padding()
@@ -69,7 +69,7 @@ struct OnboardingScreenView: View {
                 Image(screen.imageName)
                     .resizable()
                     .frame(width: 100, height: 100)
-            }else{
+            } else {
                 Image(systemName: screen.imageName)
                     .resizable()
                     .frame(width: 100, height: 100)
