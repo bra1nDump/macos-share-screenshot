@@ -14,12 +14,11 @@ import CloudKit
 
 
 struct CaptureStackView: View {
-    @StateObject var model: StackModel
+    var model: StackModel
     @AppStorage("onboardingShown") var onboardingShown = true
     
-    init(model: StateObject<StackModel>, onboardingShown: Bool = true) {
-        self._model = model
-        self.onboardingShown = onboardingShown
+    init(model: StackModel) {
+        self.model = model
     }
     
     var body: some View {
@@ -244,9 +243,9 @@ struct CaptureStackView: View {
     }
 
     private func deleteImage(_ image: ImageData) {
-        withAnimation {
-            model.images.removeAll(where: { $0 == image })
-        }
+        // @Kirill likes the speed over the animations :D
+        // Easier to close all by spamming the button
+        model.images.removeAll(where: { $0 == image })
     }
     
     private func openImageInPreview(image: NSImage) {

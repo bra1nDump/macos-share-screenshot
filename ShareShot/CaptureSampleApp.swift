@@ -7,6 +7,9 @@ import HotKey
 import SwiftUI
 import ScreenCaptureKit
 
+// For the new @Observable macro
+import Observation
+
 @main
 struct ShareShotApp {
     @AppStorage("onboardingShown") static var onboardingShown = false
@@ -27,7 +30,8 @@ enum StackState {
     case userAskedToShowHistory
 }
 
-class StackModel: ObservableObject {
+@Observable
+class StackModel {
     var state: StackState
     /// Images shown
     var images: [ImageData]
@@ -49,6 +53,10 @@ class StackModel: ObservableObject {
  */
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+    // Settings
+    let maxScreenshotsToShowOnStack = 5
+    let maxStoredHistory = 50
+    
     /// Overlay that blocks user interaction without switching key window.
     /// - Removes standard cursor while tracking the mouse position
     /// - Adds a SwiftUI overlay that draws the area selection
@@ -58,7 +66,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var currentPreviewPanel: ScreenshotStackPanel?
     
     // Start out empty
-    @StateObject var stackModel = StackModel(state: .inactive, images: [])
+    // https://developer.apple.com/documentation/swiftui/migrating-from-the-observable-object-protocol-to-the-observable-macro
+    let stackModel = StackModel(state: .inactive, images: [])
     
     /// Menu bar
     var statusBarItem: NSStatusItem!
@@ -72,6 +81,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusBarItem()
+
         
         // TODO: We might want to ask for permissions before trying to screen record using CGRequestScreenCaptureAccess()
         // Probably should do this before allowing the user to proceed with the screenshot
@@ -94,7 +104,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         cmdShiftEight.keyDownHandler = { [weak self] in
-            // TODO:
+            self?.showScreenshotHistoryStack()
         }
     }
     
@@ -107,9 +117,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // This is expected to be visible if we take the second screenshot in a row
         // We will re-show this after the screenshot is complete - or we cancel (might not work right now)
-        if let existingPreviewPanel = self.currentPreviewPanel {
-            existingPreviewPanel.orderOut(nil)
-        }
+        currentPreviewPanel?.orderOut(nil)
         
         // Configure and show screenshot area selection
         let screenRect = NSScreen.main?.frame ?? NSRect.zero
@@ -129,34 +137,42 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 return
             }
             
-            // TODO: Save image
-            
-            // Use date
+            // Persist new one
             let screenshotsDirectory = screenshotHistoryUrl()
+            // Ensure directory exixts
+            try? FileManager.default.createDirectory(at: screenshotsDirectory, withIntermediateDirectories: false)
             
-            // TODO: Cleanup the old data
-            // Sort by url - they are carefuly formatted. Delete all (usually one) in the tail
-//            FileManager.default.contentsOfDirectory(at: screenshotsDirectory, includingPropertiesForKeys: nil)
+            // Cleanup old screenshots
+            deleteOldScreenshots()
             
             let newCapturedScreenshotPath = screenshotsDirectory.appendingPathComponent(dateTimeUniqueScreenshotFileName())
-            try? capturedImageData.write(to: newCapturedScreenshotPath)
-            
-            self.stackModel.images.insert(capturedImageData, at: 0)
-
-            // Show panel if now showing already - actually should never be present!
-            if self.currentPreviewPanel == nil {
-                // Magic configuration to show the panel, combined with the panel's configuration results in
-                // the app not taking away focus from the current app, yet still appearing.
-                // Some of the configuraiton might be discardable - further fiddling might reveal what.
-                let newCapturePreview = ScreenshotStackPanel(stackModelState: _stackModel)
-                NSApp.activate(ignoringOtherApps: true)
-                newCapturePreview.orderFront(nil)
-                newCapturePreview.makeFirstResponder(newCapturePreview)
-                
-                print("New model image count: \(_stackModel.wrappedValue.images.count)")
-                
-                self.currentPreviewPanel = newCapturePreview
+            do {
+                try capturedImageData.write(to: newCapturedScreenshotPath)
+            } catch {
+                print("error saving screenshot to history", error, "at path: ", newCapturedScreenshotPath)
             }
+            
+            // Update model
+            stackModel.images.insert(capturedImageData, at: 0)
+            
+            // Only push up to fixed number of screenshots
+            if stackModel.images.count + 1 > maxScreenshotsToShowOnStack {
+                stackModel.images.removeLast(stackModel.images.count + 1 - maxScreenshotsToShowOnStack )
+            }
+
+            // Create panel hosting the stack if not shown
+            if currentPreviewPanel == nil {
+                currentPreviewPanel = ScreenshotStackPanel(stackModelState: stackModel)
+            }
+            
+            // Always activate the app
+            //
+            // Magic configuration to show the panel, combined with the panel's configuration results in
+            // the app not taking away focus from the current app, yet still appearing.
+            // Some of the configuraiton might be discardable - further fiddling might reveal what.
+            NSApp.activate(ignoringOtherApps: true)
+            currentPreviewPanel?.orderFront(nil)
+            currentPreviewPanel?.makeFirstResponder(self.currentPreviewPanel)
         }
         
         screenshotAreaSelectionNoninteractiveWindow.makeKeyAndOrderFront(nil)
@@ -164,25 +180,44 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     /// Show history in the same panel as we normally show users
+    @objc
     func showScreenshotHistoryStack() {
+        // To avoid overflow show only last 4
         let last4Screenshots = lastNScreenshots(n: 4)
         
         // Mutate model in-place
         stackModel.images = last4Screenshots
         stackModel.state = .userAskedToShowHistory
         
-        let newCapturePreview = ScreenshotStackPanel(stackModelState: _stackModel)
+        let newCapturePreview = ScreenshotStackPanel(stackModelState: stackModel)
         NSApp.activate(ignoringOtherApps: true)
         newCapturePreview.orderFront(nil)
         newCapturePreview.makeFirstResponder(newCapturePreview)
     }
+    
+    func allScreenshotUrlsMostRecentOneIsLast() -> [URL] {
+        let screenshotsDirectory = screenshotHistoryUrl()
+        let urls = try? FileManager.default.contentsOfDirectory(at: screenshotsDirectory, includingPropertiesForKeys: nil)
+        let sortedUrls = (urls ?? []).sorted { $0.path < $1.path }
+        return sortedUrls
+    }
 
     func lastNScreenshots(n: Int) -> [ImageData] {
-        let screenshotsDirectory = screenshotHistoryUrl()
-        let urls = try! FileManager.default.contentsOfDirectory(at: screenshotsDirectory, includingPropertiesForKeys: nil)
-        let sortedUrls = urls.sorted { $0.path < $1.path }
-        let lastN = sortedUrls.suffix(n)
+        let urls = allScreenshotUrlsMostRecentOneIsLast()
+        let lastN = urls.suffix(n)
         return lastN.compactMap { try? Data(contentsOf: $0) }
+    }
+    
+    func deleteOldScreenshots() {
+        let urls = allScreenshotUrlsMostRecentOneIsLast()
+        
+        // Drop the urls to keep
+        let urlsToDelete = urls.dropLast(maxStoredHistory)
+        
+        for url in urlsToDelete {
+            print("removing old screenshot at ", url)
+            try? FileManager.default.removeItem(at: url)
+        }
     }
     
     private func showOnboardingView() {
@@ -191,7 +226,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                             backing: .buffered,
                             defer: false)
         let onboardingView = OnboardingView(onComplete: { self.startScreenshot(); panel.close()})
-        let onboardingViewController = NSHostingController(rootView: onboardingView)
 
         panel.contentView = NSHostingView(rootView: onboardingView)
         panel.center() // Центрируем панель на экране
@@ -219,12 +253,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let contextMenu = NSMenu()
         
         let screenshot = NSMenuItem(title: "Screenshot", action: #selector(startScreenshot), keyEquivalent: "7")
+        let history = NSMenuItem(title: "History", action: #selector(showScreenshotHistoryStack), keyEquivalent: "8")
         screenshot.keyEquivalentModifierMask = [.command, .shift]
         let githubMenuItem = NSMenuItem(title: "GitHub", action: #selector(openGitHub), keyEquivalent: "")
         let quitMenuItem = NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: "Q")
         quitMenuItem.keyEquivalentModifierMask = [.command, .shift]
         _ = [
             screenshot,
+            history,
             githubMenuItem,
             NSMenuItem.separator(),
             quitMenuItem,
