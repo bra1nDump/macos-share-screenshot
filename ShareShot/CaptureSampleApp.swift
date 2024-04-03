@@ -119,7 +119,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                             defer: false)
         let onboardingView = OnboardingView(onComplete: { self.startScreenshot(); panel.close()})
         _ = NSHostingController(rootView: onboardingView)
-
+        panel.isFloatingPanel = true
+        panel.worksWhenModal = true
+        panel.isOpaque = false
+        panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         panel.contentView = NSHostingView(rootView: onboardingView)
         panel.center() 
         panel.level = .floating

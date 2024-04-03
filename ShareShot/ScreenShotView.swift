@@ -9,6 +9,7 @@
 import SwiftUI
 import AppKit
 
+// This view is for creating a screenshot preview with overlaid buttons.
 struct ScreenShotView: View {
     var image: ImageData
     @State private var fileURL: URL?
@@ -24,67 +25,76 @@ struct ScreenShotView: View {
             .frame(width: 201, height: 152)
             .foregroundColor(.clear)
             .overlay(
-                Image(nsImage: NSImage(data: image)!)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 200, height: 150)
-                    .background(Color.clear)
-                    .cornerRadius(10)
-                    .cornerRadius(20)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(Color.gray, lineWidth: 1)
-                            .opacity(!isHovered ? 1.0 : 0.0)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(Color.white, lineWidth: 1)
-                            .opacity(isHovered ? 1.0 : 0.0)
+                Group {
+                    // Check to avoid a fatal error
+                    if let nsImage = NSImage(data: image) {
+                        Image(nsImage: NSImage(data: image)!)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 200, height: 150)
+                            .background(Color.clear)
+                            .cornerRadius(10)
+                            .cornerRadius(20)
                             .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.clear)
-                                    .frame(width: 195, height: 145)
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(Color.gray, lineWidth: 1)
+                                    .opacity(!isHovered ? 1.0 : 0.0)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(Color.white, lineWidth: 1)
+                                    .opacity(isHovered ? 1.0 : 0.0)
                                     .overlay(
-                                        ZStack {
-                                            VStack {
-                                                HStack {
-                                                    CircleButton(systemName: "xmark", action: deleteImage, image: image)
-                                                    Spacer()
-                                                    HStack {
-                                                    CircleButton(systemName: "square.and.arrow.up", action: shareImage, image: image)
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .fill(Color.clear)
+                                            .frame(width: 195, height: 145)
+                                            .overlay(
+                                                ZStack {
+                                                    VStack {
+                                                        HStack {
+                                                            CircleButton(systemName: "xmark", action: deleteImage, image: image)
+                                                            Spacer()
+                                                            HStack {
+                                                                CircleButton(systemName: "square.and.arrow.up", action: shareImage, image: image)
+                                                            }
+                                                        }
+                                                        Spacer()
+                                                        HStack {
+                                                            Spacer()
+                                                            CircleButton(systemName: "cloud", action: saveToiCloud, image: image)
+                                                        }
+                                                        
+                                                    }
+                                                    .padding(7)
+                                                    VStack(spacing: 15) {
+                                                        TextButton(text: "Copy", action: copyImage, image: image)
+#if NOSANDBOX
+                                                        TextButton(text: "Save to Desktop", action: saveToDesktopImage, image: image)
+#endif
+                                                        TextButton(text: "Save as", action: saveImage, image: image)
                                                     }
                                                 }
-                                                Spacer()
-                                                HStack {
-                                                    Spacer()
-                                                CircleButton(systemName: "cloud", action: saveToiCloud, image: image)
-                                                }
-                                                
-                                            }
-                                            .padding(7)
-                                            VStack(spacing: 15) {
-                                                TextButton(text: "Copy", action: copyImage, image: image)
-#if NOSANDBOX
-                                                TextButton(text: "Save to Desktop", action: saveToDesktopImage, image: image)
-#endif
-                                                TextButton(text: "Save as", action: saveImage, image: image)
-                                            }
-                                        }
-                                            .opacity(isHovered ? 1.0 : 0.0)
+                                                    .opacity(isHovered ? 1.0 : 0.0)
+                                            )
                                     )
                             )
-                    )
-                    .focusable(false)
-                    .onHover { hovering in
-                        isHovered = hovering
+                            .focusable(false)
+                            .onHover { hovering in
+                                isHovered = hovering
+                            }
+                            .onDrag {
+                                NSItemProvider(object: NSImage(data: image)!)
+                            }
+                    } else {
+                        Text("Invalid Image")
                     }
-                    .onDrag {
-                                            NSItemProvider(object: NSImage(data: image)!)
-                                        }
+                }
+
             )
     }
 }
 
+// This view is for the small buttons with image overlaying the screenshot preview.
 struct CircleButton: View {
     let systemName: String
     let action: ((ImageData) -> Void)
@@ -103,6 +113,7 @@ struct CircleButton: View {
     }
 }
 
+// This view is for the text buttons overlaying the screenshot preview.
 struct TextButton: View {
     let text: String
     let action: ((ImageData) -> Void)

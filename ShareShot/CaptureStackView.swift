@@ -8,10 +8,8 @@
 
 import SwiftUI
 import AppKit
-import Cocoa
 import Foundation
 import CloudKit
-
 
 struct CaptureStackView: View {
     @State var capturedImages: [ImageData]
@@ -28,7 +26,7 @@ struct CaptureStackView: View {
                                 }
                                 .rotationEffect(.degrees(180))
                         }
-                        // Toolkit for screanshoot 
+                        // Toolkit for screanshoot
                         if onboardingShown {
                             withAnimation {
                                 OnboardingScreenshot()
@@ -49,22 +47,17 @@ struct CaptureStackView: View {
     }
     
     private func shareAction(_ imageData: ImageData) {
-           let sharingPicker = NSSharingServicePicker(items: [NSImage(data: imageData) as Any])
-       
+        let sharingPicker = NSSharingServicePicker(items: [NSImage(data: imageData) as Any])
+        
         if let mainWindow =  ShareShotApp.appDelegate?.currentPreviewPanel?.contentView?.subviews.first?.subviews.first?.subviews.first?.subviews.first?.subviews.first?.subviews.first?.subviews[indexForImage(imageData)!] {
             sharingPicker.show(relativeTo: mainWindow.bounds, of: mainWindow, preferredEdge: .minX)
-           } else {
-               print("No windows available.")
-           }
-       }
+        } else {
+            print("No windows available.")
+        }
+    }
     
     private func indexForImage(_ imageData: ImageData) -> Int? {
-        for (index, image) in capturedImages.enumerated() {
-            if image == imageData {
-                return index
-            }
-        }
-        return nil
+        return capturedImages.firstIndex(of: imageData)
     }
     
     private func copyToClipboard(_ image: ImageData) {
@@ -103,67 +96,64 @@ struct CaptureStackView: View {
                 } catch {
                     print("Error saving image: \(error)")
                 }
-#if SANDBOX
+                #if SANDBOX
                 folderManager.saveToUserDefaults()
                 print(folderManager.getRecentFolders())
-#endif
+                #endif
             }
         }
     }
     
     private func saveImageToICloud(_ image: ImageData) {
+        guard let fileURL = saveImageLocally(image) else {
+            return
+        }
+        
+        saveFileToICloud(fileURL: fileURL) { iCloudURL in
+            if let iCloudURL = iCloudURL {
+                print("Image saved to iCloud. URL: \(iCloudURL)")
+                let pasteboard = NSPasteboard.general
+                pasteboard.clearContents()
+                pasteboard.writeObjects([iCloudURL as NSPasteboardWriting])
+            } else {
+                print("Error saving image to iCloud.")
+            }
+            deleteImage(image)
+        }
+    }
+    
+    private func saveImageLocally(_ image: ImageData) -> URL? {
         guard let nsImage = NSImage(data: image) else {
             print("Unable to convert ImageData to NSImage.")
-            return
+            return nil
         }
 
-        // Obtain the documents directory
-        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            print("Unable to access documents directory.")
-            return
-        }
-        
-        // Generate a unique filename based on the current date and time
-        let currentDate = Date()
-        let formattedDate = DateFormatter.localizedString(from: currentDate, dateStyle: .short, timeStyle: .short)
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        let formattedDate = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .short)
         let fileName = "ShareShot_\(UUID().uuidString).png"
-        let fileURL = documentsDirectory.appendingPathComponent(fileName)
-        
+        let fileURL = documentsDirectory?.appendingPathComponent(fileName)
+
         guard let tiffData = nsImage.tiffRepresentation,
               let bitmapImageRep = NSBitmapImageRep(data: tiffData),
               let pngData = bitmapImageRep.representation(using: .png, properties: [:]) else {
             print("Error converting image to PNG format.")
-            return
+            return nil
         }
-        
+
         do {
-            // Write PNG data to a file in the documents directory
-            try pngData.write(to: fileURL)
-            
-            // Save to iCloud
-            saveFileToICloud(fileURL: fileURL) { iCloudURL in
-                // Handle iCloud saving completion (e.g., show a notification)
-                if let iCloudURL = iCloudURL {
-                    print("Image saved to iCloud. URL: \(iCloudURL)")
-                    
-                    // Optionally, copy the iCloud URL to the clipboard
-                    let pasteboard = NSPasteboard.general
-                    pasteboard.clearContents()
-                    pasteboard.writeObjects([iCloudURL as NSPasteboardWriting])
-                } else {
-                    print("Error saving image to iCloud.")
-                }
-            }
-            // Delete the original image
-            deleteImage(image)
+            try pngData.write(to: fileURL!)
+            return fileURL
         } catch {
-            let alert = NSAlert()
-            alert.messageText = "Error"
-            alert.informativeText = "Failed to save image to iCloud."
-            alert.addButton(withTitle: "OK")
-            alert.alertStyle = .critical
-            alert.runModal()
-            print("Error saving image: \(error)")
+            print("Error saving image locally: \(error)")
+            return nil
+        }
+    }
+    
+    // MARK: Sandbox only
+    private func saveImageToDesktop(_ image: ImageData) {
+        guard let nsImage = NSImage(data: image) else {
+            print("Unable to convert ImageData to NSImage.")
+            return
         }
     }
     
@@ -184,16 +174,11 @@ struct CaptureStackView: View {
                     completion(nil)
                 } else {
                     print("File successfully saved to iCloud")
-                    
                     guard let record = record else {
                         print("Error: CKRecord is nil")
                         completion(nil)
                         return
                     }
-                    
-                    // TODO: When opening this url nothing happens
-                    // Is it possible the record is only sharable inside the app?
-                    // So CloudKit is more just like a database, but cannot actually be used for sharing with other people
                     let recordName = record.recordID.recordName
                     let shareURLString = "https://www.icloud.com/share/#\(recordName)"
                     if let shareURL = URL(string: shareURLString) {
@@ -230,66 +215,5 @@ struct CaptureStackView: View {
             }
         }
         NSWorkspace.shared.open(temporaryImageURL)
-    }
-    
-    // MARK: Sandbox only
-    private func saveImageToDesktop(_ image: ImageData) {
-        guard let nsImage = NSImage(data: image) else {
-            print("Unable to convert ImageData to NSImage.")
-            return
-        }
-        
-        let desktopURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
-        
-        guard let desktop = desktopURL else {
-            print("Unable to access desktop directory.")
-            return
-        }
-        
-        let currentDate = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
-        let formattedDate = dateFormatter.string(from: currentDate)
-        let fileName = "CapturedImage_\(formattedDate).png"
-        
-        let filePath = desktop.appendingPathComponent(fileName)
-        
-        do {
-            guard let tiffData = nsImage.tiffRepresentation,
-                  let bitmapImageRep = NSBitmapImageRep(data: tiffData),
-                  let pngData = bitmapImageRep.representation(using: .png, properties: [:]) else {
-                print("Error converting image to PNG format.")
-                return
-            }
-            
-            try pngData.write(to: filePath)
-            deleteImage(image)
-            print("Image saved to desktop.")
-        } catch {
-            print("Error saving image: \(error)")
-        }
-    }
-    
-    private func saveImageURL(at fileURL: URL, _ image: ImageData) {
-        do {
-            guard let nsImage = NSImage(data: image) else {
-                print("Unable to convert ImageData to NSImage.")
-                return
-            }
-            
-            let imageData: Data
-            if let tiffData = nsImage.tiffRepresentation,
-               let bitmapImageRep = NSBitmapImageRep(data: tiffData) {
-                imageData = bitmapImageRep.representation(using: .png, properties: [:]) ?? Data()
-            } else {
-                print("Error converting image to PNG format.")
-                return
-            }
-            
-            try imageData.write(to: fileURL)
-            print("Image saved at \(fileURL.absoluteString)")
-        } catch {
-            print("Error saving image: \(error)")
-        }
     }
 }
