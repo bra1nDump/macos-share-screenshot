@@ -12,10 +12,17 @@ import Foundation
 import CloudKit
 
 struct CaptureStackView: View {
-    @State var capturedImages: [ImageData]
+    var model: StackModel
     @AppStorage("onboardingShown") var onboardingShown = true
+    
+    init(model: StackModel) {
+        self.model = model
+    }
+    
     var body: some View {
         VStack {
+            let capturedImages = model.images
+            
             if !capturedImages.isEmpty {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20){
@@ -191,14 +198,48 @@ struct CaptureStackView: View {
             }
         }
     }
-  
-    private func deleteImage(_ image: ImageData) {
-        ShareShotApp.appDelegate?.deleteImage(image)
-        if let index = capturedImages.firstIndex(of: image) {
-            withAnimation {
-                capturedImages.remove(at: index)
+    
+    private func saveFileToICloudAnother(fileURL: URL, completion: @escaping (URL?) -> Void) {
+        let recordID = CKRecord.ID(recordName: UUID().uuidString)
+        let record = CKRecord(recordType: "YourRecordType", recordID: recordID)
+        let asset = CKAsset(fileURL: fileURL)
+        record["file"] = asset
+
+        let container = CKContainer.default()
+        let privateDatabase = container.privateCloudDatabase
+
+        privateDatabase.save(record) { (record, error) in
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("Error saving to iCloud: \(error.localizedDescription)")
+                    completion(nil)
+                    return
+                }
+
+                guard let record = record else {
+                    print("Error: CKRecord is nil")
+                    completion(nil)
+                    return
+                }
+
+                let recordName = record.recordID.recordName
+                let shareURLString = "https://www.icloud.com/share/#\(recordName)"
+                guard let shareURL = URL(string: shareURLString) else {
+                    print("Error constructing share URL.")
+                    completion(nil)
+                    return
+                }
+
+                print("File successfully saved to iCloud")
+                completion(shareURL)
             }
         }
+    }
+
+    private func deleteImage(_ image: ImageData) {
+        // @Kirill likes the speed over the animations :D
+        // Easier to close all by spamming the button
+        model.images.removeAll(where: { $0 == image })
     }
     
     private func openImageInPreview(image: NSImage) {
@@ -215,5 +256,20 @@ struct CaptureStackView: View {
             }
         }
         NSWorkspace.shared.open(temporaryImageURL)
+    }
+
+    
+    // MARK: Sandbox only
+    private func saveImageToDesktop(_ image: ImageData) {
+        let desktopURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
+        guard let desktop = desktopURL else {
+            print("Unable to access desktop directory.")
+            return
+        }
+        
+        let fileName = dateTimeUniqueScreenshotFileName()
+        let filePath = desktop.appendingPathComponent(fileName)
+        
+        saveImageAsPng(image: image, at: filePath)
     }
 }

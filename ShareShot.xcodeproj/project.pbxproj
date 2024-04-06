@@ -24,6 +24,8 @@
 		8BEBDD052B8D3AD4006C6B96 /* convertToSwiftUICoordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D255C43C2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift */; };
 		8BEBDD072B8D3AD4006C6B96 /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = 8BEBDCFC2B8D3AD4006C6B96 /* HotKey */; };
 		8BEBDD082B8D3AD4006C6B96 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 8BEBDCFA2B8D3AD4006C6B96 /* LaunchAtLogin */; };
+		D21277F72BBBA020001C0953 /* Persistance.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21277F62BBBA020001C0953 /* Persistance.swift */; };
+		D21277F82BBBA020001C0953 /* Persistance.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21277F62BBBA020001C0953 /* Persistance.swift */; };
 		D255C43D2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D255C43C2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift */; };
 		D255C43F2B31D1D200A0C7B2 /* ScreenshotAreaSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D255C43E2B31D1D200A0C7B2 /* ScreenshotAreaSelectionView.swift */; };
 		D26996772B2EAA7100CADFDC /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = D26996762B2EAA7100CADFDC /* LaunchAtLogin */; };
@@ -45,6 +47,7 @@
 		8BEBDD0F2B8D3AD4006C6B96 /* ShareShot withoutsandbox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ShareShot withoutsandbox.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D89E0E7125AFE6B4E2E6500 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		C4B0DAA7276BA4460015082A /* ShareShot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShareShot.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D21277F62BBBA020001C0953 /* Persistance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistance.swift; sourceTree = "<group>"; };
 		D255C4362B30077000A0C7B2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D255C43C2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = convertToSwiftUICoordinates.swift; sourceTree = "<group>"; };
 		D255C43E2B31D1D200A0C7B2 /* ScreenshotAreaSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotAreaSelectionView.swift; sourceTree = "<group>"; };
@@ -117,8 +120,9 @@
 				8B6934E22B495D29003BFDDF /* ScreenshotStackPanel.swift */,
 				8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */,
 				8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */,
-				D255C43C2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift */,
 				8BB3A9832BAF7350002CA772 /* OnboardingView.swift */,
+				D255C43C2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift */,
+				D21277F62BBBA020001C0953 /* Persistance.swift */,
 				D266C9A32B2FB87A001D7B66 /* ShowAndHideCursor.h */,
 				D266C99D2B2FB18B001D7B66 /* ShareShot-Bridging-Header.h */,
 				D255C4362B30077000A0C7B2 /* Info.plist */,
@@ -240,6 +244,7 @@
 				8BEBDCFF2B8D3AD4006C6B96 /* ScreenshotAreaSelectionView.swift in Sources */,
 				8BB5A2F52B8E6EB300292962 /* CaptureSampleApp.swift in Sources */,
 				8BEBDD012B8D3AD4006C6B96 /* CaptureStackView.swift in Sources */,
+				D21277F82BBBA020001C0953 /* Persistance.swift in Sources */,
 				8BB3A9852BAF7350002CA772 /* OnboardingView.swift in Sources */,
 				8BEBDD022B8D3AD4006C6B96 /* ScreenShotView.swift in Sources */,
 				8BEBDD032B8D3AD4006C6B96 /* ScreenshotAreaSelectionNonactivatingPanel.swift in Sources */,
@@ -258,6 +263,7 @@
 				8B5E62272B93E78C00455929 /* ImageEditorWindow.swift in Sources */,
 				8BBAE2842B4689260079CCD4 /* CaptureStackView.swift in Sources */,
 				D2C5BC6D2BAA2F08004ACF8A /* KeyboardAndMouseEventMonitors.swift in Sources */,
+				D21277F72BBBA020001C0953 /* Persistance.swift in Sources */,
 				8B6E04CD2B4F4CB600DD5CDB /* ScreenShotView.swift in Sources */,
 				D269967E2B2EB12700CADFDC /* ScreenshotAreaSelectionNonactivatingPanel.swift in Sources */,
 				8B5E62252B93DA1D00455929 /* FolderLink.swift in Sources */,

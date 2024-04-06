@@ -14,10 +14,15 @@ Lets continue working with Sandbox for now.
   - Show history in the menu bar - maybe even make draggable?
   - NSMenuItem.view can be set and this can be a draggable view
 - Maybe close all button when multiple screenshots are shown?
+- Kirill is now writing all screenshots to the app's container /Data/screenshots. Can we try opening preview and pointing to the matching screenshot file? I hope this will allow us to allow preview to directly modify the file in place and read that data once the user hits save in Preview. Unlikely though. tmp is probably also within sandbox and Preview is declining to write to that path.
 
 - Promote
 
 # Later
+We are storing captured images in two places it seems - here and ScreenshotStackPanel
+We should have a shared model on app delegate level that the ScreenshotStackPanel will
+also consume / mutate
+
 - Save to cloud
   - ICloud - research
     - [impossible] https://stackoverflow.com/a/27934969/5278310
