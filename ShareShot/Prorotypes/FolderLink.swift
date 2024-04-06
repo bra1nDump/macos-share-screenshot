@@ -8,31 +8,42 @@
 
 import Foundation
 
+// Structure to represent a folder link
 struct FolderLink: Codable {
     var name: String
     var url: URL
 }
 
+// Manager class for handling recent folders
 class FolderManager {
+    // Array to store recent folder links
     private var recentFolders: [FolderLink] = []
+    // Maximum number of recent folders to keep
     private let maxRecentFoldersCount = 3
     
+    // Add a folder link to recent folders
     func addFolderLink(name: String, url: URL) {
         let newLink = FolderLink(name: name, url: url)
+        // Check if the folder already exists, remove it before adding to keep it unique
         if let existingIndex = recentFolders.firstIndex(where: { $0.url == url }) {
             recentFolders.remove(at: existingIndex)
         }
+        // Insert the new folder link at the beginning of the array
         recentFolders.insert(newLink, at: 0)
+        // Remove the last folder link if the count exceeds the maximum
         if recentFolders.count > maxRecentFoldersCount {
             recentFolders.removeLast()
         }
+        // Save the recent folders to UserDefaults
         saveToUserDefaults()
     }
     
+    // Retrieve the recent folders
     func getRecentFolders() -> [FolderLink] {
         return recentFolders
     }
     
+    // Save recent folders to UserDefaults
     func saveToUserDefaults() {
         do {
             let encoder = JSONEncoder()
@@ -43,6 +54,7 @@ class FolderManager {
         }
     }
     
+    // Load recent folders from UserDefaults
     func loadFromUserDefaults() {
         if let data = UserDefaults.standard.data(forKey: "recentFolders") {
             do {

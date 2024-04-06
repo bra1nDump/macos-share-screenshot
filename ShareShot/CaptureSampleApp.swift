@@ -220,7 +220,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    private func showOnboardingView() {
+    @objc private func showOnboardingView() {
         let panel = NSPanel(contentRect: NSRect(x: 0, y: 0, width: 500, height: 500),
                             styleMask: [.titled, .closable, .resizable],
                             backing: .buffered,
@@ -237,42 +237,119 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         panel.makeKeyAndOrderFront(nil)
     }
-
-
-
-
-
     
     private func setupStatusBarItem() {
+        // Create status bar item
         statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         
+        // Set image for status bar item
         let statusBarItemLogo = NSImage(named: NSImage.Name("LogoForStatusBarItem"))!
-        // https://stackoverflow.com/questions/33703966/osx-status-bar-image-sizing-cocoa#:~:text=The%20size%20of%20the%20image%20should%20be%20set%20to%20(18.0%2C%2018.0)
         statusBarItemLogo.size = NSSize(width: 18, height: 18)
         statusBarItem.button?.image = statusBarItemLogo
         
-        // Create a menu
+        // Create menu for status bar item
         let contextMenu = NSMenu()
         
-        let screenshot = NSMenuItem(title: "Screenshot", action: #selector(startScreenshot), keyEquivalent: "7")
-        let history = NSMenuItem(title: "History", action: #selector(showScreenshotHistoryStack), keyEquivalent: "8")
-        screenshot.keyEquivalentModifierMask = [.command, .shift]
-        let githubMenuItem = NSMenuItem(title: "GitHub", action: #selector(openGitHub), keyEquivalent: "")
-        let onboardingItem = NSMenuItem(title: "Show Onboarding", action: #selector(showOnboardingView), keyEquivalent: "")
+        // Add menu items
+        let screenshotMenuItem = NSMenuItem(title: "Screenshot", action: #selector(startScreenshot), keyEquivalent: "7")
+        let historyMenuItem = NSMenuItem(title: "History", action: nil, keyEquivalent: "")
         let quitMenuItem = NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: "Q")
-        quitMenuItem.keyEquivalentModifierMask = [.command, .shift]
-        _ = [
-            screenshot,
-            history,
-            githubMenuItem,
-            onboardingItem,
-            NSMenuItem.separator(),
-            quitMenuItem,
-        ].map(contextMenu.addItem)
         
-        // Set the menu to the status bar item
+        // Set key modifiers for menu items
+        screenshotMenuItem.keyEquivalentModifierMask = [.command, .shift]
+        quitMenuItem.keyEquivalentModifierMask = [.command, .shift]
+        
+        // Add items to menu
+        contextMenu.addItem(screenshotMenuItem)
+        contextMenu.addItem(historyMenuItem) // Placeholder for sub-menu
+        
+        // Add sub-menu for history
+        let historyMenu = NSMenu()
+        let lastScreenshots = lastNScreenshots(n: 5) // Get last 5 screenshots
+        for (index, screenshot) in lastScreenshots.enumerated() {
+            let resizedImage = resizeImage(NSImage(data: screenshot)!, newSize: NSSize(width: 50, height: 50)) // Resize image to 50x50
+            let menuItem = NSMenuItem(title: "Screenshot \(index + 1)", action: nil, keyEquivalent: "")
+            menuItem.image = resizedImage
+            menuItem.representedObject = screenshot // Store data in representedObject
+            menuItem.target = self // Set target to handle drag events
+            menuItem.submenu = createCopyToClipboardSubmenu(for: screenshot) // Add copy to clipboard submenu
+            historyMenu.addItem(menuItem)
+        }
+        historyMenuItem.submenu = historyMenu
+        
+        // Add quit menu item
+        contextMenu.addItem(NSMenuItem.separator())
+        contextMenu.addItem(quitMenuItem)
+        
+        // Set menu for status bar item
         statusBarItem.menu = contextMenu
     }
+
+    // Create a submenu for copying the screenshot to the clipboard
+    func createCopyToClipboardSubmenu(for screenshot: Data) -> NSMenu {
+        let submenu = NSMenu()
+        // Create a menu item "Copy" for copying to the clipboard
+        let copyToClipboardItem = NSMenuItem(title: "Copy", action: #selector(copyToClipboard(_:)), keyEquivalent: "")
+        // Associate the screenshot data with the menu item to pass to the copy method
+        copyToClipboardItem.representedObject = screenshot
+        // Add the "Copy" menu item to the submenu
+        submenu.addItem(copyToClipboardItem)
+        return submenu
+    }
+
+    // Method for copying the screenshot data to the clipboard
+    @objc func copyToClipboard(_ sender: NSMenuItem) {
+        // Get the screenshot data from the associated object of the menu item
+        guard let screenshot = sender.representedObject as? Data else { return }
+        
+        // Clear the contents of the pasteboard
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        // Set the screenshot data to the pasteboard
+        pasteboard.setData(screenshot, forType: .tiff)
+    }
+
+    // Method for resizing the image
+    func resizeImage(_ image: NSImage, newSize: NSSize) -> NSImage {
+        // Create a new image with the specified size
+        let newImage = NSImage(size: newSize)
+        // Draw the original image with the new size
+        newImage.lockFocus()
+        image.draw(in: NSRect(origin: NSPoint.zero, size: newSize),
+                   from: NSRect(origin: NSPoint.zero, size: image.size),
+                   operation: NSCompositingOperation.sourceOver,
+                   fraction: CGFloat(1))
+        newImage.unlockFocus()
+        return NSImage(data: newImage.tiffRepresentation!)! // Return the resized image
+    }
+
+    private func updateRecentScreenshotsMenu(_ historyMenuItem: NSMenuItem) {
+        // Get recent screenshots
+        let lastScreenshots = lastNScreenshots(n: 5)
+        
+        // Clear previous history items
+        if let submenu = historyMenuItem.submenu {
+            for item in submenu.items {
+                if item.title.hasPrefix("Screenshot") {
+                    submenu.removeItem(item)
+                }
+            }
+        }
+
+        
+        // Add new history items
+        for (index, screenshot) in lastScreenshots.enumerated() {
+            let title = "Screenshot \(index + 1)"
+            let menuItem = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+            menuItem.isEnabled = false
+            historyMenuItem.submenu?.addItem(menuItem)
+            
+            if let image = NSImage(data: screenshot) {
+                menuItem.image = image
+            }
+        }
+    }
+
     
     @objc func showScreenRecordingPermissionAlert() {
         let alert = NSAlert()
@@ -300,3 +377,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // Implement any other necessary AppDelegate methods here
 }
 
+// Drag delegate methods
+extension AppDelegate: NSDraggingSource {
+    func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
+        return .copy
+    }
+    
+    func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext, atIndex index: Int) -> NSDragOperation {
+        return .copy
+    }
+    
+    func ignoreModifierKeys(for session: NSDraggingSession) -> Bool {
+        return false
+    }
+}

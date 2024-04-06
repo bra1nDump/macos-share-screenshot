@@ -11,10 +11,12 @@ import AppKit
 import Foundation
 import CloudKit
 
+// SwiftUI view for displaying captured stack of images
 struct CaptureStackView: View {
     var model: StackModel
     @AppStorage("onboardingShown") var onboardingShown = true
     
+    // Initialize with a StackModel
     init(model: StackModel) {
         self.model = model
     }
@@ -26,14 +28,17 @@ struct CaptureStackView: View {
             if !capturedImages.isEmpty {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20){
+                        // Display each captured image in a reversed order
                         ForEach(capturedImages.reversed(), id: \.self) { image in
+                            // Custom view to display screenshot
                             ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction, saveToiCloud: saveImageToICloud)
                                 .onTapGesture {
+                                    // Open the image in Preview app upon tap
                                     openImageInPreview(image: NSImage(data: image)!)
                                 }
                                 .rotationEffect(.degrees(180))
                         }
-                        // Toolkit for screanshoot
+                        // Display onboarding view for screenshot toolkit if onboardingShown is true
                         if onboardingShown {
                             withAnimation {
                                 OnboardingScreenshot()
@@ -53,20 +58,24 @@ struct CaptureStackView: View {
         .padding(20)
     }
     
+    // Share action to share the image
     private func shareAction(_ imageData: ImageData) {
         let sharingPicker = NSSharingServicePicker(items: [NSImage(data: imageData) as Any])
         
-        if let mainWindow =  ShareShotApp.appDelegate?.currentPreviewPanel?.contentView?.subviews.first?.subviews.first?.subviews.first?.subviews.first?.subviews.first?.subviews.first?.subviews[indexForImage(imageData)!] {
+        // Find the main window to show the sharing picker
+        if let mainWindow =  ShareShotApp.appDelegate?.currentPreviewPanel?.contentView?.subviews.first?.subviews.first?.subviews.first?.subviews.first?.subviews.first?.subviews[indexForImage(imageData)!] {
             sharingPicker.show(relativeTo: mainWindow.bounds, of: mainWindow, preferredEdge: .minX)
         } else {
             print("No windows available.")
         }
     }
     
+    // Get the index of the image in the model
     private func indexForImage(_ imageData: ImageData) -> Int? {
-        return capturedImages.firstIndex(of: imageData)
+        return model.images.firstIndex(of: imageData)
     }
     
+    // Copy the image to clipboard
     private func copyToClipboard(_ image: ImageData) {
         if let nsImage = NSImage(data: image) {
             let pasteboard = NSPasteboard.general
@@ -76,6 +85,7 @@ struct CaptureStackView: View {
         }
     }
   
+    // Save the image locally
     private func saveImage(_ image: ImageData) {
         guard let nsImage = NSImage(data: image) else { return }
         let savePanel = NSSavePanel()
@@ -111,6 +121,7 @@ struct CaptureStackView: View {
         }
     }
     
+    // Save the image to iCloud
     private func saveImageToICloud(_ image: ImageData) {
         guard let fileURL = saveImageLocally(image) else {
             return
@@ -129,17 +140,21 @@ struct CaptureStackView: View {
         }
     }
     
+    // Save the image locally and return its URL
     private func saveImageLocally(_ image: ImageData) -> URL? {
+        // Convert ImageData to NSImage
         guard let nsImage = NSImage(data: image) else {
             print("Unable to convert ImageData to NSImage.")
             return nil
         }
 
+        // Get documents directory URL
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
-        let formattedDate = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .short)
+        _ = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .short)
         let fileName = "ShareShot_\(UUID().uuidString).png"
         let fileURL = documentsDirectory?.appendingPathComponent(fileName)
 
+        // Convert NSImage to PNG data and save to fileURL
         guard let tiffData = nsImage.tiffRepresentation,
               let bitmapImageRep = NSBitmapImageRep(data: tiffData),
               let pngData = bitmapImageRep.representation(using: .png, properties: [:]) else {
@@ -156,14 +171,7 @@ struct CaptureStackView: View {
         }
     }
     
-    // MARK: Sandbox only
-    private func saveImageToDesktop(_ image: ImageData) {
-        guard let nsImage = NSImage(data: image) else {
-            print("Unable to convert ImageData to NSImage.")
-            return
-        }
-    }
-    
+    // Save the file to iCloud
     private func saveFileToICloud(fileURL: URL, completion: @escaping (URL?) -> Void) {
         let recordID = CKRecord.ID(recordName: UUID().uuidString)
         let record = CKRecord(recordType: "YourRecordType", recordID: recordID)
@@ -198,50 +206,14 @@ struct CaptureStackView: View {
             }
         }
     }
-    
-    private func saveFileToICloudAnother(fileURL: URL, completion: @escaping (URL?) -> Void) {
-        let recordID = CKRecord.ID(recordName: UUID().uuidString)
-        let record = CKRecord(recordType: "YourRecordType", recordID: recordID)
-        let asset = CKAsset(fileURL: fileURL)
-        record["file"] = asset
 
-        let container = CKContainer.default()
-        let privateDatabase = container.privateCloudDatabase
-
-        privateDatabase.save(record) { (record, error) in
-            DispatchQueue.main.async {
-                if let error = error {
-                    print("Error saving to iCloud: \(error.localizedDescription)")
-                    completion(nil)
-                    return
-                }
-
-                guard let record = record else {
-                    print("Error: CKRecord is nil")
-                    completion(nil)
-                    return
-                }
-
-                let recordName = record.recordID.recordName
-                let shareURLString = "https://www.icloud.com/share/#\(recordName)"
-                guard let shareURL = URL(string: shareURLString) else {
-                    print("Error constructing share URL.")
-                    completion(nil)
-                    return
-                }
-
-                print("File successfully saved to iCloud")
-                completion(shareURL)
-            }
-        }
-    }
-
+    // Delete the image from the model
     private func deleteImage(_ image: ImageData) {
-        // @Kirill likes the speed over the animations :D
-        // Easier to close all by spamming the button
+        // Remove the image from the model's images array
         model.images.removeAll(where: { $0 == image })
     }
     
+    // Open the image in Preview app
     private func openImageInPreview(image: NSImage) {
         let temporaryDirectoryURL = FileManager.default.temporaryDirectory
         let temporaryImageURL = temporaryDirectoryURL.appendingPathComponent("ShareShot.png")
@@ -258,8 +230,9 @@ struct CaptureStackView: View {
         NSWorkspace.shared.open(temporaryImageURL)
     }
 
-    
     // MARK: Sandbox only
+    
+    // Save the image to desktop (sandbox only)
     private func saveImageToDesktop(_ image: ImageData) {
         let desktopURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
         guard let desktop = desktopURL else {
