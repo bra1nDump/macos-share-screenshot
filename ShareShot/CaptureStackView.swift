@@ -15,48 +15,82 @@ import CloudKit
 struct CaptureStackView: View {
     var model: StackModel
     @AppStorage("onboardingShown") var onboardingShown = true
-    
+    @State private var isPanelCollapsed = false
+
     // Initialize with a StackModel
     init(model: StackModel) {
         self.model = model
     }
-    
+
     var body: some View {
         VStack {
             let capturedImages = model.images
-            
+
             if !capturedImages.isEmpty {
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 20){
-                        // Display each captured image in a reversed order
-                        ForEach(capturedImages.reversed(), id: \.self) { image in
-                            // Custom view to display screenshot
-                            ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction, saveToiCloud: saveImageToICloud)
+                VStack{
+                    if isPanelCollapsed {
+                        Spacer()
+                    }
+                    HStack {
+                            // Toggle the panel collapse state
+                            Image(systemName: isPanelCollapsed ? "chevron.down" : "chevron.up")
+                                .resizable()
+                                .frame(width: 120, height: 30)
+                                .foregroundColor(.white.opacity(0.8))
                                 .onTapGesture {
-                                    // Open the image in Preview app upon tap
-                                    openImageInPreview(image: NSImage(data: image)!)
-                                }
-                                .rotationEffect(.degrees(180))
+                                    withAnimation {
+                                        isPanelCollapsed.toggle()
+                                    }
                         }
-                        // Display onboarding view for screenshot toolkit if onboardingShown is true
-                        if onboardingShown {
-                            withAnimation {
-                                OnboardingScreenshot()
-                                    .onAppear {
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                                            onboardingShown = false
-                                        }
+                        .padding()
+                       .foregroundColor(Color.black.opacity(0.5))
+                    }
+                    
+                    .frame(maxWidth: .infinity)
+                    .background(
+                                            RoundedRectangle(cornerRadius: 20)
+                                                .fill(Color.black.opacity(0.5))
+                                        )
+                    .rotationEffect(.degrees(180))
+                    
+                    .padding()
+                }
+
+                if !isPanelCollapsed {
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 20) {
+                            // Display each captured image in a reversed order
+                            ForEach(capturedImages.reversed(), id: \.self) { image in
+                                // Custom view to display screenshot
+                                ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction, saveToiCloud: saveImageToICloud)
+                                    .onTapGesture {
+                                        // Open the image in Preview app upon tap
+                                        openImageInPreview(image: NSImage(data: image)!)
+                                    }
+                                    .rotationEffect(.degrees(180))
+                            }
+                            // Display onboarding view for screenshot toolkit if onboardingShown is true
+                            if onboardingShown {
+                                withAnimation {
+                                    OnboardingScreenshot()
+                                        .onAppear {
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                                onboardingShown = false
+                                            }
+                                    }
                                 }
                             }
                         }
                     }
+                    .rotationEffect(.degrees(180))
                 }
-                .rotationEffect(.degrees(180))
             }
         }
         .padding(.bottom, 60)
         .padding(20)
     }
+
+
     
     // Share action to share the image
     private func shareAction(_ imageData: ImageData) {
@@ -87,20 +121,33 @@ struct CaptureStackView: View {
   
     // Save the image locally
     private func saveImage(_ image: ImageData) {
+        // Check if NSImage can be created from image data
         guard let nsImage = NSImage(data: image) else { return }
+        
+        // Create a save panel for image
         let savePanel = NSSavePanel()
+        
+        // Format the current date for use in the file name
         let currentDate = Date()
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd.MM.yyyy HH:mm"
         let formattedDate = dateFormatter.string(from: currentDate)
+        
+        // Set up save panel parameters
         savePanel.nameFieldStringValue = "CaptureSample - \(formattedDate).png"
         savePanel.message = "Select a directory to save the image"
+        
+        // Initialize folder manager to manage saved folders
         let folderManager = FolderManager()
         folderManager.loadFromUserDefaults()
+        
+        // Begin working with the save panel
         savePanel.begin { response in
             if response == .OK, let url = savePanel.url {
+                // Add a link to the saved folder in the folder manager
                 folderManager.addFolderLink(name: formattedDate, url: url)
                 
+                // Convert image to PNG data and write to file
                 guard let tiffData = nsImage.tiffRepresentation,
                       let bitmapImageRep = NSBitmapImageRep(data: tiffData),
                       let imageData = bitmapImageRep.representation(using: .png, properties: [:]) else {
@@ -108,11 +155,14 @@ struct CaptureStackView: View {
                 }
                 do {
                     try imageData.write(to: url)
+                    // Delete the saved image after successful saving
                     deleteImage(image)
                     print("Image saved")
                 } catch {
                     print("Error saving image: \(error)")
                 }
+                
+                // Save folder information to UserDefaults (for sandbox mode)
                 #if SANDBOX
                 folderManager.saveToUserDefaults()
                 print(folderManager.getRecentFolders())

@@ -8,6 +8,7 @@
 
 import Foundation
 import Cocoa
+import UniformTypeIdentifiers
 
 // Window controller for image editing
 class ImageEditorWindowController: NSWindowController, NSWindowDelegate {
@@ -48,7 +49,8 @@ class ImageEditorWindowController: NSWindowController, NSWindowDelegate {
     // Action method to open an image
     @objc private func openImage(_ sender: Any) {
         let openPanel = NSOpenPanel()
-        openPanel.allowedFileTypes = ["jpg", "jpeg", "png"]
+        let allowedTypes: [UTType] = [.jpeg, .png]
+        openPanel.allowedContentTypes = allowedTypes
         
         openPanel.begin { response in
             if response == .OK, let imageURL = openPanel.url {
@@ -65,8 +67,10 @@ class ImageEditorWindowController: NSWindowController, NSWindowDelegate {
         }
         
         let savePanel = NSSavePanel()
-        savePanel.allowedFileTypes = ["png", "jpg", "jpeg"]
+        let allowedTypes: [UTType] = [.jpeg, .png]
+        savePanel.allowedContentTypes = allowedTypes
         savePanel.begin { response in
+            
             if response == .OK, let saveURL = savePanel.url {
                 guard let data = image.tiffRepresentation else {
                     // Handle the case when there is an issue with image representation

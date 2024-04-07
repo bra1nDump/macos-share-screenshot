@@ -20,14 +20,16 @@ struct ScreenShotView: View {
     var saveToDesktopImage: ((ImageData) -> Void)
     var shareImage: ((ImageData) -> Void)
     var saveToiCloud: ((ImageData) -> Void)
+    
     var body: some View {
-        RoundedRectangle(cornerRadius: 20)
+        RoundedRectangle(cornerRadius: 20) // Container for the screenshot view
             .frame(width: 201, height: 152)
             .foregroundColor(.clear)
             .overlay(
                 Group {
-                    // Check to avoid a fatal error
+                    // Check if NSImage can be created from image data
                     if let nsImage = NSImage(data: image) {
+                        // Display the image
                         Image(nsImage: NSImage(data: image)!)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -35,11 +37,13 @@ struct ScreenShotView: View {
                             .background(Color.clear)
                             .cornerRadius(10)
                             .cornerRadius(20)
+                        // Overlay to show border when hovered
                             .overlay(
                                 RoundedRectangle(cornerRadius: 20)
                                     .stroke(Color.gray, lineWidth: 1)
                                     .opacity(!isHovered ? 1.0 : 0.0)
                             )
+                        // Overlay to show border when hovered
                             .overlay(
                                 RoundedRectangle(cornerRadius: 20)
                                     .stroke(Color.white, lineWidth: 1)
@@ -50,6 +54,7 @@ struct ScreenShotView: View {
                                             .frame(width: 195, height: 145)
                                             .overlay(
                                                 ZStack {
+                                                    // Buttons for actions
                                                     VStack {
                                                         HStack {
                                                             CircleButton(systemName: "xmark", action: deleteImage, image: image)
@@ -66,8 +71,10 @@ struct ScreenShotView: View {
                                                         
                                                     }
                                                     .padding(7)
+                                                    // Buttons for actions
                                                     VStack(spacing: 15) {
                                                         TextButton(text: "Copy", action: copyImage, image: image)
+                                                        // Conditionally show button based on a flag
 #if NOSANDBOX
                                                         TextButton(text: "Save to Desktop", action: saveToDesktopImage, image: image)
 #endif
@@ -78,21 +85,25 @@ struct ScreenShotView: View {
                                             )
                                     )
                             )
+                        // Disable focus on the image
                             .focusable(false)
+                        // Track hover state
                             .onHover { hovering in
                                 isHovered = hovering
                             }
+                        // Enable drag and drop functionality
                             .onDrag {
                                 NSItemProvider(object: NSImage(data: image)!)
                             }
                     } else {
+                        // Display message for invalid image
                         Text("Invalid Image")
                     }
                 }
-
             )
     }
 }
+
 
 // This view is for the small buttons with image overlaying the screenshot preview.
 struct CircleButton: View {
