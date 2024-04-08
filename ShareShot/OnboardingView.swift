@@ -11,7 +11,9 @@ import SwiftUI
 // View for onboarding process
 struct OnboardingView: View {
     @State private var currentPage = 0
-    var onComplete: () -> Void
+    @State private var backgroundColor = Color.blue // Background color for demonstration
+    @State private var nextButtonColor = Color.red
+    let onComplete: () -> Void
     let screens = [
         // Array of onboarding screens
         OnboardingScreen(imageName: "Logo",
@@ -29,42 +31,44 @@ struct OnboardingView: View {
     ]
     
     var body: some View {
-        VStack {
-            ScrollView {
-                // Display the current onboarding screen
-                OnboardingScreenView(screen: screens[currentPage])
-            }
+        ZStack {
+            backgroundColor.edgesIgnoringSafeArea(.all) // Set background color for entire view
             
-            // Next/Start button
-            RoundedRectangle(cornerRadius: 20)
-                .frame(width: 150, height: 30)
-                .foregroundColor(.blue)
-                .overlay(
-                    VStack {
-                        if currentPage == 3 {
-                            Text("Start") // If on the last screen, show "Start"
-                                .bold()
-                                .padding()
-                                .foregroundColor(.white)
-                        } else {
-                            Text("Next") // Otherwise, show "Next"
-                                .bold()
-                                .padding()
-                                .foregroundColor(.white)
+            VStack {
+                    // Display the current onboarding screen
+                    OnboardingScreenView(screen: screens[currentPage])
+                    .padding(.top, 100)
+                Spacer()
+                // Next/Start button with animation
+                    Image(systemName: currentPage == 3 ? "checkmark.circle.fill" : "arrow.right.circle.fill")
+                        .font(.system(size: 44))
+                        .foregroundColor(nextButtonColor)
+                        .onTapGesture {
+                            withAnimation {
+                                // Handle button tap
+                                if currentPage == 3 {
+                                    onComplete() // If on the last screen, call completion handler
+                                } else {
+                                    currentPage += 1 // Otherwise, move to the next screen
+                                    backgroundColor = getNextColor() // Change background color
+                                    nextButtonColor = getButtonColor()
+                                }
                         }
-                    }
-                )
-                .onTapGesture {
-                    // Handle button tap
-                    if currentPage == 3 {
-                        onComplete() // If on the last screen, call completion handler
-                    } else {
-                        currentPage += 1 // Otherwise, move to the next screen
-                    }
                 }
                 .padding()
+            }
         }
-        .frame(width: 500, height: 400)
+        .frame(maxWidth: .infinity, maxHeight: .infinity) // Set frame to fill entire window
+    }
+    
+    // Function to get the next background color
+    func getNextColor() -> Color {
+        let colors: [Color] = [.red, .green, .blue, .orange, .yellow] // Example colors
+        return colors[currentPage % colors.count]
+    }
+    func getButtonColor() -> Color {
+        let colors: [Color] = [.green, .blue, .orange, .yellow] // Example colors
+        return colors[currentPage % colors.count]
     }
 }
 

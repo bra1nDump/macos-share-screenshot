@@ -110,7 +110,7 @@ struct ScreenshotAreaSelectionView: View {
                             state = .capturingInProgress
 
                             Task(priority: .userInitiated) {
-                                if let screenshot = await captureScreenshot(rect: frame) {
+                                if let screenshot = await captureScreenshot(display: (NSScreen.main?.displayID)!, rect: frame) {
                                     onComplete(screenshot)
                                 } else {
                                     print("WARNING: Capture failed! Still dismissing screenshot view")
@@ -174,8 +174,8 @@ struct ScreenshotAreaSelectionView: View {
         return display
     }
     
-    private func captureScreenshot(rect: CGRect) async -> Data? {
-        if #available(macOS 14.0, *) {
+    private func captureScreenshot(display: CGDirectDisplayID, rect: CGRect) async -> Data? {
+            if #available(macOS 14.0, *) {
             guard let display = await getShareableContent() else {
                 return nil
             }
@@ -214,7 +214,7 @@ struct ScreenshotAreaSelectionView: View {
             
             return NSImage(cgImage: cgImage, size: rect.size).tiffRepresentation
         } else {
-            guard let cgImage = CGDisplayCreateImage(CGMainDisplayID(), rect: rect) else {
+            guard let cgImage = CGDisplayCreateImage(display, rect: rect) else {
                 return nil
             }
             let capturedImage = NSImage(cgImage: cgImage, size: rect.size)
@@ -223,7 +223,7 @@ struct ScreenshotAreaSelectionView: View {
             }
 
             return capturedImage.tiffRepresentation
-        }
+       }
     }
 
     static private func toFrame(anchorPoint: CGPoint, virtualCursorPosition: CGPoint) -> CGRect {
@@ -232,6 +232,25 @@ struct ScreenshotAreaSelectionView: View {
                width: abs(anchorPoint.x - virtualCursorPosition.x),
                height: abs(anchorPoint.y - virtualCursorPosition.y))
     }
+}
+
+// Extension to get CGDirectDisplayID from NSScreen
+extension NSScreen {
+    var displayID: CGDirectDisplayID? {
+        guard let screen = self.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber else {
+            return nil
+        }
+        return CGDirectDisplayID(truncating: screen)
+    }
+}
+
+// Function to get all available displays
+func getAllDisplays() -> [NSScreen] {
+    return NSScreen.screens
+}
+
+func getScreenContainingPoint(point: NSPoint) -> NSScreen? {
+    return NSScreen.screens.first(where: { NSMouseInRect(point, $0.frame, false) })
 }
 
 typealias ImageData = Data

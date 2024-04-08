@@ -28,7 +28,7 @@ struct ScreenShotView: View {
             .overlay(
                 Group {
                     // Check if NSImage can be created from image data
-                    if let nsImage = NSImage(data: image) {
+                    if NSImage(data: image) != nil {
                         // Display the image
                         Image(nsImage: NSImage(data: image)!)
                             .resizable()

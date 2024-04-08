@@ -2,8 +2,6 @@ Lets continue working with Sandbox for now.
 
 # TODO Oleg
 - iCloud fix link or abandon for now
-- Onboarding. Similar to cleanshot x
-- Fix: Panel for onboarding sometimes disappears
 - Multi-display fix [later]
   - Have the preview follow the cursor (like on cleanshot)
   - Be able to screenshot on any display (not just the main / current one)
@@ -48,6 +46,8 @@ also consume / mutate
 - Drag and drop does not work for all things
 - Add show onboarding button as one of the menu items
 - Fix: share menu appears connected to our invisible stack view, not the screenshot being shared
+- Onboarding. Similar to cleanshot x
+- Fix: Panel for onboarding sometimes disappears
 
 # Archive
 

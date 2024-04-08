@@ -70,5 +70,20 @@ class ScreenshotAreaSelectionNonactivatingPanel: NSPanel {
         
         cHideCursor()
     }
+    
+    override func keyDown(with event: NSEvent) {
+        if event.keyCode == 53 { // Escape key code
+            self.close()
+        } else {
+            super.keyDown(with: event)
+        }
+    }
+    
+    override func mouseDown(with event: NSEvent) {
+        if !self.frame.contains(event.locationInWindow) {
+            self.close()
+        } else {
+            super.mouseDown(with: event)
+        }
+    }
 }
-
