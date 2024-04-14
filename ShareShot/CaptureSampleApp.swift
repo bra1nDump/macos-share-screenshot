@@ -252,7 +252,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Add menu items
         let screenshotMenuItem = NSMenuItem(title: "Screenshot", action: #selector(startScreenshot), keyEquivalent: "7")
-        let historyMenuItem = NSMenuItem(title: "History", action: nil, keyEquivalent: "")
         let quitMenuItem = NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: "Q")
         
         // Set key modifiers for menu items
@@ -261,24 +260,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Add items to menu
         contextMenu.addItem(screenshotMenuItem)
-        contextMenu.addItem(historyMenuItem) // Placeholder for sub-menu
         
-        // Add sub-menu for history
-        let historyMenu = NSMenu()
+        // Add history items directly to main menu
+        contextMenu.addItem(NSMenuItem.separator())
         let lastScreenshots = lastNScreenshots(n: 5) // Get last 5 screenshots
         for (index, screenshot) in lastScreenshots.enumerated() {
-            let resizedImage = resizeImage(NSImage(data: screenshot)!, newSize: NSSize(width: 50, height: 50)) // Resize image to 50x50
-            let menuItem = NSMenuItem(title: "Screenshot \(index + 1)", action: nil, keyEquivalent: "")
+            let resizedImage = resizeImage(NSImage(data: screenshot)!, newSize: NSSize(width: 70, height: 50)) // Resize image to 50x50
+            let menuItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
             menuItem.image = resizedImage
             menuItem.representedObject = screenshot // Store data in representedObject
             menuItem.target = self // Set target to handle drag events
             menuItem.submenu = createCopyToClipboardSubmenu(for: screenshot) // Add copy to clipboard submenu
-            historyMenu.addItem(menuItem)
+            contextMenu.addItem(menuItem)
         }
-        historyMenuItem.submenu = historyMenu
+        contextMenu.addItem(NSMenuItem.separator())
         
         // Add quit menu item
-        contextMenu.addItem(NSMenuItem.separator())
         contextMenu.addItem(quitMenuItem)
         
         // Set menu for status bar item
@@ -378,16 +375,47 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 // Drag delegate methods
-extension AppDelegate: NSDraggingSource {
-    func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
+extension AppDelegate: NSDraggingDestination {
+    func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
         return .copy
     }
     
-    func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext, atIndex index: Int) -> NSDragOperation {
-        return .copy
+    func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        let pasteboard = sender.draggingPasteboard
+        if let item = pasteboard.pasteboardItems?.first {
+            if let imageData = item.data(forType: .tiff) {
+                // Handle dropped image data
+                // For example, you can save it to a file or perform any other operation
+                print("Image dropped!")
+                return true
+            }
+        }
+        return false
     }
     
-    func ignoreModifierKeys(for session: NSDraggingSession) -> Bool {
+    func prepareForDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        return true
+    }
+}
+
+class DragDropView: NSView {
+    override func awakeFromNib() {
+        registerForDraggedTypes([.fileURL])
+    }
+    
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        return sender.draggingSourceOperationMask
+    }
+    
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        let pasteboard = sender.draggingPasteboard
+        if let files = pasteboard.propertyList(forType: .fileURL) as? [String] {
+            // Handle dropped file URLs
+            for file in files {
+                print("Dropped file: \(file)")
+            }
+            return true
+        }
         return false
     }
 }

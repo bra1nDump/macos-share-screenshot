@@ -2,9 +2,11 @@ Lets continue working with Sandbox for now.
 
 # TODO Oleg
 - iCloud fix link or abandon for now
+- Update screenshot history
 - Multi-display fix [later]
   - Have the preview follow the cursor (like on cleanshot)
   - Be able to screenshot on any display (not just the main / current one)
+  
 
 # TODO Kirill
 - Add login item to menu bar
