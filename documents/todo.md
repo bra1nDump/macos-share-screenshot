@@ -1,24 +1,31 @@
 Lets continue working with Sandbox for now.
 
 # TODO Oleg
-- iCloud fix link or abandon for now
 - Update screenshot history
-- Multi-display fix [later]
-  - Have the preview follow the cursor (like on cleanshot)
-  - Be able to screenshot on any display (not just the main / current one)
-  
+  - refactor to have swiftUI in the entire status bar
+  - will also take care of the reactivity to changes in capture history
+  - Make draggable
+  - Maybe "close all" translucent button when multiple screenshots are shown?
+- Ditch the separate history panel for now
+- Get the first test flight out
+- Add login item to menu bar - needed to launch the app on startup
+
 
 # TODO Kirill
-- Add login item to menu bar
-- Implement Cmd+Shift+8 to show history - last 5 probably?
-  - Show history in the menu bar - maybe even make draggable?
-  - NSMenuItem.view can be set and this can be a draggable view
-- Maybe close all button when multiple screenshots are shown?
+- Test flight - Oleg will let Kirill know when ready to test, Kirill will deploy
+
 - Kirill is now writing all screenshots to the app's container /Data/screenshots. Can we try opening preview and pointing to the matching screenshot file? I hope this will allow us to allow preview to directly modify the file in place and read that data once the user hits save in Preview. Unlikely though. tmp is probably also within sandbox and Preview is declining to write to that path.
 
 - Promote
 
 # Later
+- Multi-display fix [later, Oleg does not have 2 displays to test with at this time]
+  - Have the preview follow the cursor (like on cleanshot)
+  - Be able to screenshot on any display (not just the main / current one)
+
+- iCloud fix link or abandon for now
+  - Might not be possible
+
 We are storing captured images in two places it seems - here and ScreenshotStackPanel
 We should have a shared model on app delegate level that the ScreenshotStackPanel will
 also consume / mutate
@@ -41,6 +48,10 @@ also consume / mutate
   - Create an example 'story' of how the user would interact with the app and how they use screenshots
   
 # Done
+- Implement Cmd+Shift+8 to show history - last 5 probably?
+  - Show history in the menu bar - maybe even make draggable?
+  - NSMenuItem.view can be set and this can be a draggable view
+
 - Show error that failed to save 
 - Simplify or decouple the screenshot view - its currently massive with too many stacks and overlays
 - First one should be how to create a screenshot, and should appear in the stack and show the key keyboard combination, or say to select from the menu bar
