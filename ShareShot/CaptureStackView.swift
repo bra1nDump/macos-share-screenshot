@@ -24,7 +24,7 @@ struct CaptureStackView: View {
 
     var body: some View {
         VStack {
-            let capturedImages = model.images
+            var capturedImages = model.images
 
             if !capturedImages.isEmpty {
                 VStack{
@@ -45,44 +45,53 @@ struct CaptureStackView: View {
                         .padding()
                        .foregroundColor(Color.black.opacity(0.5))
                     }
-                    
                     .frame(maxWidth: .infinity)
                     .background(
                                             RoundedRectangle(cornerRadius: 20)
                                                 .fill(Color.black.opacity(0.5))
                                         )
                     .rotationEffect(.degrees(180))
-                    
                     .padding()
-                }
-
-                if !isPanelCollapsed {
-                    ScrollView(showsIndicators: false) {
-                        VStack(spacing: 20) {
-                            // Display each captured image in a reversed order
-                            ForEach(capturedImages.reversed(), id: \.self) { image in
-                                // Custom view to display screenshot
-                                ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction, saveToiCloud: saveImageToICloud)
-                                    .onTapGesture {
-                                        // Open the image in Preview app upon tap
-                                        openImageInPreview(image: NSImage(data: image)!)
-                                    }
-                                    .rotationEffect(.degrees(180))
-                            }
-                            // Display onboarding view for screenshot toolkit if onboardingShown is true
-                            if onboardingShown {
-                                withAnimation {
-                                    OnboardingScreenshot()
-                                        .onAppear {
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                                                onboardingShown = false
-                                            }
+                    
+                    if !isPanelCollapsed {
+                        ScrollView(showsIndicators: false) {
+                            VStack(spacing: 20) {
+                                // Display each captured image in a reversed order
+                                ForEach(capturedImages.reversed(), id: \.self) { image in
+                                    // Custom view to display screenshot
+                                    ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction, saveToiCloud: saveImageToICloud)
+                                        .onTapGesture {
+                                            // Open the image in Preview app upon tap
+                                            openImageInPreview(image: NSImage(data: image)!)
+                                        }
+                                        .rotationEffect(.degrees(180))
+                                }
+                                // Display onboarding view for screenshot toolkit if onboardingShown is true
+                                if onboardingShown {
+                                    withAnimation {
+                                        OnboardingScreenshot()
+                                            .onAppear {
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                                    onboardingShown = false
+                                                }
+                                        }
                                     }
                                 }
+                                // Close All button
+                                Button(action: {
+                                    // Implement logic to close all screenshots
+                                    capturedImages.removeAll()
+                                }) {
+                                    Text("Close All")
+                                }
+                                .padding()
+                                .background(Color.red)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
                             }
                         }
+                        .rotationEffect(.degrees(180))
                     }
-                    .rotationEffect(.degrees(180))
                 }
             }
         }
