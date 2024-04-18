@@ -31,28 +31,6 @@ struct CaptureStackView: View {
                     if isPanelCollapsed {
                         Spacer()
                     }
-                    HStack {
-                            // Toggle the panel collapse state
-                            Image(systemName: isPanelCollapsed ? "chevron.down" : "chevron.up")
-                                .resizable()
-                                .frame(width: 120, height: 30)
-                                .foregroundColor(.white.opacity(0.8))
-                                .onTapGesture {
-                                    withAnimation {
-                                        isPanelCollapsed.toggle()
-                                    }
-                        }
-                        .padding()
-                       .foregroundColor(Color.black.opacity(0.5))
-                    }
-                    .frame(maxWidth: .infinity)
-                    .background(
-                                            RoundedRectangle(cornerRadius: 20)
-                                                .fill(Color.black.opacity(0.5))
-                                        )
-                    .rotationEffect(.degrees(180))
-                    .padding()
-                    
                     if !isPanelCollapsed {
                         ScrollView(showsIndicators: false) {
                             VStack(spacing: 20) {
@@ -79,15 +57,18 @@ struct CaptureStackView: View {
                                 }
                                 // Close All button
                                 Button(action: {
-                                    // Implement logic to close all screenshots
-                                    capturedImages.removeAll()
+                                    withAnimation {
+                                        isPanelCollapsed.toggle()
+                                    }
                                 }) {
                                     Text("Close All")
+                                        .font(.title)
+                                        .frame(width: 100, height: 40)
                                 }
                                 .padding()
-                                .background(Color.red)
                                 .foregroundColor(.white)
                                 .cornerRadius(10)
+                                .rotationEffect(.degrees(180))
                             }
                         }
                         .rotationEffect(.degrees(180))

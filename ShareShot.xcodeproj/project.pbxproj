@@ -16,8 +16,7 @@
 		8BB5A2F52B8E6EB300292962 /* CaptureSampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A115922B8DED31003A69FF /* CaptureSampleApp.swift */; };
 		8BB5A2F62B8E6F4000292962 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2A115942B8DEDE1003A69FF /* Assets.xcassets */; };
 		8BBAE2842B4689260079CCD4 /* CaptureStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */; };
-		8BC75D282BCC9FEF0083441C /* HistoryStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC75D272BCC9FEF0083441C /* HistoryStackView.swift */; };
-		8BC75D2A2BCCA0010083441C /* HistoryStackPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC75D292BCCA0010083441C /* HistoryStackPanel.swift */; };
+		8BE726E72BD0A2AA0039601A /* ScreenShotStatusBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE726E62BD0A2AA0039601A /* ScreenShotStatusBarView.swift */; };
 		8BEBDCFF2B8D3AD4006C6B96 /* ScreenshotAreaSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D255C43E2B31D1D200A0C7B2 /* ScreenshotAreaSelectionView.swift */; };
 		8BEBDD012B8D3AD4006C6B96 /* CaptureStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */; };
 		8BEBDD022B8D3AD4006C6B96 /* ScreenShotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */; };
@@ -26,6 +25,8 @@
 		8BEBDD052B8D3AD4006C6B96 /* convertToSwiftUICoordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D255C43C2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift */; };
 		8BEBDD072B8D3AD4006C6B96 /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = 8BEBDCFC2B8D3AD4006C6B96 /* HotKey */; };
 		8BEBDD082B8D3AD4006C6B96 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 8BEBDCFA2B8D3AD4006C6B96 /* LaunchAtLogin */; };
+		8BFDCEF92BCEADE500B7E84E /* StatusBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFDCEF82BCEADE500B7E84E /* StatusBarView.swift */; };
+		8BFDCEFA2BCEADE500B7E84E /* StatusBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFDCEF82BCEADE500B7E84E /* StatusBarView.swift */; };
 		D21277F72BBBA020001C0953 /* Persistance.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21277F62BBBA020001C0953 /* Persistance.swift */; };
 		D21277F82BBBA020001C0953 /* Persistance.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21277F62BBBA020001C0953 /* Persistance.swift */; };
 		D255C43D2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D255C43C2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift */; };
@@ -46,9 +47,9 @@
 		8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenShotView.swift; sourceTree = "<group>"; };
 		8BB3A9832BAF7350002CA772 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureStackView.swift; sourceTree = "<group>"; };
-		8BC75D272BCC9FEF0083441C /* HistoryStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStackView.swift; sourceTree = "<group>"; };
-		8BC75D292BCCA0010083441C /* HistoryStackPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStackPanel.swift; sourceTree = "<group>"; };
+		8BE726E62BD0A2AA0039601A /* ScreenShotStatusBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenShotStatusBarView.swift; sourceTree = "<group>"; };
 		8BEBDD0F2B8D3AD4006C6B96 /* ShareShot withoutsandbox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ShareShot withoutsandbox.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8BFDCEF82BCEADE500B7E84E /* StatusBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarView.swift; sourceTree = "<group>"; };
 		8D89E0E7125AFE6B4E2E6500 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		C4B0DAA7276BA4460015082A /* ShareShot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShareShot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D21277F62BBBA020001C0953 /* Persistance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistance.swift; sourceTree = "<group>"; };
@@ -122,11 +123,11 @@
 				D255C43E2B31D1D200A0C7B2 /* ScreenshotAreaSelectionView.swift */,
 				D2C5BC6C2BAA2F08004ACF8A /* KeyboardAndMouseEventMonitors.swift */,
 				8B6934E22B495D29003BFDDF /* ScreenshotStackPanel.swift */,
+				8BFDCEF82BCEADE500B7E84E /* StatusBarView.swift */,
 				8BBAE2832B4689260079CCD4 /* CaptureStackView.swift */,
 				8B6E04CC2B4F4CB600DD5CDB /* ScreenShotView.swift */,
 				8BB3A9832BAF7350002CA772 /* OnboardingView.swift */,
-				8BC75D272BCC9FEF0083441C /* HistoryStackView.swift */,
-				8BC75D292BCCA0010083441C /* HistoryStackPanel.swift */,
+				8BE726E62BD0A2AA0039601A /* ScreenShotStatusBarView.swift */,
 				D255C43C2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift */,
 				D21277F62BBBA020001C0953 /* Persistance.swift */,
 				D266C9A32B2FB87A001D7B66 /* ShowAndHideCursor.h */,
@@ -253,6 +254,7 @@
 				D21277F82BBBA020001C0953 /* Persistance.swift in Sources */,
 				8BB3A9852BAF7350002CA772 /* OnboardingView.swift in Sources */,
 				8BEBDD022B8D3AD4006C6B96 /* ScreenShotView.swift in Sources */,
+				8BFDCEFA2BCEADE500B7E84E /* StatusBarView.swift in Sources */,
 				8BEBDD032B8D3AD4006C6B96 /* ScreenshotAreaSelectionNonactivatingPanel.swift in Sources */,
 				D2C5BC6E2BAA2F08004ACF8A /* KeyboardAndMouseEventMonitors.swift in Sources */,
 				8BEBDD042B8D3AD4006C6B96 /* ScreenshotStackPanel.swift in Sources */,
@@ -270,13 +272,13 @@
 				8BBAE2842B4689260079CCD4 /* CaptureStackView.swift in Sources */,
 				D2C5BC6D2BAA2F08004ACF8A /* KeyboardAndMouseEventMonitors.swift in Sources */,
 				D21277F72BBBA020001C0953 /* Persistance.swift in Sources */,
-				8BC75D2A2BCCA0010083441C /* HistoryStackPanel.swift in Sources */,
+				8BFDCEF92BCEADE500B7E84E /* StatusBarView.swift in Sources */,
 				8B6E04CD2B4F4CB600DD5CDB /* ScreenShotView.swift in Sources */,
-				8BC75D282BCC9FEF0083441C /* HistoryStackView.swift in Sources */,
 				D269967E2B2EB12700CADFDC /* ScreenshotAreaSelectionNonactivatingPanel.swift in Sources */,
 				8B5E62252B93DA1D00455929 /* FolderLink.swift in Sources */,
 				8B6934E32B495D29003BFDDF /* ScreenshotStackPanel.swift in Sources */,
 				D255C43D2B31CE1300A0C7B2 /* convertToSwiftUICoordinates.swift in Sources */,
+				8BE726E72BD0A2AA0039601A /* ScreenShotStatusBarView.swift in Sources */,
 				8BB3A9842BAF7350002CA772 /* OnboardingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

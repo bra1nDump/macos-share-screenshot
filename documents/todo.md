@@ -8,7 +8,6 @@ Lets continue working with Sandbox for now.
   - Maybe "close all" translucent button when multiple screenshots are shown?
 - Ditch the separate history panel for now
 - Get the first test flight out
-- Add login item to menu bar - needed to launch the app on startup
 
 
 # TODO Kirill
@@ -61,6 +60,7 @@ also consume / mutate
 - Fix: share menu appears connected to our invisible stack view, not the screenshot being shared
 - Onboarding. Similar to cleanshot x
 - Fix: Panel for onboarding sometimes disappears
+- Add login item to menu bar - needed to launch the app on startup
 
 # Archive
 

@@ -60,7 +60,18 @@ class StatusBarManager {
 }
 
 struct StatusBarView: View {
+    var model: StackModel
+    var startScreenshot: () -> Void
+    var quitApplication: () -> Void
+    
+    init(model: StackModel, startScreenshot: @escaping () -> Void, quitApplication: @escaping () -> Void) {
+            self.model = model
+            self.startScreenshot = startScreenshot
+            self.quitApplication = quitApplication
+        }
+    
     var body: some View {
+        var capturedImages = model.images
         Menu {
             Button(action: startScreenshot) {
                 Label("Screenshot", systemImage: "camera")
@@ -69,6 +80,9 @@ struct StatusBarView: View {
             ForEach(1..<6) { index in
                 Button(action: {}) {
                     Label("Screenshot \(index)", systemImage: "photo")
+                }
+                ForEach(capturedImages.reversed(), id: \.self) { image in
+                    ScreenShotStatusBarView(image: image)
                 }
             }
             
@@ -83,16 +97,5 @@ struct StatusBarView: View {
                 .imageScale(.large)
         }
     }
-    
-    func startScreenshot() {
-        // Handle screenshot action
-    }
-    
-    func quitApplication() {
-        // Handle quit action
-    }
 }
 
-#Preview {
-    StatusBarView()
-}

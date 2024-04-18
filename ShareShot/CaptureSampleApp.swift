@@ -81,7 +81,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusBarItem()
-
+        requestAuthorizationForLoginItem() 
         
         // TODO: We might want to ask for permissions before trying to screen record using CGRequestScreenCaptureAccess()
         // Probably should do this before allowing the user to proceed with the screenshot
@@ -371,6 +371,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSApplication.shared.terminate(self)
     }
     
+    func requestAuthorizationForLoginItem() {
+        let helperBundleIdentifier = "com.example.MyAppHelper"
+        guard let launcherAppURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: helperBundleIdentifier) else {
+            return
+        }
+        
+        // Get the login items list
+        let loginItemsList = LSSharedFileListCreate(nil, kLSSharedFileListSessionLoginItems.takeRetainedValue(), nil)!.takeRetainedValue() as LSSharedFileList
+        
+        // Add the application to the login items list
+        LSSharedFileListInsertItemURL(loginItemsList, kLSSharedFileListItemBeforeFirst.takeRetainedValue(), nil, nil, launcherAppURL as CFURL, nil, nil)
+    }
     // Implement any other necessary AppDelegate methods here
 }
 
