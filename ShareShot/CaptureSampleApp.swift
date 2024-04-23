@@ -221,20 +221,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc private func showOnboardingView() {
+        // Create a new NSPanel
         let panel = NSPanel(contentRect: NSRect(x: 0, y: 0, width: 500, height: 500),
                             styleMask: [.titled, .closable, .resizable],
                             backing: .buffered,
                             defer: false)
+        
+        // Create an instance of the OnboardingView with a completion handler
         let onboardingView = OnboardingView(onComplete: { self.startScreenshot(); panel.close()})
+        
+        // Create an NSHostingController with the OnboardingView as its rootView
         _ = NSHostingController(rootView: onboardingView)
+        
+        // Set panel properties
         panel.isFloatingPanel = true
         panel.worksWhenModal = true
         panel.isOpaque = false
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         panel.contentView = NSHostingView(rootView: onboardingView)
-        panel.center() 
-        panel.level = .floating
+        panel.center() // Center the panel on the screen
+        panel.level = .floating // Set the panel's level to floating
         
+        // Make the panel key and order it front
         panel.makeKeyAndOrderFront(nil)
     }
     
@@ -273,6 +281,41 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             menuItem.submenu = createCopyToClipboardSubmenu(for: screenshot) // Add copy to clipboard submenu
             contextMenu.addItem(menuItem)
         }
+        contextMenu.addItem(NSMenuItem.separator())
+        
+        // Add quit menu item
+        contextMenu.addItem(quitMenuItem)
+        
+        // Set menu for status bar item
+        statusBarItem.menu = contextMenu
+    }
+    
+    private func setupStatusBarItemSwiftUI() {
+        // Create status bar item
+        statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        
+        // Set image for status bar item
+        let statusBarItemLogo = NSImage(named: NSImage.Name("LogoForStatusBarItem"))!
+        statusBarItemLogo.size = NSSize(width: 18, height: 18)
+        statusBarItem.button?.image = statusBarItemLogo
+        
+        // Create menu for status bar item
+        let contextMenu = NSMenu()
+        
+        // Add menu items
+        let screenshotMenuItem = NSMenuItem(title: "Screenshot", action: #selector(startScreenshot), keyEquivalent: "7")
+        let quitMenuItem = NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: "Q")
+        
+        // Set key modifiers for menu items
+        screenshotMenuItem.keyEquivalentModifierMask = [.command, .shift]
+        quitMenuItem.keyEquivalentModifierMask = [.command, .shift]
+        
+        // Add items to menu
+        contextMenu.addItem(screenshotMenuItem)
+        
+        // Add history items directly to main menu
+        contextMenu.addItem(NSMenuItem.separator())
+        let lastScreenshots = lastNScreenshots(n: 5) // Get last 5 screenshots
         contextMenu.addItem(NSMenuItem.separator())
         
         // Add quit menu item
@@ -395,7 +438,7 @@ extension AppDelegate: NSDraggingDestination {
     func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
         let pasteboard = sender.draggingPasteboard
         if let item = pasteboard.pasteboardItems?.first {
-            if let imageData = item.data(forType: .tiff) {
+            if item.data(forType: .tiff) != nil {
                 // Handle dropped image data
                 // For example, you can save it to a file or perform any other operation
                 print("Image dropped!")

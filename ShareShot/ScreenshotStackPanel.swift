@@ -11,8 +11,8 @@ import SwiftUI
 class ScreenshotStackPanel: NSPanel {
     init(stackModelState: StackModel) {
         let screenFrame = NSScreen.main?.frame ?? NSRect.zero
-        let panelWidth = min(300, screenFrame.width * 0.8) // Panel width is at most 80% of the screen width, capped at 300
-        let panelHeight = min(950, screenFrame.height * 0.95) // Panel height is at most 80% of the screen height, capped at 950
+        let panelWidth = min(300, screenFrame.width * 0.8)
+        let panelHeight = min(950, screenFrame.height * 0.95)
         let previewRect = NSRect(x: 0, y: 0, width: panelWidth, height: panelHeight)
         super.init(contentRect: previewRect, styleMask: .borderless, backing: .buffered, defer: false)
         self.backgroundColor = NSColor.clear

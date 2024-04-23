@@ -6,7 +6,6 @@ Lets continue working with Sandbox for now.
   - will also take care of the reactivity to changes in capture history
   - Make draggable
   - Maybe "close all" translucent button when multiple screenshots are shown?
-- Ditch the separate history panel for now
 - Get the first test flight out
 
 
@@ -61,6 +60,7 @@ also consume / mutate
 - Onboarding. Similar to cleanshot x
 - Fix: Panel for onboarding sometimes disappears
 - Add login item to menu bar - needed to launch the app on startup
+- Ditch the separate history panel for now
 
 # Archive
 

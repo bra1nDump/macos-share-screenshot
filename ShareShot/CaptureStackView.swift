@@ -24,7 +24,7 @@ struct CaptureStackView: View {
 
     var body: some View {
         VStack {
-            var capturedImages = model.images
+            let capturedImages = model.images
 
             if !capturedImages.isEmpty {
                 VStack{
@@ -63,6 +63,7 @@ struct CaptureStackView: View {
                                 }) {
                                     Text("Close All")
                                         .font(.title)
+                                        .foregroundColor(.black)
                                         .frame(width: 100, height: 40)
                                 }
                                 .padding()

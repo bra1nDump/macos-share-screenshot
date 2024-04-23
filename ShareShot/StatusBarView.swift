@@ -76,7 +76,9 @@ struct StatusBarView: View {
             Button(action: startScreenshot) {
                 Label("Screenshot", systemImage: "camera")
             }
-            
+            Button(action: startScreenshot) {
+                Label("Onboarding", systemImage: "")
+            }
             ForEach(1..<6) { index in
                 Button(action: {}) {
                     Label("Screenshot \(index)", systemImage: "photo")
@@ -85,9 +87,7 @@ struct StatusBarView: View {
                     ScreenShotStatusBarView(image: image)
                 }
             }
-            
             Divider()
-            
             Button(action: quitApplication) {
                 Label("Quit", systemImage: "power")
             }
