@@ -59,43 +59,58 @@ class StatusBarManager {
     }
 }
 
-struct StatusBarView: View {
-    var model: StackModel
-    var startScreenshot: () -> Void
-    var quitApplication: () -> Void
-    
-    init(model: StackModel, startScreenshot: @escaping () -> Void, quitApplication: @escaping () -> Void) {
-            self.model = model
-            self.startScreenshot = startScreenshot
-            self.quitApplication = quitApplication
-        }
+struct ScreenShotStatusBarView: View {
+    var image: NSImage
     
     var body: some View {
-        var capturedImages = model.images
-        Menu {
-            Button(action: startScreenshot) {
-                Label("Screenshot", systemImage: "camera")
-            }
-            Button(action: startScreenshot) {
-                Label("Onboarding", systemImage: "")
-            }
-            ForEach(1..<6) { index in
-                Button(action: {}) {
-                    Label("Screenshot \(index)", systemImage: "photo")
-                }
-                ForEach(capturedImages.reversed(), id: \.self) { image in
-                    ScreenShotStatusBarView(image: image)
-                }
-            }
-            Divider()
-            Button(action: quitApplication) {
-                Label("Quit", systemImage: "power")
-            }
-        } label: {
-            Image(systemName: "star")
-                .foregroundColor(.blue)
-                .imageScale(.large)
+        HStack {
+            Image(nsImage: image)
+                .resizable()
+                .frame(width: 20, height: 20)
+            Text("Screenshot")
         }
     }
 }
 
+struct ContentView: View {
+    @StateObject var manager = StatusBarManager()
+    @State private var isScreenshotActive = false
+    
+    var body: some View {
+        VStack {
+            Text("Hello, StatusBar!")
+                .padding()
+            Button("Toggle Screenshot") {
+                isScreenshotActive.toggle()
+            }
+        }
+        .frame(width: 200, height: 200)
+        .background(Color.white)
+        .onAppear {
+            NSApplication.shared.setActivationPolicy(.accessory)
+        }
+        .onDisappear {
+            NSApplication.shared.setActivationPolicy(.regular)
+        }
+        .popover(isPresented: $isScreenshotActive, arrowEdge: .bottom) {
+            StatusBarView(startScreenshot: {}, quitApplication: {})
+        }
+    }
+}
+
+struct StatusBarView: View {
+    var startScreenshot: () -> Void
+    var quitApplication: () -> Void
+    
+    var body: some View {
+        VStack {
+            Button(action: startScreenshot) {
+                Label("Screenshot", systemImage: "camera")
+            }
+            Button(action: quitApplication) {
+                Label("Quit", systemImage: "power")
+            }
+        }
+        .padding()
+    }
+}
