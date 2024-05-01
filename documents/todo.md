@@ -3,7 +3,10 @@ Lets continue working with Sandbox for now.
 # TODO Oleg
   - refactor to have swiftUI in the entire status bar
   - will also take care of the reactivity to changes in capture history
+  - close all should simply close all individual screenshots in stack, not just collapse
   - Make draggable
+    - Try doing draggable using paths instead of data - or in addition to data
+    - Lets try avoiding dropping to old school draggable if possible. If you think thats the only way, send evidence you found to Kirill so we can double check
 - Get the first test flight out
 
 
@@ -18,6 +21,9 @@ Lets continue working with Sandbox for now.
 - Multi-display fix [later, Oleg does not have 2 displays to test with at this time]
   - Have the preview follow the cursor (like on cleanshot)
   - Be able to screenshot on any display (not just the main / current one)
+  
+- Compression
+  - ? Does cleanshot x already have this?
 
 - iCloud fix link or abandon for now
   - Might not be possible
