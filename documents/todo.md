@@ -1,11 +1,9 @@
 Lets continue working with Sandbox for now.
 
 # TODO Oleg
-- Update screenshot history
   - refactor to have swiftUI in the entire status bar
   - will also take care of the reactivity to changes in capture history
   - Make draggable
-  - Maybe "close all" translucent button when multiple screenshots are shown?
 - Get the first test flight out
 
 
@@ -61,6 +59,8 @@ also consume / mutate
 - Fix: Panel for onboarding sometimes disappears
 - Add login item to menu bar - needed to launch the app on startup
 - Ditch the separate history panel for now
+- Maybe "close all" translucent button when multiple screenshots are shown?
+- Update screenshot history
 
 # Archive
 

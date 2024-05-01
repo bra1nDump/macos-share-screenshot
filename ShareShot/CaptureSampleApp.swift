@@ -72,6 +72,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     /// Menu bar
     var statusBarItem: NSStatusItem!
     var contextMenu: NSMenu = NSMenu()
+    var popover: NSPopover!
     
     // Hot Keys
     // Screenshot
@@ -80,8 +81,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let cmdShiftEight = HotKey(key: .eight, modifiers: [.command, .shift])
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        setupStatusBarItem()
-        requestAuthorizationForLoginItem() 
+        setupStatusBarItemSwiftUI()
+        requestAuthorizationForLoginItem()
         
         // TODO: We might want to ask for permissions before trying to screen record using CGRequestScreenCaptureAccess()
         // Probably should do this before allowing the user to proceed with the screenshot
@@ -290,40 +291,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarItem.menu = contextMenu
     }
     
-    private func setupStatusBarItemSwiftUI() {
-        // Create status bar item
-        statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        
-        // Set image for status bar item
+    func setupStatusBarItemSwiftUI() {
+            statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         let statusBarItemLogo = NSImage(named: NSImage.Name("LogoForStatusBarItem"))!
         statusBarItemLogo.size = NSSize(width: 18, height: 18)
         statusBarItem.button?.image = statusBarItemLogo
-        
-        // Create menu for status bar item
-        let contextMenu = NSMenu()
-        
-        // Add menu items
-        let screenshotMenuItem = NSMenuItem(title: "Screenshot", action: #selector(startScreenshot), keyEquivalent: "7")
-        let quitMenuItem = NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: "Q")
-        
-        // Set key modifiers for menu items
-        screenshotMenuItem.keyEquivalentModifierMask = [.command, .shift]
-        quitMenuItem.keyEquivalentModifierMask = [.command, .shift]
-        
-        // Add items to menu
-        contextMenu.addItem(screenshotMenuItem)
-        
-        // Add history items directly to main menu
-        contextMenu.addItem(NSMenuItem.separator())
-        let lastScreenshots = lastNScreenshots(n: 5) // Get last 5 screenshots
-        contextMenu.addItem(NSMenuItem.separator())
-        
-        // Add quit menu item
-        contextMenu.addItem(quitMenuItem)
-        
-        // Set menu for status bar item
-        statusBarItem.menu = contextMenu
-    }
+            statusBarItem.button?.action = #selector(togglePopover(_:))
+            popover = NSPopover()
+            popover.behavior = .transient
+        popover.contentViewController = NSHostingController(rootView: StatusBarView(startScreenshot: startScreenshot, quitApplication: quitApplication, lastScreenshots: lastNScreenshots(n: 5)))
+        }
+    
+    @objc func togglePopover(_ sender: AnyObject?) {
+           if popover.isShown {
+               popover.performClose(sender)
+           } else if let button = statusBarItem.button {
+               popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+           }
+       }
 
     // Create a submenu for copying the screenshot to the clipboard
     func createCopyToClipboardSubmenu(for screenshot: Data) -> NSMenu {

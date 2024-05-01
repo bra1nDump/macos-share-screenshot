@@ -59,21 +59,10 @@ class StatusBarManager {
     }
 }
 
-struct ScreenShotStatusBarView: View {
-    var image: NSImage
-    
-    var body: some View {
-        HStack {
-            Image(nsImage: image)
-                .resizable()
-                .frame(width: 20, height: 20)
-            Text("Screenshot")
-        }
-    }
-}
+
 
 struct ContentView: View {
-    @StateObject var manager = StatusBarManager()
+  //  @StateObject var manager = StatusBarManager()
     @State private var isScreenshotActive = false
     
     var body: some View {
@@ -93,7 +82,7 @@ struct ContentView: View {
             NSApplication.shared.setActivationPolicy(.regular)
         }
         .popover(isPresented: $isScreenshotActive, arrowEdge: .bottom) {
-            StatusBarView(startScreenshot: {}, quitApplication: {})
+            StatusBarView(startScreenshot: {}, quitApplication: {}, lastScreenshots: [])
         }
     }
 }
@@ -101,9 +90,19 @@ struct ContentView: View {
 struct StatusBarView: View {
     var startScreenshot: () -> Void
     var quitApplication: () -> Void
-    
+    var lastScreenshots: [Data]
+
     var body: some View {
         VStack {
+            ForEach(lastScreenshots, id: \.self) { imageData in
+                if let image = NSImage(data: imageData) {
+                    Image(nsImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 70, height: 50)
+                        .draggable(image)
+                }
+            }
             Button(action: startScreenshot) {
                 Label("Screenshot", systemImage: "camera")
             }
@@ -114,3 +113,4 @@ struct StatusBarView: View {
         .padding()
     }
 }
+
