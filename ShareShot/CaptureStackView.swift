@@ -14,7 +14,6 @@ import CloudKit
 struct CaptureStackView: View {
     var model: StackModel
     @AppStorage("onboardingShown") var onboardingShown = true
-    @State private var isPanelCollapsed = false
     // Initialize with a StackModel
     init(model: StackModel) {
         self.model = model
@@ -25,13 +24,6 @@ struct CaptureStackView: View {
             if !model.images.isEmpty {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20) {
-                        if isPanelCollapsed {
-                            Spacer()
-                            OpenAllButton(action: { isPanelCollapsed.toggle() })
-                                .padding()
-                                .rotationEffect(.degrees(180))
-                        }
-                        if !isPanelCollapsed {
                             ForEach(model.images.reversed(), id: \.self) { image in
                                 ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction, saveToiCloud: saveImageToICloud)
                                     .onTapGesture {
@@ -49,10 +41,10 @@ struct CaptureStackView: View {
                                         }
                                     }
                             }
-                            CloseAllButton(action: { isPanelCollapsed.toggle() })
+                            CloseAllButton(action: { deleteAllImage() })
                                 .padding()
                                 .rotationEffect(.degrees(180))
-                        }
+                        
                     }
                 }
                 .rotationEffect(.degrees(180), anchor: .center)
@@ -195,6 +187,10 @@ struct CaptureStackView: View {
     // Delete the image from the model
     private func deleteImage(_ image: ImageData) {
         model.images.removeAll(where: { $0 == image })
+    }
+    
+    private func deleteAllImage() {
+        model.images.removeAll()
     }
     
     // Open the image in Preview app

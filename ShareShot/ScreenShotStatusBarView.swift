@@ -11,8 +11,8 @@ import SwiftUI
 struct ScreenShotStatusBarView: View {
     var image: ImageData
     var body: some View {
-        RoundedRectangle(cornerRadius: 20) // Container for the screenshot view
-            .frame(width: 201, height: 152)
+        RoundedRectangle(cornerRadius: 10) // Container for the screenshot view
+            .frame(width: 100, height: 75)
             .foregroundColor(.clear)
             .overlay(
                 Group {
@@ -22,7 +22,7 @@ struct ScreenShotStatusBarView: View {
                         Image(nsImage: NSImage(data: image)!)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .frame(width: 200, height: 150)
+                            .frame(width: 100, height: 75)
                             .background(Color.clear)
                             .cornerRadius(10)
                             .cornerRadius(20)

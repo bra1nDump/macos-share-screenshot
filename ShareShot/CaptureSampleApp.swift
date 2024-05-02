@@ -81,7 +81,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let cmdShiftEight = HotKey(key: .eight, modifiers: [.command, .shift])
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        setupStatusBarItemSwiftUI()
+        setupStatusBarItem()
         requestAuthorizationForLoginItem()
         
         // TODO: We might want to ask for permissions before trying to screen record using CGRequestScreenCaptureAccess()
@@ -246,52 +246,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Make the panel key and order it front
         panel.makeKeyAndOrderFront(nil)
     }
-    
-    private func setupStatusBarItem() {
-        // Create status bar item
-        statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        
-        // Set image for status bar item
-        let statusBarItemLogo = NSImage(named: NSImage.Name("LogoForStatusBarItem"))!
-        statusBarItemLogo.size = NSSize(width: 18, height: 18)
-        statusBarItem.button?.image = statusBarItemLogo
-        
-        // Create menu for status bar item
-        let contextMenu = NSMenu()
-        
-        // Add menu items
-        let screenshotMenuItem = NSMenuItem(title: "Screenshot", action: #selector(startScreenshot), keyEquivalent: "7")
-        let quitMenuItem = NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: "Q")
-        
-        // Set key modifiers for menu items
-        screenshotMenuItem.keyEquivalentModifierMask = [.command, .shift]
-        quitMenuItem.keyEquivalentModifierMask = [.command, .shift]
-        
-        // Add items to menu
-        contextMenu.addItem(screenshotMenuItem)
-        
-        // Add history items directly to main menu
-        contextMenu.addItem(NSMenuItem.separator())
-        let lastScreenshots = lastNScreenshots(n: 5) // Get last 5 screenshots
-        for (index, screenshot) in lastScreenshots.enumerated() {
-            let resizedImage = resizeImage(NSImage(data: screenshot)!, newSize: NSSize(width: 70, height: 50)) // Resize image to 50x50
-            let menuItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
-            menuItem.image = resizedImage
-            menuItem.representedObject = screenshot // Store data in representedObject
-            menuItem.target = self // Set target to handle drag events
-            menuItem.submenu = createCopyToClipboardSubmenu(for: screenshot) // Add copy to clipboard submenu
-            contextMenu.addItem(menuItem)
-        }
-        contextMenu.addItem(NSMenuItem.separator())
-        
-        // Add quit menu item
-        contextMenu.addItem(quitMenuItem)
-        
-        // Set menu for status bar item
-        statusBarItem.menu = contextMenu
-    }
-    
-    func setupStatusBarItemSwiftUI() {
+     
+    func setupStatusBarItem() {
             statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         let statusBarItemLogo = NSImage(named: NSImage.Name("LogoForStatusBarItem"))!
         statusBarItemLogo.size = NSSize(width: 18, height: 18)
@@ -360,7 +316,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             }
         }
-
         
         // Add new history items
         for (index, screenshot) in lastScreenshots.enumerated() {
