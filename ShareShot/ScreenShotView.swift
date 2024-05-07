@@ -104,7 +104,6 @@ struct ScreenShotView: View {
     }
 }
 
-
 // This view is for the small buttons with image overlaying the screenshot preview.
 struct CircleButton: View {
     let systemName: String

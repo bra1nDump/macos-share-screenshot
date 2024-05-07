@@ -256,21 +256,16 @@ private struct CloseAllButton: View {
     }
 }
 
-private struct OpenAllButton: View {
-    var action: () -> Void
-    
+// View for onboarding screenshot example
+struct OnboardingScreenshot: View {
     var body: some View {
-        RoundedRectangle(cornerRadius: 15)
-            .frame(width: 100, height: 40)
-            .foregroundColor(.white.opacity(0.7))
+        RoundedRectangle(cornerRadius: 20)
+            .frame(width: 201, height: 152)
+            .foregroundColor(.gray.opacity(0.7))
             .overlay(
-                Text("Open All")
-                    .font(.title2)
-                    .foregroundColor(.black)
+                Text("Use ⇧⌘7 for screenshot") // Display instructions for screenshot shortcut
+                    .bold()
             )
-            .onTapGesture {
-                action()
-            }
+            .rotationEffect(.degrees(180))
     }
 }
-

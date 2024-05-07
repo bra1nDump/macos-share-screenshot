@@ -254,8 +254,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarItem.button?.image = statusBarItemLogo
             statusBarItem.button?.action = #selector(togglePopover(_:))
             popover = NSPopover()
-            popover.behavior = .transient
-        popover.contentViewController = NSHostingController(rootView: StatusBarView(startScreenshot: startScreenshot, quitApplication: quitApplication, lastScreenshots: lastNScreenshots(n: 5)))
+        popover.contentViewController = NSHostingController(rootView: StatusBarView(startScreenshot: startScreenshot, quitApplication: quitApplication, history:  showScreenshotHistoryStack, onboarding: showOnboardingView, lastScreenshots: lastNScreenshots(n: 5)))
         }
     
     @objc func togglePopover(_ sender: AnyObject?) {
@@ -263,74 +262,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                popover.performClose(sender)
            } else if let button = statusBarItem.button {
                popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+               popover.behavior = .applicationDefined
            }
        }
 
-    // Create a submenu for copying the screenshot to the clipboard
-    func createCopyToClipboardSubmenu(for screenshot: Data) -> NSMenu {
-        let submenu = NSMenu()
-        // Create a menu item "Copy" for copying to the clipboard
-        let copyToClipboardItem = NSMenuItem(title: "Copy", action: #selector(copyToClipboard(_:)), keyEquivalent: "")
-        // Associate the screenshot data with the menu item to pass to the copy method
-        copyToClipboardItem.representedObject = screenshot
-        // Add the "Copy" menu item to the submenu
-        submenu.addItem(copyToClipboardItem)
-        return submenu
-    }
-
-    // Method for copying the screenshot data to the clipboard
-    @objc func copyToClipboard(_ sender: NSMenuItem) {
-        // Get the screenshot data from the associated object of the menu item
-        guard let screenshot = sender.representedObject as? Data else { return }
-        
-        // Clear the contents of the pasteboard
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        // Set the screenshot data to the pasteboard
-        pasteboard.setData(screenshot, forType: .tiff)
-    }
-
-    // Method for resizing the image
-    func resizeImage(_ image: NSImage, newSize: NSSize) -> NSImage {
-        // Create a new image with the specified size
-        let newImage = NSImage(size: newSize)
-        // Draw the original image with the new size
-        newImage.lockFocus()
-        image.draw(in: NSRect(origin: NSPoint.zero, size: newSize),
-                   from: NSRect(origin: NSPoint.zero, size: image.size),
-                   operation: NSCompositingOperation.sourceOver,
-                   fraction: CGFloat(1))
-        newImage.unlockFocus()
-        return NSImage(data: newImage.tiffRepresentation!)! // Return the resized image
-    }
-
-    private func updateRecentScreenshotsMenu(_ historyMenuItem: NSMenuItem) {
-        // Get recent screenshots
-        let lastScreenshots = lastNScreenshots(n: 5)
-        
-        // Clear previous history items
-        if let submenu = historyMenuItem.submenu {
-            for item in submenu.items {
-                if item.title.hasPrefix("Screenshot") {
-                    submenu.removeItem(item)
-                }
-            }
-        }
-        
-        // Add new history items
-        for (index, screenshot) in lastScreenshots.enumerated() {
-            let title = "Screenshot \(index + 1)"
-            let menuItem = NSMenuItem(title: title, action: nil, keyEquivalent: "")
-            menuItem.isEnabled = false
-            historyMenuItem.submenu?.addItem(menuItem)
-            
-            if let image = NSImage(data: screenshot) {
-                menuItem.image = image
-            }
-        }
-    }
-
-    
     @objc func showScreenRecordingPermissionAlert() {
         let alert = NSAlert()
         alert.messageText = "Screen Recording Permission Required"
@@ -355,62 +290,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func requestAuthorizationForLoginItem() {
-        let helperBundleIdentifier = "com.example.MyAppHelper"
+        let helperBundleIdentifier = "com.bra1ndump.share-screenshot"
         guard let launcherAppURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: helperBundleIdentifier) else {
             return
         }
         
-        // Get the login items list
-        let loginItemsList = LSSharedFileListCreate(nil, kLSSharedFileListSessionLoginItems.takeRetainedValue(), nil)!.takeRetainedValue() as LSSharedFileList
+        // AppleScript command to add application to login items
+        let scriptString = "tell application \"System Events\" to make login item at end with properties {path:\"\(launcherAppURL.path)\", hidden:false}"
         
-        // Add the application to the login items list
-        LSSharedFileListInsertItemURL(loginItemsList, kLSSharedFileListItemBeforeFirst.takeRetainedValue(), nil, nil, launcherAppURL as CFURL, nil, nil)
+        var error: NSDictionary?
+        if let script = NSAppleScript(source: scriptString) {
+            script.executeAndReturnError(&error)
+            if let error = error {
+                print("Error adding login item: \(error)")
+            }
+        }
     }
     // Implement any other necessary AppDelegate methods here
-}
-
-// Drag delegate methods
-extension AppDelegate: NSDraggingDestination {
-    func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
-        return .copy
-    }
-    
-    func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        let pasteboard = sender.draggingPasteboard
-        if let item = pasteboard.pasteboardItems?.first {
-            if item.data(forType: .tiff) != nil {
-                // Handle dropped image data
-                // For example, you can save it to a file or perform any other operation
-                print("Image dropped!")
-                return true
-            }
-        }
-        return false
-    }
-    
-    func prepareForDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        return true
-    }
-}
-
-class DragDropView: NSView {
-    override func awakeFromNib() {
-        registerForDraggedTypes([.fileURL])
-    }
-    
-    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
-        return sender.draggingSourceOperationMask
-    }
-    
-    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        let pasteboard = sender.draggingPasteboard
-        if let files = pasteboard.propertyList(forType: .fileURL) as? [String] {
-            // Handle dropped file URLs
-            for file in files {
-                print("Dropped file: \(file)")
-            }
-            return true
-        }
-        return false
-    }
 }

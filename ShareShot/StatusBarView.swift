@@ -11,15 +11,23 @@ import SwiftUI
 struct StatusBarView: View {
     var startScreenshot: () -> Void
     var quitApplication: () -> Void
+    var history: () -> Void
+    var onboarding: () -> Void
     var lastScreenshots: [Data]
-
+    
     var body: some View {
         VStack {
             ForEach(lastScreenshots, id: \.self) { imageData in
-            ScreenShotStatusBarView(image: imageData)
+                ScreenShotStatusBarView(image: imageData)
             }
             Button(action: startScreenshot) {
                 Label("Screenshot", systemImage: "camera")
+            }
+            Button(action: history) {
+                Label("History", systemImage: "tray.full")
+            }
+            Button(action: onboarding) {
+                Label("Onboarding", systemImage: "info.circle")
             }
             Button(action: quitApplication) {
                 Label("Quit", systemImage: "power")

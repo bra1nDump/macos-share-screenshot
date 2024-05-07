@@ -17,17 +17,17 @@ struct OnboardingView: View {
     let screens = [
         // Array of onboarding screens
         OnboardingScreen(imageName: "Logo",
-                         title: "Welcome to the ShareShot!",
+                         title: "Welcome to ShareShot!",
                          description: "Let's guide you through a quick setup and tailor ShareShot to your preferences."),
         OnboardingScreen(imageName: "command",
-                         title: "Shortcut for screenshot",
-                         description: "Let's use ⇧⌘7 for screenshot."),
+                         title: "Shortcut for Screenshots",
+                         description: "Use ⇧⌘7 to capture screenshots."),
         OnboardingScreen(imageName: "plus.square.on.square",
                          title: "Drag and Drop",
-                         description: "More options in status bar."),
+                         description: "Drag and drop options available in the status bar."),
         OnboardingScreen(imageName: "gear",
-                         title: "Set your preferences",
-                         description: "More options in status bar.")
+                         title: "Set Your Preferences",
+                         description: "Customize settings from the status bar.")
     ]
     
     var body: some View {
@@ -35,25 +35,36 @@ struct OnboardingView: View {
             backgroundColor.edgesIgnoringSafeArea(.all) // Set background color for entire view
             
             VStack {
-                    // Display the current onboarding screen
-                    OnboardingScreenView(screen: screens[currentPage])
+                // Display the current onboarding screen
+                OnboardingScreenView(screen: screens[currentPage])
                     .padding(.top, 100)
+                
                 Spacer()
+                
+                // Page indicators
+                PageControl(numberOfPages: screens.count, currentPage: $currentPage)
+                    .padding(.bottom)
+                
                 // Next/Start button with animation
-                    Image(systemName: currentPage == 3 ? "checkmark.circle.fill" : "arrow.right.circle.fill")
-                        .font(.system(size: 44))
-                        .foregroundColor(nextButtonColor)
-                        .onTapGesture {
-                            withAnimation {
-                                // Handle button tap
-                                if currentPage == 3 {
-                                    onComplete() // If on the last screen, call completion handler
-                                } else {
-                                    currentPage += 1 // Otherwise, move to the next screen
-                                    backgroundColor = getNextColor() // Change background color
-                                    nextButtonColor = getButtonColor()
-                                }
+                Button(action: {
+                    withAnimation {
+                        // Handle button tap
+                        if currentPage == screens.count - 1 {
+                            onComplete() // If on the last screen, call completion handler
+                        } else {
+                            currentPage += 1 // Otherwise, move to the next screen
+                            backgroundColor = getNextColor() // Change background color
+                            nextButtonColor = getButtonColor()
                         }
+                    }
+                }) {
+                    Label(currentPage == screens.count - 1 ? "Start" : "Next", systemImage: "arrow.right.circle.fill")
+                        .font(.headline)
+                        .padding()
+                        .foregroundColor(.white)
+                        .background(nextButtonColor)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .shadow(radius: 5)
                 }
                 .padding()
             }
@@ -66,9 +77,26 @@ struct OnboardingView: View {
         let colors: [Color] = [.red, .green, .blue, .orange, .yellow] // Example colors
         return colors[currentPage % colors.count]
     }
+    
     func getButtonColor() -> Color {
         let colors: [Color] = [.green, .blue, .orange, .yellow] // Example colors
         return colors[currentPage % colors.count]
+    }
+}
+
+// Custom page control indicator
+struct PageControl: View {
+    var numberOfPages: Int
+    @Binding var currentPage: Int
+    
+    var body: some View {
+        HStack {
+            ForEach(0..<numberOfPages) { page in
+                Circle()
+                    .frame(width: 8, height: 8)
+                    .foregroundColor(page == currentPage ? .white : .gray)
+            }
+        }
     }
 }
 
@@ -90,10 +118,12 @@ struct OnboardingScreenView: View {
             
             Text(screen.title) // Display title
                 .bold()
-                .font(.largeTitle)
+                .font(.title)
                 .padding()
             
             Text(screen.description) // Display description
+                .multilineTextAlignment(.center)
+                .padding()
         }
         .padding()
     }
@@ -104,18 +134,4 @@ struct OnboardingScreen {
     let imageName: String
     let title: String
     let description: String
-}
-
-// View for onboarding screenshot example
-struct OnboardingScreenshot: View {
-    var body: some View {
-        RoundedRectangle(cornerRadius: 20)
-            .frame(width: 201, height: 152)
-            .foregroundColor(.gray.opacity(0.7))
-            .overlay(
-                Text("Use ⇧⌘7 for screenshot") // Display instructions for screenshot shortcut
-                    .bold()
-            )
-            .rotationEffect(.degrees(180))
-    }
 }
