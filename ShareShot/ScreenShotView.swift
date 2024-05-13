@@ -9,41 +9,46 @@
 import SwiftUI
 import AppKit
 
+// View model for holding the image data
+class ImageViewModel: ObservableObject {
+    @Published var image: NSImage?
+
+    init(imageData: ImageData) {
+        if let nsImage = NSImage(data: imageData) {
+            image = nsImage
+        }
+    }
+}
+
 // This view is for creating a screenshot preview with overlaid buttons.
 struct ScreenShotView: View {
-    var image: ImageData
-    @State private var fileURL: URL?
+    @ObservedObject var viewModel: ImageViewModel
     @State private var isHovered = false
-    var saveImage: ((ImageData) -> Void)
-    var copyImage: ((ImageData) -> Void)
-    var deleteImage: ((ImageData) -> Void)
-    var saveToDesktopImage: ((ImageData) -> Void)
-    var shareImage: ((ImageData) -> Void)
-    var saveToiCloud: ((ImageData) -> Void)
-    
+    var saveImage: (() -> Void)
+    var copyImage: (() -> Void)
+    var deleteImage: (() -> Void)
+    var saveToDesktopImage: (() -> Void)?
+    var shareImage: (() -> Void)
+    var saveToiCloud: (() -> Void)?
+
     var body: some View {
         RoundedRectangle(cornerRadius: 20) // Container for the screenshot view
             .frame(width: 201, height: 152)
             .foregroundColor(.clear)
             .overlay(
                 Group {
-                    // Check if NSImage can be created from image data
-                    if NSImage(data: image) != nil {
-                        // Display the image
-                        Image(nsImage: NSImage(data: image)!)
+                    if let image = viewModel.image {
+                        Image(nsImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(width: 200, height: 150)
-                            .background(Color.clear)
                             .cornerRadius(10)
                             .cornerRadius(20)
-                        // Overlay to show border when hovered
                             .overlay(
                                 RoundedRectangle(cornerRadius: 20)
                                     .stroke(Color.gray, lineWidth: 1)
                                     .opacity(!isHovered ? 1.0 : 0.0)
                             )
-                        // Overlay to show border when hovered
                             .overlay(
                                 RoundedRectangle(cornerRadius: 20)
                                     .stroke(Color.white, lineWidth: 1)
@@ -57,43 +62,40 @@ struct ScreenShotView: View {
                                                     // Buttons for actions
                                                     VStack {
                                                         HStack {
-                                                            CircleButton(systemName: "xmark", action: deleteImage, image: image)
+                                                            CircleButton(systemName: "xmark", action: deleteImage)
                                                             Spacer()
                                                             HStack {
-                                                                CircleButton(systemName: "square.and.arrow.up", action: shareImage, image: image)
+                                                                CircleButton(systemName: "square.and.arrow.up", action: shareImage)
                                                             }
                                                         }
                                                         Spacer()
                                                         HStack {
                                                             Spacer()
-                                                            CircleButton(systemName: "cloud", action: saveToiCloud, image: image)
+                                                            if let saveToiCloud = saveToiCloud {
+                                                                CircleButton(systemName: "cloud", action: saveToiCloud)
+                                                            }
                                                         }
-                                                        
                                                     }
                                                     .padding(7)
                                                     // Buttons for actions
                                                     VStack(spacing: 15) {
-                                                        TextButton(text: "Copy", action: copyImage, image: image)
-                                                        // Conditionally show button based on a flag
-#if NOSANDBOX
-                                                        TextButton(text: "Save to Desktop", action: saveToDesktopImage, image: image)
-#endif
-                                                        TextButton(text: "Save as", action: saveImage, image: image)
+                                                        TextButton(text: "Copy", action: copyImage)
+                                                        if let saveToDesktopImage = saveToDesktopImage {
+                                                            TextButton(text: "Save to Desktop", action: saveToDesktopImage)
+                                                        }
+                                                        TextButton(text: "Save as", action: saveImage)
                                                     }
                                                 }
-                                                    .opacity(isHovered ? 1.0 : 0.0)
+                                                .opacity(isHovered ? 1.0 : 0.0)
                                             )
                                     )
                             )
-                        // Disable focus on the image
                             .focusable(false)
-                        // Track hover state
                             .onHover { hovering in
                                 isHovered = hovering
                             }
-                        // Enable drag and drop functionality
                             .onDrag {
-                                NSItemProvider(object: NSImage(data: image)!)
+                                NSItemProvider(object: image)
                             }
                     } else {
                         // Display message for invalid image
@@ -107,37 +109,31 @@ struct ScreenShotView: View {
 // This view is for the small buttons with image overlaying the screenshot preview.
 struct CircleButton: View {
     let systemName: String
-    let action: ((ImageData) -> Void)
-    var image: ImageData
+    let action: (() -> Void)
+
     var body: some View {
-        Circle()
-            .frame(width: 25, height: 25)
-            .foregroundColor(.white)
-            .overlay(
-                Image(systemName: systemName)
-                    .foregroundColor(.black)
-            )
-            .onTapGesture {
-                action(image)
-            }
+        Button(action: action) {
+            Image(systemName: systemName)
+                .foregroundColor(.black)
+                .frame(width: 25, height: 25)
+                .background(Color.white)
+                .clipShape(Circle())
+        }
     }
 }
 
 // This view is for the text buttons overlaying the screenshot preview.
 struct TextButton: View {
     let text: String
-    let action: ((ImageData) -> Void)
-    var image: ImageData
+    let action: (() -> Void)
+
     var body: some View {
-        RoundedRectangle(cornerRadius: 20)
-            .frame(width: 110, height: 30)
-            .foregroundColor(.white)
-            .overlay(
-                Text(text)
-                    .foregroundColor(.black)
-            )
-            .onTapGesture {
-                action(image)
-            }
+        Button(action: action) {
+            Text(text)
+                .foregroundColor(.black)
+                .frame(width: 110, height: 30)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+        }
     }
 }

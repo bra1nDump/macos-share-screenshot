@@ -107,6 +107,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         cmdShiftEight.keyDownHandler = { [weak self] in
             self?.showScreenshotHistoryStack()
         }
+        let clickRecognizer = NSClickGestureRecognizer(target: self, action: #selector(handleClickOutsidePopover))
+        NSApplication.shared.keyWindow?.contentView?.addGestureRecognizer(clickRecognizer)
+        handleClickOutsidePopover(sender: clickRecognizer)
+        
     }
     
     @objc
@@ -258,13 +262,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     
     @objc func togglePopover(_ sender: AnyObject?) {
-           if popover.isShown {
-               popover.performClose(sender)
-           } else if let button = statusBarItem.button {
-               popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-               popover.behavior = .applicationDefined
-           }
-       }
+        if popover.isShown {
+            popover.performClose(sender)
+        } else if let button = statusBarItem.button {
+            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+            popover.behavior = .applicationDefined
+        }
+    }
 
     @objc func showScreenRecordingPermissionAlert() {
         let alert = NSAlert()
@@ -306,5 +310,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
     }
+    
+    @objc func handleClickOutsidePopover(sender: NSClickGestureRecognizer) {
+            if popover.isShown {
+                let location = sender.location(in: nil)
+                if !popover.contentViewController!.view.frame.contains(location) {
+                    popover.performClose(sender)
+                }
+            }
+        }
     // Implement any other necessary AppDelegate methods here
+    
 }
+
