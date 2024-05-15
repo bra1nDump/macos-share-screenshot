@@ -110,6 +110,9 @@ struct ScreenshotAreaSelectionView: View {
                             state = .capturingInProgress
 
                             Task(priority: .userInitiated) {
+                                // Add a delay of 1 second (adjust as needed)
+                                await Task.sleep(1 * 1_000_000_000)
+                                
                                 if let screenshot = await captureScreenshot(display: (NSScreen.main?.displayID)!, rect: frame) {
                                     onComplete(screenshot)
                                 } else {
