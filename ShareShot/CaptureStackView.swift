@@ -25,12 +25,12 @@ struct CaptureStackView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20) {
                             ForEach(model.images.reversed(), id: \.self) { image in
-                                ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction, saveToiCloud: saveImageToICloud)
                                     .onTapGesture {
                                         // Open the image in Preview app upon tap
                                         openImageInPreview(image: NSImage(data: image)!)
                                     }
                                     .rotated()
+                            
                             }
                             
                             if onboardingShown {

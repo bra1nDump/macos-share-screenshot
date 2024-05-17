@@ -11,47 +11,39 @@ import Cocoa
 
 class DragDropView: NSView {
     
-    // Initialize the DragDropView
+    // Convenience initializer to reduce redundancy
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
-        // Register for file URL drag types
-        registerForDraggedTypes([.fileURL])
+        setup()
     }
     
-    // Initialize from Coder
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        // Register for file URL drag types
+        setup()
+    }
+    
+    // Setup function for common initialization tasks
+    private func setup() {
         registerForDraggedTypes([.fileURL])
     }
     
     // Draw the view
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-        // Fill with white color
         NSColor.white.setFill()
         dirtyRect.fill()
     }
     
     // Invoked when a drag enters the view
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
-        // Check if drag is allowed
-        if shouldAllowDrag(sender) {
-            return .copy
-        } else {
-            return []
-        }
+        return shouldAllowDrag(sender) ? .copy : []
     }
     
     // Invoked when a drag operation is performed
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        // Get the URL of the dropped file
-        if let fileURL = getURL(from: sender) {
-            // Print the received file path
-            print("Received file: \(fileURL.path)")
-            return true
-        }
-        return false
+        guard let fileURL = getURL(from: sender) else { return false }
+        print("Received file: \(fileURL.path)")
+        return true
     }
     
     // Check if drag should be allowed
@@ -62,7 +54,8 @@ class DragDropView: NSView {
     
     // Get the URL from dragging info
     private func getURL(from draggingInfo: NSDraggingInfo) -> URL? {
-        guard let board = draggingInfo.draggingPasteboard.propertyList(forType: .fileURL) as? String else { return nil }
-        return URL(string: board)
+        let classes = [NSURL.self]
+        let options: [NSPasteboard.ReadingOptionKey: Any] = [.urlReadingFileURLsOnly: true]
+        return draggingInfo.draggingPasteboard.readObjects(forClasses: classes, options: options)?.first as? URL
     }
 }

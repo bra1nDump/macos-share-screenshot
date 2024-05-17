@@ -15,10 +15,12 @@ struct StatusBarView: View {
     var onboarding: () -> Void
     var lastScreenshots: [Data]
     
+    private let imageSize: CGSize = CGSize(width: 100, height: 75)
+    
     var body: some View {
         VStack {
             ForEach(lastScreenshots, id: \.self) { imageData in
-                ScreenShotStatusBarView(image: imageData)
+                ScreenShotStatusBarView(imageData: imageData, size: imageSize)
             }
             Button(action: startScreenshot) {
                 Label("Screenshot", systemImage: "camera")
@@ -38,41 +40,43 @@ struct StatusBarView: View {
 }
 
 struct ScreenShotStatusBarView: View {
-    var image: ImageData
+    var imageData: Data
+    var size: CGSize
+    
     var body: some View {
-        RoundedRectangle(cornerRadius: 10) // Container for the screenshot view
-            .frame(width: 100, height: 75)
+        RoundedRectangle(cornerRadius: 10)
+            .frame(width: size.width, height: size.height)
             .foregroundColor(.clear)
             .overlay(
                 Group {
-                    // Check if NSImage can be created from image data
-                    if NSImage(data: image) != nil {
-                        // Display the image
-                        Image(nsImage: NSImage(data: image)!)
+                    if let nsImage = NSImage(data: imageData) {
+                        Image(nsImage: nsImage)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .frame(width: 100, height: 75)
+                            .frame(width: size.width, height: size.height)
                             .background(Color.clear)
                             .cornerRadius(10)
-                        // Enable drag and drop functionality
-                            .onDrag {
-                                NSItemProvider(object: NSImage(data: image)!)
-                            }
-                            .onTapGesture {
-                                copyToClipboard(image)
-                            }
+                            .onDrag { NSItemProvider(object: nsImage) }
+                            .onTapGesture { copyToClipboard(nsImage) }
                     } else {
-                        // Display message for invalid image
                         Text("Invalid Image")
+                            .frame(width: size.width, height: size.height)
+                            .background(Color.clear)
+                            .cornerRadius(10)
                     }
                 }
             )
     }
     
-    private func copyToClipboard(_ image: ImageData) {
-        guard let nsImage = NSImage(data: image) else { return }
+    private func copyToClipboard(_ image: NSImage) {
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
-        pasteboard.writeObjects([nsImage])
+        pasteboard.writeObjects([image])
+    }
+}
+
+extension NSImage {
+    convenience init?(data: Data) {
+        self.init(data: data)
     }
 }
