@@ -24,26 +24,27 @@ struct CaptureStackView: View {
             if !model.images.isEmpty {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20) {
-                            ForEach(model.images.reversed(), id: \.self) { image in
-                                    .onTapGesture {
-                                        // Open the image in Preview app upon tap
-                                        openImageInPreview(image: NSImage(data: image)!)
-                                    }
-                                    .rotated()
+                        ForEach(model.images.reversed(), id: \.self) { image in
+                            ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction, saveToiCloud: saveImageToICloud)
+                                .onTapGesture {
+                                    // Open the image in Preview app upon tap
+                                    openImageInPreview(image: NSImage(data: image)!)
+                                }
+                                .rotated()
                             
-                            }
-                            
-                            if onboardingShown {
-                                OnboardingScreenshot()
-                                    .onAppear {
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                                            onboardingShown = false
-                                        }
+                        }
+                        
+                        if onboardingShown {
+                            OnboardingScreenshot()
+                                .onAppear {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                        onboardingShown = false
                                     }
-                            }
-                            CloseAllButton(action: { deleteAllImage() })
-                                .padding()
-                                .rotationEffect(.degrees(180))
+                                }
+                        }
+                        CloseAllButton(action: { deleteAllImage() })
+                            .padding()
+                            .rotationEffect(.degrees(180))
                         
                     }
                 }
@@ -269,3 +270,4 @@ struct OnboardingScreenshot: View {
             .rotationEffect(.degrees(180))
     }
 }
+

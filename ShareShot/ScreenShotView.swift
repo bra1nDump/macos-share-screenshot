@@ -9,46 +9,44 @@
 import SwiftUI
 import AppKit
 
-// View model for holding the image data
-class ImageViewModel: ObservableObject {
-    @Published var image: NSImage?
-
-    init(imageData: ImageData) {
-        if let nsImage = NSImage(data: imageData) {
-            image = nsImage
-        }
-    }
-}
-
-// This view is for creating a screenshot preview with overlaid buttons.
+// Main view for displaying a screenshot with action buttons
 struct ScreenShotView: View {
-    @ObservedObject var viewModel: ImageViewModel
+    var image: Data
+    @State private var fileURL: URL?
     @State private var isHovered = false
-    var saveImage: (() -> Void)
-    var copyImage: (() -> Void)
-    var deleteImage: (() -> Void)
-    var saveToDesktopImage: (() -> Void)?
-    var shareImage: (() -> Void)
-    var saveToiCloud: (() -> Void)?
-
+    var saveImage: ((Data) -> Void)
+    var copyImage: ((Data) -> Void)
+    var deleteImage: ((Data) -> Void)
+    var saveToDesktopImage: ((Data) -> Void)
+    var shareImage: ((Data) -> Void)
+    var saveToiCloud: ((Data) -> Void)
+    
     var body: some View {
-        RoundedRectangle(cornerRadius: 20) // Container for the screenshot view
+        RoundedRectangle(cornerRadius: 20)
             .frame(width: 201, height: 152)
             .foregroundColor(.clear)
             .overlay(
                 Group {
-                    if let image = viewModel.image {
-                        Image(nsImage: image)
+                    // Check if NSImage can be created from image data
+                    if let nsImage = NSImage(data: image) {
+                        Image(nsImage: nsImage)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(width: 200, height: 150)
-                            .cornerRadius(10)
+                            .background(Color.clear)
                             .cornerRadius(20)
+                        // Enable drag and drop functionality
+                            .onDrag {
+                                let url = saveImageToTemporaryDirectory(image: nsImage)
+                                return url != nil ? NSItemProvider(contentsOf: url!)! : NSItemProvider(object: image as NSData as! NSItemProviderWriting)
+                            }
+                        // Overlay to show border when not hovered
                             .overlay(
                                 RoundedRectangle(cornerRadius: 20)
                                     .stroke(Color.gray, lineWidth: 1)
                                     .opacity(!isHovered ? 1.0 : 0.0)
                             )
+                        // Overlay to show border when hovered
                             .overlay(
                                 RoundedRectangle(cornerRadius: 20)
                                     .stroke(Color.white, lineWidth: 1)
@@ -59,43 +57,35 @@ struct ScreenShotView: View {
                                             .frame(width: 195, height: 145)
                                             .overlay(
                                                 ZStack {
-                                                    // Buttons for actions
                                                     VStack {
                                                         HStack {
-                                                            CircleButton(systemName: "xmark", action: deleteImage)
+                                                            CircleButton(systemName: "xmark", action: deleteImage, image: image)
                                                             Spacer()
-                                                            HStack {
-                                                                CircleButton(systemName: "square.and.arrow.up", action: shareImage)
-                                                            }
+                                                            CircleButton(systemName: "square.and.arrow.up", action: shareImage, image: image)
                                                         }
                                                         Spacer()
                                                         HStack {
                                                             Spacer()
-                                                            if let saveToiCloud = saveToiCloud {
-                                                                CircleButton(systemName: "cloud", action: saveToiCloud)
-                                                            }
+                                                            CircleButton(systemName: "cloud", action: saveToiCloud, image: image)
                                                         }
                                                     }
                                                     .padding(7)
-                                                    // Buttons for actions
                                                     VStack(spacing: 15) {
-                                                        TextButton(text: "Copy", action: copyImage)
-                                                        if let saveToDesktopImage = saveToDesktopImage {
-                                                            TextButton(text: "Save to Desktop", action: saveToDesktopImage)
-                                                        }
-                                                        TextButton(text: "Save as", action: saveImage)
+                                                        TextButton(text: "Copy", action: copyImage, image: image)
+                                                        // Conditionally show button based on a flag
+#if NOSANDBOX
+                                                        TextButton(text: "Save to Desktop", action: saveToDesktopImage, image: image)
+#endif
+                                                        TextButton(text: "Save as", action: saveImage, image: image)
                                                     }
                                                 }
-                                                .opacity(isHovered ? 1.0 : 0.0)
+                                                    .opacity(isHovered ? 1.0 : 0.0)
                                             )
                                     )
                             )
-                            .focusable(false)
+                        // Track hover state
                             .onHover { hovering in
                                 isHovered = hovering
-                            }
-                            .onDrag {
-                                NSItemProvider(object: image)
                             }
                     } else {
                         // Display message for invalid image
@@ -104,36 +94,62 @@ struct ScreenShotView: View {
                 }
             )
     }
-}
-
-// This view is for the small buttons with image overlaying the screenshot preview.
-struct CircleButton: View {
-    let systemName: String
-    let action: (() -> Void)
-
-    var body: some View {
-        Button(action: action) {
-            Image(systemName: systemName)
-                .foregroundColor(.black)
-                .frame(width: 25, height: 25)
-                .background(Color.white)
-                .clipShape(Circle())
+    
+    // Function to save the image to a temporary directory and return the URL
+    func saveImageToTemporaryDirectory(image: NSImage) -> URL? {
+        let temporaryDirectory = FileManager.default.temporaryDirectory
+        let fileURL = temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("png")
+        
+        guard let data = image.tiffRepresentation,
+              let bitmap = NSBitmapImageRep(data: data),
+              let pngData = bitmap.representation(using: .png, properties: [:]) else {
+            return nil
+        }
+        
+        do {
+            try pngData.write(to: fileURL)
+            return fileURL
+        } catch {
+            print("Failed to save image to temporary directory: \(error)")
+            return nil
         }
     }
 }
 
-// This view is for the text buttons overlaying the screenshot preview.
+// View for small circular buttons overlaying the screenshot preview
+struct CircleButton: View {
+    let systemName: String
+    let action: ((Data) -> Void)
+    var image: Data
+    var body: some View {
+        Circle()
+            .frame(width: 25, height: 25)
+            .foregroundColor(.white)
+            .overlay(
+                Image(systemName: systemName)
+                    .foregroundColor(.black)
+            )
+            .onTapGesture {
+                action(image)
+            }
+    }
+}
+
+// View for text buttons overlaying the screenshot preview
 struct TextButton: View {
     let text: String
-    let action: (() -> Void)
-
+    let action: ((Data) -> Void)
+    var image: Data
     var body: some View {
-        Button(action: action) {
-            Text(text)
-                .foregroundColor(.black)
-                .frame(width: 110, height: 30)
-                .background(Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-        }
+        RoundedRectangle(cornerRadius: 20)
+            .frame(width: 110, height: 30)
+            .foregroundColor(.white)
+            .overlay(
+                Text(text)
+                    .foregroundColor(.black)
+            )
+            .onTapGesture {
+                action(image)
+            }
     }
 }

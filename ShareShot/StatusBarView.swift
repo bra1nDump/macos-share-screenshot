@@ -56,7 +56,14 @@ struct ScreenShotStatusBarView: View {
                             .frame(width: size.width, height: size.height)
                             .background(Color.clear)
                             .cornerRadius(10)
-                            .onDrag { NSItemProvider(object: nsImage) }
+                            .onDrag {
+                                            if isReceivingURL() {
+                                                let url = saveImageToTemporaryDirectory(image: nsImage)
+                                                return NSItemProvider(contentsOf: url!)!
+                                            } else {
+                                                return NSItemProvider(object: nsImage)
+                                            }
+                                        }
                             .onTapGesture { copyToClipboard(nsImage) }
                     } else {
                         Text("Invalid Image")
@@ -73,10 +80,29 @@ struct ScreenShotStatusBarView: View {
         pasteboard.clearContents()
         pasteboard.writeObjects([image])
     }
+    
+    // Function to save the image to a temporary directory and return the URL
+       func saveImageToTemporaryDirectory(image: NSImage) -> URL? {
+           let temporaryDirectory = FileManager.default.temporaryDirectory
+           let fileURL = temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("png")
+
+           guard let data = image.tiffRepresentation,
+                 let bitmap = NSBitmapImageRep(data: data),
+                 let pngData = bitmap.representation(using: .png, properties: [:]) else {
+               return nil
+           }
+
+           do {
+               try pngData.write(to: fileURL)
+               return fileURL
+           } catch {
+               print("Failed to save image to temporary directory: \(error)")
+               return nil
+           }
+       }
+
+       func isReceivingURL() -> Bool {
+           return true
 }
 
-extension NSImage {
-    convenience init?(data: Data) {
-        self.init(data: data)
-    }
 }

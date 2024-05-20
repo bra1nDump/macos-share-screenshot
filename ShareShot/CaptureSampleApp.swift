@@ -1,7 +1,7 @@
 /*
-Abstract:
-The entry point into this app.
-*/
+ Abstract:
+ The entry point into this app.
+ */
 import Cocoa
 import HotKey
 import SwiftUI
@@ -73,7 +73,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var statusBarItem: NSStatusItem!
     var contextMenu: NSMenu = NSMenu()
     var popover: NSPopover!
-    
+    var eventMonitor: Any?
     // Hot Keys
     // Screenshot
     let cmdShiftSeven = HotKey(key: .seven, modifiers: [.command, .shift])
@@ -94,11 +94,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             showOnboardingView()
         } else {
 #if DEBUG
-      //  startScreenshot()
+            //  startScreenshot()
 #endif
         }
         defaults.set(true, forKey: "HasLaunchedBefore")
-
+        
         cmdShiftSeven.keyDownHandler = { [weak self] in
             // Make sure the old window is dismissed
             self?.startScreenshot()
@@ -164,7 +164,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if stackModel.images.count + 1 > maxScreenshotsToShowOnStack {
                 stackModel.images.removeLast(stackModel.images.count + 1 - maxScreenshotsToShowOnStack )
             }
-
+            
             // Create panel hosting the stack if not shown
             if currentPreviewPanel == nil {
                 currentPreviewPanel = ScreenshotStackPanel(stackModelState: stackModel)
@@ -206,7 +206,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let sortedUrls = (urls ?? []).sorted { $0.path < $1.path }
         return sortedUrls
     }
-
+    
     func lastNScreenshots(n: Int) -> [ImageData] {
         let urls = allScreenshotUrlsMostRecentOneIsLast()
         let lastN = urls.suffix(n)
@@ -250,26 +250,40 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Make the panel key and order it front
         panel.makeKeyAndOrderFront(nil)
     }
-     
+    
     func setupStatusBarItem() {
-            statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         let statusBarItemLogo = NSImage(named: NSImage.Name("LogoForStatusBarItem"))!
         statusBarItemLogo.size = NSSize(width: 18, height: 18)
         statusBarItem.button?.image = statusBarItemLogo
-            statusBarItem.button?.action = #selector(togglePopover(_:))
-            popover = NSPopover()
+        statusBarItem.button?.action = #selector(togglePopover(_:))
+        popover = NSPopover()
         popover.contentViewController = NSHostingController(rootView: StatusBarView(startScreenshot: startScreenshot, quitApplication: quitApplication, history:  showScreenshotHistoryStack, onboarding: showOnboardingView, lastScreenshots: lastNScreenshots(n: 5)))
-        }
+    }
     
     @objc func togglePopover(_ sender: AnyObject?) {
-        if popover.isShown {
-            popover.performClose(sender)
-        } else if let button = statusBarItem.button {
-            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-            popover.behavior = .applicationDefined
-        }
-    }
-
+          if popover.isShown {
+              popover.performClose(sender)
+              if let eventMonitor = eventMonitor {
+                  NSEvent.removeMonitor(eventMonitor)
+                  self.eventMonitor = nil
+              }
+          } else if let button = statusBarItem.button {
+              popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+              popover.behavior = .applicationDefined
+              
+              eventMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { [weak self] event in
+                  if let strongSelf = self, strongSelf.popover.isShown {
+                      strongSelf.popover.performClose(sender)
+                      if let eventMonitor = strongSelf.eventMonitor {
+                          NSEvent.removeMonitor(eventMonitor)
+                          strongSelf.eventMonitor = nil
+                      }
+                  }
+              }
+          }
+      }
+    
     @objc func showScreenRecordingPermissionAlert() {
         let alert = NSAlert()
         alert.messageText = "Screen Recording Permission Required"
@@ -312,13 +326,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc func handleClickOutsidePopover(sender: NSClickGestureRecognizer) {
-            if popover.isShown {
-                let location = sender.location(in: nil)
-                if !popover.contentViewController!.view.frame.contains(location) {
-                    popover.performClose(sender)
-                }
+        if popover.isShown {
+            let location = sender.location(in: nil)
+            if !popover.contentViewController!.view.frame.contains(location) {
+                popover.performClose(sender)
             }
         }
+    }
     // Implement any other necessary AppDelegate methods here
     
 }
