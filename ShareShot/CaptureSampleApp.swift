@@ -172,7 +172,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             
             // Always activate the app
             //
-            // Magic configuration to show the panel, combined with the panel's configuration results in
+            // Magic configuration to show the panel, co7mbined with the panel's configuration results in
             // the app not taking away focus from the current app, yet still appearing.
             // Some of the configuraiton might be discardable - further fiddling might reveal what.
             NSApp.activate(ignoringOtherApps: true)
@@ -187,7 +187,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     /// Show history in the same panel as we normally show users
     @objc
     func showScreenshotHistoryStack() {
-        // To avoid overflow show only last 4
+        // To avoid overflow show only last 44
         let last4Screenshots = lastNScreenshots(n: 4)
         
         // Mutate model in-place

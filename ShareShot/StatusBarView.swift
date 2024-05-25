@@ -20,7 +20,10 @@ struct StatusBarView: View {
     var body: some View {
         VStack {
             ForEach(lastScreenshots, id: \.self) { imageData in
-                ScreenShotStatusBarView(imageData: imageData, size: imageSize)
+                ScreenShotView(image: imageData, saveImage: {_ in }, copyImage: {_ in }, deleteImage: {_ in }, saveToDesktopImage: {_ in }, shareImage: {_ in })
+                    .onTapGesture {
+                        openImageInPreview(image: NSImage(data: imageData)!)
+                    }
             }
             Button(action: startScreenshot) {
                 Label("Screenshot", systemImage: "camera")
@@ -37,6 +40,45 @@ struct StatusBarView: View {
         }
         .padding()
     }
+    private func deleteImage(_ image: ImageData) {
+    }
+    
+    // Open the image in Preview app
+    private func openImageInPreview(image: NSImage) {
+        let temporaryDirectoryURL = FileManager.default.temporaryDirectory
+        let temporaryImageURL = temporaryDirectoryURL.appendingPathComponent("ShareShot.png")
+        if let imageData = image.tiffRepresentation, let bitmapRep = NSBitmapImageRep(data: imageData) {
+            if let pngData = bitmapRep.representation(using: .png, properties: [:]) {
+                do {
+                    try pngData.write(to: temporaryImageURL)
+                } catch {
+                    print("Failed to save temporary image: \(error)")
+                    return
+                }
+            }
+        }
+        NSWorkspace.shared.open(temporaryImageURL)
+    }
+    
+    // Save the image to desktop (sandbox only)
+    private func saveImageToDesktop(_ image: ImageData) {
+        guard let desktopURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first else {
+            print("Unable to access desktop directory.")
+            return
+        }
+        let fileName = dateTimeUniqueScreenshotFileName()
+        let filePath = desktopURL.appendingPathComponent(fileName)
+        saveImageAsPng(image: image, at: filePath)
+    }
+    
+    // Generate a unique filename based on date and time
+    private func dateTimeUniqueScreenshotFileName() -> String {
+        let currentDate = Date()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd_HHmmss"
+        return "ShareShot_\(formatter.string(from: currentDate)).png"
+    }
+    
 }
 
 struct ScreenShotStatusBarView: View {
@@ -50,20 +92,7 @@ struct ScreenShotStatusBarView: View {
             .overlay(
                 Group {
                     if let nsImage = NSImage(data: imageData) {
-                        Image(nsImage: nsImage)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: size.width, height: size.height)
-                            .background(Color.clear)
-                            .cornerRadius(10)
-                            .onDrag {
-                                            if isReceivingURL() {
-                                                let url = saveImageToTemporaryDirectory(image: nsImage)
-                                                return NSItemProvider(contentsOf: url!)!
-                                            } else {
-                                                return NSItemProvider(object: nsImage)
-                                            }
-                                        }
+                        ScreenShotView(image: imageData, saveImage: {_ in }, copyImage: {_ in }, deleteImage: {_ in }, saveToDesktopImage: {_ in }, shareImage: {_ in })
                             .onTapGesture { copyToClipboard(nsImage) }
                     } else {
                         Text("Invalid Image")

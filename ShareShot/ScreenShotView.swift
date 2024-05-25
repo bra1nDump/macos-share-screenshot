@@ -19,7 +19,6 @@ struct ScreenShotView: View {
     var deleteImage: ((Data) -> Void)
     var saveToDesktopImage: ((Data) -> Void)
     var shareImage: ((Data) -> Void)
-    var saveToiCloud: ((Data) -> Void)
     
     var body: some View {
         RoundedRectangle(cornerRadius: 20)
@@ -64,10 +63,6 @@ struct ScreenShotView: View {
                                                             CircleButton(systemName: "square.and.arrow.up", action: shareImage, image: image)
                                                         }
                                                         Spacer()
-                                                        HStack {
-                                                            Spacer()
-                                                            CircleButton(systemName: "cloud", action: saveToiCloud, image: image)
-                                                        }
                                                     }
                                                     .padding(7)
                                                     VStack(spacing: 15) {

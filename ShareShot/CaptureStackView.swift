@@ -25,7 +25,7 @@ struct CaptureStackView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20) {
                         ForEach(model.images.reversed(), id: \.self) { image in
-                            ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction, saveToiCloud: saveImageToICloud)
+                            ScreenShotView(image: image, saveImage: saveImage, copyImage: copyToClipboard, deleteImage: deleteImage, saveToDesktopImage: saveImageToDesktop, shareImage: shareAction)
                                 .onTapGesture {
                                     // Open the image in Preview app upon tap
                                     openImageInPreview(image: NSImage(data: image)!)
@@ -112,22 +112,6 @@ struct CaptureStackView: View {
         }
     }
     
-    // Save the image to iCloud
-    private func saveImageToICloud(_ image: ImageData) {
-        guard let fileURL = saveImageLocally(image) else { return }
-        saveFileToICloud(fileURL: fileURL) { iCloudURL in
-            if let iCloudURL = iCloudURL {
-                print("Image saved to iCloud. URL: \(iCloudURL)")
-                let pasteboard = NSPasteboard.general
-                pasteboard.clearContents()
-                pasteboard.writeObjects([iCloudURL as NSPasteboardWriting])
-            } else {
-                print("Error saving image to iCloud.")
-            }
-            deleteImage(image)
-        }
-    }
-    
     // Save the image locally and return its URL
     private func saveImageLocally(_ image: ImageData) -> URL? {
         guard let nsImage = NSImage(data: image) else {
@@ -151,40 +135,6 @@ struct CaptureStackView: View {
             return nil
         }
     }
-    
-    // Save the file to iCloud
-    private func saveFileToICloud(fileURL: URL, completion: @escaping (URL?) -> Void) {
-        let recordID = CKRecord.ID(recordName: UUID().uuidString)
-        let record = CKRecord(recordType: "YourRecordType", recordID: recordID)
-        let asset = CKAsset(fileURL: fileURL)
-        record["file"] = asset
-        let container = CKContainer.default()
-        let privateDatabase = container.privateCloudDatabase
-        privateDatabase.save(record) { (record, error) in
-            DispatchQueue.main.async {
-                if let error = error {
-                    print("Error saving to iCloud: \(error.localizedDescription)")
-                    completion(nil)
-                } else {
-                    print("File successfully saved to iCloud")
-                    guard let record = record else {
-                        print("Error: CKRecord is nil")
-                        completion(nil)
-                        return
-                    }
-                    let recordName = record.recordID.recordName
-                    let shareURLString = "https://www.icloud.com/share/#\(recordName)"
-                    if let shareURL = URL(string: shareURLString) {
-                        completion(shareURL)
-                    } else {
-                        print("Error constructing share URL.")
-                        completion(nil)
-                    }
-                }
-            }
-        }
-    }
-    
     // Delete the image from the model
     private func deleteImage(_ image: ImageData) {
         model.images.removeAll(where: { $0 == image })
